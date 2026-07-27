@@ -1499,6 +1499,66 @@ Fixed via [schloss-ui#46](https://github.com/zudaR107/schloss-ui/pull/46)
 [schloss#96](https://github.com/zudaR107/schloss/pull/96)
 ([schloss#95](https://github.com/zudaR107/schloss/issues/95)).
 
+## Invite-gated registration, admin panel, admin-only API docs, platform documentation refresh (2026-07-27)
+
+Started as a single ask - publish OpenAPI/Swagger docs for the platform's
+APIs - but scoping who should see them surfaced a bigger need: restricting
+self-registration before the platform can be run more publicly (Russian
+law imposes compliance burdens on services with open registration - this
+is a product decision, not a certified legal conclusion). Three
+interrelated features landed together, plus the originally-requested
+documentation refresh and a "docs updated" line added to the standing PR
+checklist.
+
+- **schlussel**: `POST /auth/register` now requires an admin-issued,
+  single-use invite code, except for the platform's very first user
+  (unchanged bootstrap path). Redemption is atomic - a conditional update
+  inside one `db.transaction`, using a pre-generated user id, so two
+  concurrent registrations racing the same code can never both succeed.
+  New `invites` table (hashed code, creator, expiry, revoked/used
+  timestamps). New admin-only endpoints: invite create/list/revoke,
+  `GET /admin/users`, `PATCH /admin/users/:id/role` (blocked if it would
+  leave zero admins), `DELETE /admin/users/:id/sessions` (force-logout),
+  `DELETE /admin/users/:id` (password-confirmed, also blocked on the last
+  admin), and `GET /admin/stats`. A new `/admin` page in
+  schlussel/web covers all of this plus a small stats overview
+  (`StatTile`/`Sparkline`), and a shareable `/register?invite=...` link
+  is generated from the invite-creation modal. `RegisterPage` gained an
+  invite-code field and a fix for a real bug: it used to bounce a bare
+  invite link away entirely, since only an externally-supplied
+  `return_to`/`code_challenge` pair used to count as a legitimate reason
+  to render the form - a bare admin-shared link has neither.
+- **Admin-only OpenAPI docs**, for both schlussel and kuvert (schloss and
+  schloss-ui have no backend API of their own). Both already validate
+  bodies with Zod, so a new, purely additive `src/openapi.ts` per service
+  registers the *existing* schemas with `@asteasolutions/zod-to-openapi`
+  rather than rewriting ~45 routes into `@hono/zod-openapi`'s own route
+  style - deleting either file would have zero effect on runtime request
+  validation. Rather than trying to gate a raw backend-served HTML page
+  (a plain browser GET can't carry a Bearer header), `/docs` is a normal
+  page inside each app's own already-authenticated frontend, rendering
+  `swagger-ui-dist` (not `swagger-ui-react` - its React peer dependency
+  caps below 19, and both apps run React 19) fed by an authenticated
+  fetch of the spec. Lazy-loaded via a dynamic `import()` so its ~2-3MB
+  of assets never reach a non-admin's bundle.
+- **Documentation refresh**, across all five repos: each service's
+  README brought in line with what's actually shipped (schlussel and
+  kuvert also list their new OpenAPI docs viewers); this repo's own
+  README gained a services/ports/docs-path table. The PR checklist
+  template in schlussel, kuvert, schloss, and schloss-ui gained an
+  "Updated docs" line, and this file's "Standing workflow" section now
+  states that expectation explicitly.
+
+Fixed via [schlussel#112](https://github.com/zudaR107/schlussel/pull/112)
+([schlussel#105](https://github.com/zudaR107/schlussel/issues/105)-[#111](https://github.com/zudaR107/schlussel/issues/111)),
+[kuvert#175](https://github.com/zudaR107/kuvert/pull/175)
+([kuvert#172](https://github.com/zudaR107/kuvert/issues/172)-[#174](https://github.com/zudaR107/kuvert/issues/174)),
+and the documentation-only follow-ups
+[schlussel#114](https://github.com/zudaR107/schlussel/pull/114),
+[kuvert#177](https://github.com/zudaR107/kuvert/pull/177),
+[schloss#102](https://github.com/zudaR107/schloss/pull/102), and
+[schloss-ui#48](https://github.com/zudaR107/schloss-ui/pull/48).
+
 ## Standing workflow (every stage)
 
 - **Milestone = one global/umbrella task**, made up of several issues (not
@@ -1539,6 +1599,11 @@ Fixed via [schloss-ui#46](https://github.com/zudaR107/schloss-ui/pull/46)
 - Every PR also appends one brief bullet to the repo's own `CHANGELOG.md`
   (under whichever theme section fits, or a new section if none does) —
   not a full commit-by-commit log, just enough to see what shipped.
+- Every PR checklist also has an "Updated docs" line: if a PR adds/changes
+  a route, env var, or user-facing behavior worth knowing about, the
+  repo's own README (and, for services with a REST API, the OpenAPI
+  registration in `src/openapi.ts`) gets updated in the same PR — not as
+  a separate follow-up.
 
 ## Repo locations
 

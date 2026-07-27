@@ -20,6 +20,20 @@ Docker images, its own issue tracker). This repo exists to answer "what
 versions of each service go together" and to hold cross-cutting planning
 docs that don't belong in any single service's history.
 
+## Services, ports, and API docs
+
+Only `tor` publishes a host port - everything else is reached through it by
+subdomain. Where a service has its own REST API, its OpenAPI spec and a
+Swagger UI viewer live at `/docs` in that service's own web app, visible to
+admins only.
+
+| Service | Purpose | Internal ports | Public path | API docs |
+|---|---|---|---|---|
+| `schloss` | Home page / launcher | `80` (web) | `https://<domain>/` | — (no API of its own) |
+| `schlussel` | Auth: accounts, login, tokens, invites, admin | `4000` (api), `80` (web) | `https://auth.<domain>/` | `/docs` (admin only) |
+| `kuvert` | Envelope budgeting | `3001` (api), `80` (web) | `https://kuvert.<domain>/` | `/docs` (admin only) |
+| `tor` | Reverse-proxy gateway | `80`/`443` | entry point for all of the above | — |
+
 ## What's in here
 
 - `ROADMAP.md` — development history and status across all repos.

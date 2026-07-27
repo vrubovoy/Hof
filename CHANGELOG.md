@@ -311,3 +311,11 @@ submodule's own `CHANGELOG.md` for that).
   revoke, and a "Выйти на всех устройствах" button - and fixed a bug
   an independent test agent caught along the way, where a failed
   session-list fetch left the loading indicator stuck on forever.
+- Bumped schlussel and kuvert: self-registration now requires an
+  admin-issued invite code (except the platform's first user); a new
+  admin panel (schlussel `/admin`) manages users and invites; both
+  services publish an admin-only OpenAPI spec + Swagger UI viewer at
+  `/docs`. Bumped schloss and schloss-ui too, for a documentation-only
+  follow-up shared across all four service repos (README refreshes,
+  an "Updated docs" line added to every PR checklist template). See
+  this file's own `ROADMAP.md` for the full writeup.
