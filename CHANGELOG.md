@@ -319,3 +319,7 @@ submodule's own `CHANGELOG.md` for that).
   follow-up shared across all four service repos (README refreshes,
   an "Updated docs" line added to every PR checklist template). See
   this file's own `ROADMAP.md` for the full writeup.
+- Bumped kuvert (Transactions page filter-select height fix) and tor
+  (documented the one-time step of trusting Caddy's local HTTPS CA in the
+  browser for local dev, discovered while testing the invite/admin batch
+  above against a freshly wiped local database).
