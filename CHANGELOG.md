@@ -334,3 +334,15 @@ submodule's own `CHANGELOG.md` for that).
   unrecognized subdomains (a typo'd hostname previously failed the
   handshake outright instead of getting any HTTP response) - all three
   found during the same manual testing pass.
+- Bumped schlussel, kuvert, schloss, and tor for a full security-audit
+  pass (three independent agents, one per service) run at the user's
+  request: schlussel gained a last-admin guard on self-service account
+  deletion, closed a login-endpoint gap that could plant a session cookie
+  on a consumer app's own origin, made the last-admin guard atomic against
+  a concurrent-request race, and added a per-IP login rate limiter; kuvert
+  gained ownership checks on cross-referenced ids in transactions/goals/
+  envelopes (previously only checked existence, not that they belonged to
+  the caller) and a request body size limit; kuvert and schloss's `/auth/*`
+  proxies now strip a trust header that's only supposed to come from
+  schlussel-web itself; tor gained baseline security response headers.
+  See each repo's own `CHANGELOG.md` for the full writeup.
