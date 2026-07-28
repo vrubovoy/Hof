@@ -346,3 +346,12 @@ submodule's own `CHANGELOG.md` for that).
   proxies now strip a trust header that's only supposed to come from
   schlussel-web itself; tor gained baseline security response headers.
   See each repo's own `CHANGELOG.md` for the full writeup.
+- Bumped schloss-ui, schlussel, and kuvert for a platform-wide precise
+  field-level validation push (per the user's request): every form now
+  highlights the specific invalid field in red instead of a generic
+  banner. schlussel additionally moved invite links from a query param to
+  a URL fragment, so the code never touches Caddy's access logs. `/login`
+  deliberately keeps its wrong-email-vs-wrong-password error merged, to
+  avoid reopening the user-enumeration gap the security audit above
+  closed. See schloss-ui/schlussel/kuvert's own `CHANGELOG.md` for the
+  full writeup.
