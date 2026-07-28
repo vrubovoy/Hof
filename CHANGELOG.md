@@ -372,3 +372,16 @@ submodule's own `CHANGELOG.md` for that).
   published too recently to pass) - left alone rather than bypassed,
   expected to clear and become mergeable naturally within hours to
   about a day.
+- Bumped schloss-ui, schloss, schlussel, and kuvert for an in-app "how to
+  use this" guide aimed at regular, non-technical end users (per the
+  user's request, who will add screenshots themselves afterward) - a
+  `/help` page in each app with a Russian-language text skeleton
+  (real headings/copy, explicit screenshot slots at each app's own
+  `public/guide/`) covering that app's actual current features, and
+  deliberately excluding admin-only functionality. schloss-ui's shared
+  `Footer` gained optional `helpHref`/`helpLabel` props so every app can
+  link to its own guide the same way; kuvert also got an always-visible
+  "Справка" sidebar entry. schlussel's `/help` is reachable without being
+  logged in (unlike `/account`, `/admin`, `/docs`) since someone stuck at
+  login/registration is exactly who needs it. See each repo's own
+  `CHANGELOG.md` for the full writeup.
