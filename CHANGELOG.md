@@ -328,3 +328,9 @@ submodule's own `CHANGELOG.md` for that).
   - added an admin-only shortcut card on schlussel's `/account`, a small
   back-link loop between `/account`/`/admin`/`/docs`, and an admin-only
   "Документация API" nav item in kuvert's sidebar.
+- Bumped schloss-ui (StatTile row-misalignment and Badge/text baseline
+  fixes, both hit on the new admin panel), and schlussel/kuvert again to
+  pick up the new schloss-ui pin. Bumped tor for a TLS-handshake fix on
+  unrecognized subdomains (a typo'd hostname previously failed the
+  handshake outright instead of getting any HTTP response) - all three
+  found during the same manual testing pass.
