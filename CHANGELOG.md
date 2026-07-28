@@ -355,3 +355,20 @@ submodule's own `CHANGELOG.md` for that).
   avoid reopening the user-enumeration gap the security audit above
   closed. See schloss-ui/schlussel/kuvert's own `CHANGELOG.md` for the
   full writeup.
+- Cleared the Dependabot backlog across every repo (per the user's
+  request), merging GitHub Actions and npm bumps in schlussel, kuvert,
+  and schloss and deleting each PR's branch both locally and remotely.
+  Several npm PRs needed a manual lockfile regeneration and force-push,
+  since Dependabot's own automated update couldn't fully resolve pnpm's
+  lockfile for a few of the larger version jumps (typescript 6→7, jsdom
+  26→30, vitest 3→4, and others). Docker-build verification of the
+  result (not just each repo's own test suite) caught one real
+  regression: kuvert's TypeScript 6→7 bump left a test file using the
+  now-untyped Node-specific `global.fetch`, breaking kuvert-web's
+  production build - fixed by switching to `globalThis.fetch` (see
+  kuvert's own `CHANGELOG.md`). A handful of PRs in kuvert (1) and
+  schloss (4) remain open, all blocked by the pnpm supply-chain policy's
+  `minimumReleaseAge` check (the resolved package versions were
+  published too recently to pass) - left alone rather than bypassed,
+  expected to clear and become mergeable naturally within hours to
+  about a day.
