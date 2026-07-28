@@ -323,3 +323,8 @@ submodule's own `CHANGELOG.md` for that).
   (documented the one-time step of trusting Caddy's local HTTPS CA in the
   browser for local dev, discovered while testing the invite/admin batch
   above against a freshly wiped local database).
+- Bumped schlussel and kuvert again: `/admin` and `/docs` weren't linked
+  from anywhere in the normal UI, discovered during the same testing pass
+  - added an admin-only shortcut card on schlussel's `/account`, a small
+  back-link loop between `/account`/`/admin`/`/docs`, and an admin-only
+  "Документация API" nav item in kuvert's sidebar.
