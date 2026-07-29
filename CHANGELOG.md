@@ -390,3 +390,8 @@ submodule's own `CHANGELOG.md` for that).
   now, on every platform), which broke schlussel's build after a
   routine Dependabot bump. Pinned back to 12.x there and added a
   Dependabot guard in both repos against a repeat.
+- Bumped tor: removed the gateway's wildcard catch-all site - its cert
+  doesn't stay scoped to just its own traffic, so real browsers
+  intermittently rejected the three real sites' TLS entirely once their
+  own short-lived certs expired and Caddy fell back to serving it
+  instead.
