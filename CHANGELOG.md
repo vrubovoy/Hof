@@ -385,3 +385,8 @@ submodule's own `CHANGELOG.md` for that).
   logged in (unlike `/account`, `/admin`, `/docs`) since someone stuck at
   login/registration is exactly who needs it. See each repo's own
   `CHANGELOG.md` for the full writeup.
+- Bumped schlussel and kuvert for a Docker build fix: `better-sqlite3`
+  v13 quietly dropped prebuilt binaries (always compiles from source
+  now, on every platform), which broke schlussel's build after a
+  routine Dependabot bump. Pinned back to 12.x there and added a
+  Dependabot guard in both repos against a repeat.
