@@ -394,4 +394,7 @@ submodule's own `CHANGELOG.md` for that).
   doesn't stay scoped to just its own traffic, so real browsers
   intermittently rejected the three real sites' TLS entirely once their
   own short-lived certs expired and Caddy fell back to serving it
-  instead.
+  instead. Then bumped again: brought the catch-all's friendly redirect
+  back via a hostless site + on-demand TLS instead (exact cert per
+  subdomain, never a shared wildcard), so unrecognized subdomains get a
+  redirect again without the collision risk.
