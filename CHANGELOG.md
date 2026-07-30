@@ -422,3 +422,24 @@ submodule's own `CHANGELOG.md` for that).
   form's own email field has the identical shape (username directly
   before a password field), so the picker was still popping up there too.
   Applied the same guard.
+- Bumped schloss-ui, schlussel, schloss, kuvert, and tor together for
+  three more reported issues:
+  - kuvert's header was missing the theme toggle that schloss's and
+    schlussel's headers already have (only the sidebar had one).
+  - The theme dropdown ran off-screen / got clipped when its trigger sat
+    near the bottom of a short viewport (kuvert's sidebar) -
+    schloss-ui's `ThemeToggle` now portals its dropdown to
+    `document.body` with viewport-aware positioning, the same technique
+    `CalendarPopover` already used.
+  - The selected theme didn't carry over between the three apps at all -
+    they're separate origins, so `localStorage` isn't shared, and a
+    shared cookie doesn't work either (`localhost` has no embedded dot).
+    Added a new `ThemeSync` component (schloss-ui) that syncs the theme
+    across origins via a hidden iframe + `postMessage`, talking to a new
+    static hub page schlussel serves at `/theme-sync.html` - last write
+    wins by timestamp, relayed live between multiple open tabs via
+    `BroadcastChannel`. Needed a narrow `frame-ancestors` CSP exception
+    in tor's gateway, scoped to just that one path and just schloss's/
+    kuvert's origins (verified in an isolated container that a matched
+    `header` directive silently loses the override next to an unmatched
+    one - `handle` blocks route it correctly instead).
