@@ -417,3 +417,8 @@ submodule's own `CHANGELOG.md` for that).
   page's inline style only set the indent, never restored numbering) hit
   all three apps identically - fixed the same way (`listStyleType:
   'decimal'`) in each.
+- Bumped schlussel once more: the readonly-until-focus autofill-picker
+  guard only covered the registration form's email field - the login
+  form's own email field has the identical shape (username directly
+  before a password field), so the picker was still popping up there too.
+  Applied the same guard.
