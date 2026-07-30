@@ -398,3 +398,11 @@ submodule's own `CHANGELOG.md` for that).
   back via a hostless site + on-demand TLS instead (exact cert per
   subdomain, never a shared wildcard), so unrecognized subdomains get a
   redirect again without the collision risk.
+- Bumped schlussel: a bare invite link (`/register#invite=...`) was
+  bouncing logged-out visitors to `/login` instead of showing the
+  registration form - the invite fragment was being re-read from the URL
+  on every render instead of captured once, so it looked "gone" as soon
+  as an unrelated effect stripped it from the address bar. Also fixed
+  keyboard focus not moving to a field after it failed validation
+  anywhere in the auth/account forms - a red border alone made the
+  visitor hunt for and click the field themselves.
