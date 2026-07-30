@@ -406,3 +406,14 @@ submodule's own `CHANGELOG.md` for that).
   keyboard focus not moving to a field after it failed validation
   anywhere in the auth/account forms - a red border alone made the
   visitor hunt for and click the field themselves.
+- Bumped schlussel again: the focus fix above made Chrome/Edge pop up
+  their saved-password picker under the registration email field (it
+  precedes the password fields, so the browser treats it as a
+  "username"); guarded with the standard readonly-until-focus technique.
+  Also fixed schlussel's own `/help` page numbered list rendering with no
+  visible markers.
+- Bumped kuvert and schloss: the same `/help` page numbered-list bug
+  (Tailwind's preflight resets `ol`/`ul` to `list-style: none`, and each
+  page's inline style only set the indent, never restored numbering) hit
+  all three apps identically - fixed the same way (`listStyleType:
+  'decimal'`) in each.
