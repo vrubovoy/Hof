@@ -443,3 +443,16 @@ submodule's own `CHANGELOG.md` for that).
     kuvert's origins (verified in an isolated container that a matched
     `header` directive silently loses the override next to an unmatched
     one - `handle` blocks route it correctly instead).
+- Bumped schloss-ui, schlussel, schloss, and kuvert again: two bugs found
+  in live testing of the theme-sync batch above. The dropdown's
+  off-screen correction could shift it up far enough to cover its own
+  trigger (it was pinning to the viewport bottom regardless of where the
+  trigger actually was) - now flips to open above the trigger instead
+  when there's room there. More importantly, the cross-origin sync
+  itself didn't actually work: every app's own `applyTheme(getStoredTheme())`
+  bootstrap call minted a fresh timestamp on a freshly-visited origin's
+  very first load (its system-default theme, not a real preference),
+  which then permanently outranked a real pick made moments earlier on
+  another origin - reproduced and confirmed fixed via a standalone script
+  exercising the actual sync algorithm across independent storage
+  instances.
