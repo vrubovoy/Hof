@@ -456,3 +456,19 @@ submodule's own `CHANGELOG.md` for that).
   another origin - reproduced and confirmed fixed via a standalone script
   exercising the actual sync algorithm across independent storage
   instances.
+- Bumped schloss-ui, schlussel, schloss, kuvert, and tor once more: theme
+  sync still didn't actually work after all the above, for a much bigger
+  reason - the hidden-iframe design read/wrote the iframe's own
+  `localStorage`, which Firefox's Total Cookie Protection (and Safari's
+  ITP) partitions by whichever site embeds it. The same hub page embedded
+  in two different apps saw two completely separate storage buckets;
+  nothing could ever actually sync, independent of any application-level
+  bug. Replaced the whole iframe/postMessage/`BroadcastChannel` mechanism
+  with a plain `fetch` against a real `GET`/`PUT /theme` API added to
+  schlussel (new `theme_preference` table, public/unauthenticated,
+  last-write-wins by client-supplied timestamp) - a fetch response isn't
+  subject to storage partitioning at all. Reverted tor's now-unnecessary
+  CSP exception and added kuvert's origin to schlussel's CORS allowlist
+  (it calls `/theme` directly now). Verified live end-to-end against the
+  real running stack: a value written from schloss's origin is correctly
+  read back from kuvert's origin through the actual gateway/CORS/DB.
