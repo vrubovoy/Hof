@@ -1,19 +1,21 @@
 # Hof
 
-Hof ("yard"/"courtyard" in German) is the meta-repo for the **Schloss
+Hof ("yard"/"courtyard" in German) is the meta-repo for the **Hof
 platform** — a small suite of self-hosted personal services. It doesn't
 contain any application code itself; it's docs plus git submodules pinning
 the service repos to the commits that make up the current release.
 
 ## The platform
 
-- [`schloss`](https://github.com/zudaR107/schloss) — the home page / launcher
+- [`schloss`](https://github.com/zudaR107/schloss) — home page / launcher
 - [`schlussel`](https://github.com/zudaR107/schlussel) — auth: accounts, login, tokens
 - [`kuvert`](https://github.com/zudaR107/kuvert) — envelope budgeting
-- [`tor`](https://github.com/zudaR107/tor) — the reverse-proxy gateway all of the above sit behind
-- [`schloss-ui`](https://github.com/zudaR107/schloss-ui) — shared design
-  tokens and layout components, published as an npm package the other
-  three consume
+- [`tafel`](https://github.com/zudaR107/tafel) — task/project tracking
+- [`tor`](https://github.com/zudaR107/tor) — reverse-proxy gateway all of the above sit behind
+- [`schloss-ui`](https://github.com/zudaR107/schloss-ui) — shared frontend
+  components, consumed by every service's web app
+- [`schloss-server-kit`](https://github.com/zudaR107/schloss-server-kit) —
+  shared backend auth/CORS kit, consumed by every service's API
 
 Each is independently developed, tested, and deployed (its own CI, its own
 Docker images, its own issue tracker). This repo exists to answer "what
