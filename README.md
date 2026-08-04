@@ -11,6 +11,7 @@ the service repos to the commits that make up the current release.
 - [`schlussel`](https://github.com/zudaR107/schlussel) — auth: accounts, login, tokens
 - [`kuvert`](https://github.com/zudaR107/kuvert) — envelope budgeting
 - [`tafel`](https://github.com/zudaR107/tafel) — task/project tracking
+- [`zettel`](https://github.com/zudaR107/zettel) — markdown note-taking
 - [`tor`](https://github.com/zudaR107/tor) — reverse-proxy gateway all of the above sit behind
 - [`schloss-ui`](https://github.com/zudaR107/schloss-ui) — shared frontend
   components, consumed by every service's web app
@@ -34,13 +35,16 @@ admins only.
 | `schloss` | Home page / launcher | `80` (web) | `https://<domain>/` | — (no API of its own) |
 | `schlussel` | Auth: accounts, login, tokens, invites, admin | `4000` (api), `80` (web) | `https://auth.<domain>/` | `/docs` (admin only) |
 | `kuvert` | Envelope budgeting | `3001` (api), `80` (web) | `https://kuvert.<domain>/` | `/docs` (admin only) |
+| `tafel` | Task/project tracking | `3002` (api), `80` (web) | `https://tafel.<domain>/` | `/docs` (admin only) |
+| `zettel` | Markdown note-taking | `3003` (api), `80` (web) | `https://zettel.<domain>/` | `/docs` (admin only) |
 | `tor` | Reverse-proxy gateway | `80`/`443` | entry point for all of the above | — |
 
 ## What's in here
 
 - `ROADMAP.md` — development history and status across all repos.
-- Five git submodules (`schlussel/`, `schloss/`, `kuvert/`, `tor/`,
-  `schloss-ui/`), each pinned to a specific commit.
+- Eight git submodules (`schlussel/`, `schloss/`, `kuvert/`, `tafel/`,
+  `zettel/`, `tor/`, `schloss-ui/`, `schloss-server-kit/`), each pinned to
+  a specific commit.
 
 ## Getting the code
 
@@ -54,8 +58,8 @@ git submodule update --init --recursive
 
 See [`tor/README.md`](https://github.com/zudaR107/tor#readme) — one
 `docker compose up` from `tor/` starts everything (`schloss`, `schlussel`,
-`kuvert`, and the gateway itself) behind a single address, no ports to
-remember.
+`kuvert`, `tafel`, `zettel`, and the gateway itself) behind a single
+address, no ports to remember.
 
 ## Updating this repo
 
