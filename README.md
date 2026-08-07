@@ -12,6 +12,7 @@ the service repos to the commits that make up the current release.
 - [`kuvert`](https://github.com/zudaR107/kuvert) — envelope budgeting
 - [`tafel`](https://github.com/zudaR107/tafel) — task/project tracking
 - [`zettel`](https://github.com/zudaR107/zettel) — markdown note-taking
+- [`glocke`](https://github.com/zudaR107/glocke) — in-app notification center and delivery foundation
 - [`tor`](https://github.com/zudaR107/tor) — reverse-proxy gateway all of the above sit behind
 - [`schloss-ui`](https://github.com/zudaR107/schloss-ui) — shared frontend
   components, consumed by every service's web app
@@ -23,7 +24,7 @@ Docker images, its own issue tracker). This repo exists to answer "what
 versions of each service go together" and to hold cross-cutting planning
 docs that don't belong in any single service's history.
 
-Kuvert, Tafel, and Zettel keep application code in `backend/` and
+Kuvert, Tafel, Zettel, and Glocke keep application code in `backend/` and
 `frontend/`. Schloss is frontend-only and keeps that frontend at its repo
 root; Schlussel keeps its backend at its repo root and its frontend in
 `frontend/`.
@@ -42,14 +43,19 @@ admins only.
 | `kuvert` | Envelope budgeting | `3001` (api), `80` (web) | `https://kuvert.<domain>/` | `/docs` (admin only) |
 | `tafel` | Task/project tracking | `3002` (api), `80` (web) | `https://tafel.<domain>/` | `/docs` (admin only) |
 | `zettel` | Markdown note-taking | `3003` (api), `80` (web) | `https://zettel.<domain>/` | `/docs` (admin only) |
+| `glocke` | In-app notification center and delivery foundation | `3004` (api), `80` (web) | `https://glocke.<domain>/` | `/docs` (admin only) |
 | `tor` | Reverse-proxy gateway | `80`/`443` | entry point for all of the above | — |
+
+Glocke's direct frontend development server uses port `5177`; production
+traffic reaches its web container through Tor on port `80` like the other
+full-stack apps.
 
 ## What's in here
 
 - `ROADMAP.md` — development history and status across all repos.
-- Eight git submodules (`schlussel/`, `schloss/`, `kuvert/`, `tafel/`,
-  `zettel/`, `tor/`, `schloss-ui/`, `schloss-server-kit/`), each pinned to
-  a specific commit.
+- Nine git submodules (`schlussel/`, `schloss/`, `kuvert/`, `tafel/`,
+  `zettel/`, `glocke/`, `tor/`, `schloss-ui/`, `schloss-server-kit/`), each
+  pinned to a specific commit.
 
 ## Getting the code
 
@@ -63,7 +69,7 @@ git submodule update --init --recursive
 
 See [`tor/README.md`](https://github.com/zudaR107/tor#readme) — one
 `docker compose up` from `tor/` starts everything (`schloss`, `schlussel`,
-`kuvert`, `tafel`, `zettel`, and the gateway itself) behind a single
+`kuvert`, `tafel`, `zettel`, `glocke`, and the gateway itself) behind a single
 address, no ports to remember.
 
 ## Updating this repo

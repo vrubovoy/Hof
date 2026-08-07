@@ -481,3 +481,8 @@ submodule's own `CHANGELOG.md` for that).
   routing/unknown-host TLS behavior. Verified with every repository's test
   and production build, gateway TLS integration tests, and one full
   `docker compose build` from tor.
+- Documented Glocke's notification foundation across the Hof ecosystem,
+  including its `3004` API and `5177` frontend development ports, Schloss
+  launcher entry, Tor gateway integration, and ninth root submodule pin.
+  Browser Push and Telegram remain future rollout phases, not implemented
+  channels.

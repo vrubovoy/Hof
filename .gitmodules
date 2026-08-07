@@ -22,3 +22,6 @@
 [submodule "schloss-server-kit"]
 	path = schloss-server-kit
 	url = git@github.com:zudaR107/schloss-server-kit.git
+[submodule "glocke"]
+	path = glocke
+	url = git@github.com:zudaR107/glocke.git
