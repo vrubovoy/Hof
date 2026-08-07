@@ -13,14 +13,17 @@ the source of truth for what happened and why.
 - `tafel` — tasks/projects (kanban, calendar, recurrence)
 - `zettel` — markdown notes (wiki-links/backlinks, tags, virtual tag
   folders, quick switching, pinning, archive/restore, and scoped export)
+- `glocke` — durable in-app notification center and transactional delivery
+  foundation (API `3004`, frontend development server `5177`)
 - `tor` — Caddy reverse-proxy gateway, single entry point, no host ports
   published by any other service
 - `schloss-ui` — shared React component library
 - `schloss-server-kit` — shared backend auth/CORS kit
 
 **Status as of 2026-08-07**: platform foundation (auth, CI/Docker/GHCR,
-gateway, shared design system, SSO) and all five app repos' core feature
-sets are merged. The small visual-signature pass (service-specific
+gateway, shared design system, SSO) and the five established app repos' core
+feature sets are merged; Glocke's notification foundation is the sixth app
+repo. The small visual-signature pass (service-specific
 illustration, badge, and motion details where applicable) is complete
 across all five apps: schloss, schlussel, kuvert, tafel, and zettel.
 
@@ -77,35 +80,42 @@ implementations on 2026-08-07.
    profile/avatar, session timeout, regional preferences, notification
    preference storage, connected-account status, and service-scoped JSON
    export. Timezone/date-format/week-start propagation to consumers is
-   implemented end to end. Notification
-   preferences do not trigger anything yet: the notification event bus,
-   in-app center, browser push, and Telegram channel do not exist.
-3. **New content services — not started**: Drive-like file storage with
+   implemented end to end. Glocke now provides the durable in-app
+   notification and transactional-delivery foundation; notification
+   preferences and existing services are not yet fully connected to it.
+3. **Notification rollout — foundation in progress, rollout pending**: after
+   Glocke's foundation, integrate every producer service with its delivery
+   contract first; then add the notification entry/unread state to the global
+   shared header; then implement Browser Push through a central Glocke-owned
+   service worker and VAPID configuration; finally add the Telegram bot and
+   account-linking flow. Browser Push and Telegram are future phases and are
+   not implemented today.
+4. **New content services — not started**: Drive-like file storage with
    real nested folders and browser-native image/PDF preview; and a webmail
    client for external IMAP/SMTP accounts, not a mail server/MTA. Sharing,
    permissions, office/video preview, and other expansion stay outside v1
    unless a concrete need appears.
-4. **Platform operations — not started**: a standalone bootstrap installer
+5. **Platform operations — not started**: a standalone bootstrap installer
    web UI, the shared `services.yml`, its idempotent Ansible reconciliation
    playbook, the later Schlussel `/admin` Services front door, and tag-push
    deployment automation. The installer remains the first bare-server
    component; installer and admin UI must use the same file and playbook.
    Deployment remains simple pull-and-restart, not rolling or zero-downtime.
-5. **Localization rollout — pending**: extract and translate app strings
+6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.
-6. **Mobile testing — not started**: dedicated cross-service pass after the
+7. **Mobile testing — not started**: dedicated cross-service pass after the
    feature and localization surface stabilizes. A native/PWA app remains a
    separate unscheduled idea.
-7. **Per-service hardening and v1.0.0 — not started**: explicitly last and
+8. **Per-service hardening and v1.0.0 — not started**: explicitly last and
    user-led, one service at a time: manual testing, help screenshots, code
    cleanup, developer docs, and release hardening. Current stabilization
    must not be counted as this phase.
-8. **Real-server deployment — not started**: follows v1 hardening.
+9. **Real-server deployment — not started**: follows v1 hardening.
 
 ## Repo locations
 
-`/home/zudar/Sandbox/Hof/{schlussel,schloss,kuvert,tafel,zettel,tor,schloss-ui,schloss-server-kit}/`
+`/home/zudar/Sandbox/Hof/{schlussel,schloss,kuvert,tafel,zettel,glocke,tor,schloss-ui,schloss-server-kit}/`
 — same names at `https://github.com/zudaR107/<name>`. This directory
 itself is the `Hof` meta-repo (docs + submodule pins only, no CI, no
 branch protection).
