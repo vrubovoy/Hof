@@ -486,3 +486,11 @@ submodule's own `CHANGELOG.md` for that).
   launcher entry, Tor gateway integration, and ninth root submodule pin.
   Browser Push and Telegram remain future rollout phases, not implemented
   channels.
+- Added platform-wide asynchronous data export in Schlussel while preserving
+  each service's direct JSON export. Kuvert, Tafel, Zettel, and Glocke expose
+  transactional `/exports/me` snapshots protected by short-lived scoped
+  delegation JWTs; Schlussel creates private expiring ZIP jobs with manifests,
+  checksums, partial success, retries, quotas, cleanup, and owner-only download.
+  Verified all service and shared test/build suites, populated migration
+  upgrades, gateway contracts, a full Tor Compose image build, and production
+  outbox response-loss/recovery with exactly one visible notification.

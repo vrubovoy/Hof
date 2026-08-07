@@ -24,6 +24,42 @@ Docker images, its own issue tracker). This repo exists to answer "what
 versions of each service go together" and to hold cross-cutting planning
 docs that don't belong in any single service's history.
 
+## Data exports
+
+The platform keeps direct service exports and the platform archive separate.
+Kuvert, Tafel, Zettel, and Glocke expose synchronous `GET /exports/me` JSON
+snapshots; their Settings pages download those responses directly. Schlüssel
+retains its synchronous `GET /auth/export` JSON. Only Schlüssel's authenticated
+`POST /auth/export-jobs` API creates the asynchronous ZIP containing snapshots
+from Schlüssel and all four consumer services.
+
+For collection, Schlüssel mints a short-lived RS256 delegation for one exact
+service audience. Services verify it through Schlüssel's JWKS and exact issuer
+and require `token_use: export`, `data:export` scope, and nonempty subject, job,
+and token IDs plus a non-expired numeric expiry. Delegations work only on that
+service's `/exports/me`; ordinary routes and retained legacy exports reject
+them. The verified subject defines
+ownership, and clients cannot supply service URLs.
+
+Every service reads a locally consistent snapshot when its own request runs.
+There is no distributed transaction, so the files are not one platform-wide
+point-in-time view; retrying failures keeps successful files and captures the
+retried services later. A job with at least one success can publish a partial
+ZIP. Its `manifest.json` records per-service status, attempts, paths, byte
+counts, SHA-256 checksums, timestamps, and sanitized errors; failed response
+bodies are not included.
+
+Artifacts are private, owner-only, and short-lived (24 hours by default).
+Status and download responses use no-store/no-cache and nosniff headers.
+Creation is bounded by a per-user cooldown, retained-job and retained-byte
+caps, per-service and aggregate response limits, a global storage quota, and a
+filesystem free-space reserve. Exports contain sensitive profile, financial,
+task, note, and notification data; protect and delete downloaded files as
+appropriate. They exclude passwords/hashes, token and signing/HMAC material,
+runtime configuration, logs, worker leases, notification inbox payloads and
+hashes, internal audit state, other users, and services outside the fixed
+Schlüssel/Kuvert/Tafel/Zettel/Glocke registry.
+
 Kuvert, Tafel, Zettel, and Glocke keep application code in `backend/` and
 `frontend/`. Schloss is frontend-only and keeps that frontend at its repo
 root; Schlussel keeps its backend at its repo root and its frontend in

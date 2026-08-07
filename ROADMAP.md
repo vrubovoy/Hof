@@ -42,6 +42,11 @@ transaction/task integrity fixes, and gateway routing/TLS corrections. The
 Hof submodule pins record the tested compatible set. This milestone is not
 the later screenshot or v1 hardening pass.
 
+The platform-wide data-export milestone is merged. It retains each service's
+direct JSON export and adds standardized `/exports/me` snapshots plus
+Schlüssel's asynchronous, delegated all-services ZIP jobs with partial-success
+manifests, retries, expiring private artifacts, and storage/user quotas.
+
 ## Standing workflow (every stage)
 
 - Milestone = umbrella of issues, not one-per-issue. One branch per
@@ -79,11 +84,13 @@ implementations on 2026-08-07.
    language switcher are pending. Schlussel `/account` now provides
    profile/avatar, session timeout, regional preferences, notification
    preference storage, connected-account status, and service-scoped JSON
-   export. Timezone/date-format/week-start propagation to consumers is
-   implemented end to end. Glocke now provides the durable in-app
-   notification and transactional-delivery foundation; notification
-   preferences and existing services are not yet fully connected to it.
-3. **Notification rollout — foundation in progress, rollout pending**: after
+   export. Platform-wide asynchronous ZIP export is implemented and merged
+   across all data-bearing services. Timezone/date-format/week-start
+   propagation to consumers is implemented end to end. Glocke now provides the
+   durable in-app notification and transactional-delivery foundation;
+   notification preferences and existing services are not yet fully connected
+   to it.
+3. **Notification rollout — foundation done, rollout pending**: after
    Glocke's foundation, integrate every producer service with its delivery
    contract first; then add the notification entry/unread state to the global
    shared header; then implement Browser Push through a central Glocke-owned
