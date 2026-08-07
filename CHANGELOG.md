@@ -472,3 +472,12 @@ submodule's own `CHANGELOG.md` for that).
   (it calls `/theme` directly now). Verified live end-to-end against the
   real running stack: a value written from schloss's origin is correctly
   read back from kuvert's origin through the actual gateway/CORS/DB.
+- Bumped all eight submodules for the platform stabilization audit. Shared
+  packages now validate JWT/profile data, provide profile-aware date and
+  calendar controls, keep theme state synchronized, and harden focus/CORS
+  behavior. The service batch fixes auth/config/OpenAPI drift, Kuvert
+  transfer/filter/import correctness, Tafel recurrence/archive/migration
+  integrity, Zettel Ctrl/Cmd+K plus archive/restore/export, and tor's
+  routing/unknown-host TLS behavior. Verified with every repository's test
+  and production build, gateway TLS integration tests, and one full
+  `docker compose build` from tor.

@@ -11,22 +11,33 @@ the source of truth for what happened and why.
 - `schloss` — home page / launcher
 - `kuvert` — envelope budgeting
 - `tafel` — tasks/projects (kanban, calendar, recurrence)
-- `zettel` — markdown notes (wiki-links + backlinks done; tags and a
-  Ctrl+K quick switcher still pending)
+- `zettel` — markdown notes (wiki-links/backlinks, tags, virtual tag
+  folders, quick switching, pinning, archive/restore, and scoped export)
 - `tor` — Caddy reverse-proxy gateway, single entry point, no host ports
   published by any other service
 - `schloss-ui` — shared React component library
 - `schloss-server-kit` — shared backend auth/CORS kit
 
-**Status**: platform foundation (auth, CI/Docker/GHCR, gateway, shared
-design system, SSO) and all 5 app repos' core feature sets are done and
-merged. The "small visual signature" pass (mascot illustration + sidebar
-badge + one micro-animation per service) is also done for
-schlussel/kuvert/tafel. Every backend now lives in `backend/` and every
-frontend in `frontend/` (renamed from `api`/`web` platform-wide on
-2026-08-04, including the `/backend/*` URL path itself — schlussel is the
-one exception, no `backend/` dir of its own, backend at repo root).
-Nothing in progress — every repo's only open PRs are Dependabot.
+**Status as of 2026-08-07**: platform foundation (auth, CI/Docker/GHCR,
+gateway, shared design system, SSO) and all five app repos' core feature
+sets are merged. The small visual-signature pass (service-specific
+illustration, badge, and motion details where applicable) is complete
+across all five apps: schloss, schlussel, kuvert, tafel, and zettel.
+
+Full-stack consumer apps use `backend/` and `frontend/`. There are two
+repository-layout exceptions: schloss is frontend-only and keeps its
+frontend at the repo root; schlussel keeps its backend at the repo root and
+its frontend in `frontend/`. The `/backend/*` URL rename is separate from
+those source-directory layouts.
+
+The platform stabilization milestone is merged across every repository. It
+includes profile-aware date controls and formatting, modal/focus/theme
+fixes, regional JWT claims and validation, PATCH-capable CORS, end-to-end
+regional-preference propagation through kuvert/tafel/zettel, scoped service
+exports, archive/restore corrections, API/OpenAPI and auth/config fixes,
+transaction/task integrity fixes, and gateway routing/TLS corrections. The
+Hof submodule pins record the tested compatible set. This milestone is not
+the later screenshot or v1 hardening pass.
 
 ## Standing workflow (every stage)
 
@@ -49,61 +60,48 @@ Nothing in progress — every repo's only open PRs are Dependabot.
 - After merge: delete the branch, set board items to Done, close the
   milestone.
 
-## Future roadmap (recorded 2026-08-04, all open questions resolved interactively with the user the same day)
+## Roadmap in dependency order
 
-Raw list of 10 items from the user, structured into dependency order.
-Nothing below is started — this is intent, not status.
+Originally recorded 2026-08-04; status reconciled with the checked-out
+implementations on 2026-08-07.
 
-1. **Zettel quick wins**: browser-tab favicon; a minimal-text `/help`
-   page now, screenshots deferred to the hardening phase.
-2. **Zettel feature expansion**: virtual folders on top of tags (saved
-   filters) — independent of the future file-storage service, doesn't
-   need to wait on phase 4, moved earlier than originally sketched for
-   that reason. Optional ideas on top, pick freely: graph view of the
-   wiki-link network, note templates, trash/restore, attachments, md/PDF
-   export, daily notes, pinned notes, better search ranking. Tags +
-   Ctrl+K quick switcher already pending from M3 regardless of this list.
-3. **Remaining architecture + cross-cutting foundation services**: i18n
-   via `react-i18next`, set up once in schloss-ui, rolled out everywhere
-   later (phase 5); notification service - in-app center + browser push
-   + a Telegram bot as the mobile channel (a native/PWA mobile app is a
-   separate, later, unscheduled idea), built as an event bus every other
-   service emits through; profile settings folded into schlussel's
-   existing `/account` rather than a new service (avatar, language,
-   timezone, theme, date format, week-start, notification prefs,
-   privacy, connected accounts, data export). Before phase 4 so new
-   services can hook into notifications/settings from day one.
-4. **New content services**: file storage (Drive-like - real nested
-   folders, not tags; preview limited to images + PDF via browser-native
-   rendering, no office-doc/video preview; no sharing/permissions in v1 -
-   single-user platform, add only if actually needed later) and a mail
-   client (a webmail UI for existing external IMAP/SMTP accounts, not a
-   self-hosted mail server/MTA).
-5. **Platform ops/infrastructure**: a new standalone, minimal, near-
-   dependency-free **bootstrap installer** service - the very first thing
-   deployed on a bare server, before schlussel even exists, since nothing
-   else can host a web UI yet at that point. Presents a full web UI
-   (chosen deliberately over a CLI/TUI wizard) to configure then provision
-   the platform: pick which services to enable, fill in their config,
-   write one `services.yml`, then run one idempotent Ansible playbook
-   that reconciles the server to match it. Once the platform is up,
-   ongoing service management (add/remove/reconfigure later) moves into a
-   "Services" tab in schlussel's `/admin` panel, reusing the exact same
-   `services.yml` + Ansible playbook as the bootstrap installer - one
-   source of truth, two front doors (a temporary bootstrap-only one, and
-   the permanent in-platform one). Also: localization string-extraction
-   across every service (last, once the service list/UI is stable) +
-   the shared language-switcher component in schloss-ui, next to
-   ThemeToggle; tag-push deploy automation for the real server - simple
-   pull+restart of the one changed container, deliberately not
-   rolling/zero-downtime (not worth the complexity for a single-user
-   personal platform).
-6. **Mobile testing**: a dedicated pass once the feature/UI surface is
-   stable across all services.
-7. **Per-service hardening -> v1.0.0**: explicitly last, explicitly
-   user-led — manual testing, help screenshots, code cleanup, dev docs,
-   one service at a time.
-8. **Real server deployment**: after hardening.
+1. **Zettel quick wins and expansion — done**: favicon, minimal text help,
+   tags, Ctrl+K/Cmd+K quick switching, minimal virtual folders as tag
+   shortcuts, pinning, archive/restore, and Zettel-scoped JSON export are
+   implemented. Help screenshots remain deferred. Unscheduled optional
+   ideas remain graph view, templates, attachments, md/PDF export, daily
+   notes, and better search ranking.
+2. **Cross-cutting foundation — partly done**: schloss-ui's shared
+   `react-i18next` foundation is merged; app string rollout and a shared
+   language switcher are pending. Schlussel `/account` now provides
+   profile/avatar, session timeout, regional preferences, notification
+   preference storage, connected-account status, and service-scoped JSON
+   export. Timezone/date-format/week-start propagation to consumers is
+   implemented end to end. Notification
+   preferences do not trigger anything yet: the notification event bus,
+   in-app center, browser push, and Telegram channel do not exist.
+3. **New content services — not started**: Drive-like file storage with
+   real nested folders and browser-native image/PDF preview; and a webmail
+   client for external IMAP/SMTP accounts, not a mail server/MTA. Sharing,
+   permissions, office/video preview, and other expansion stay outside v1
+   unless a concrete need appears.
+4. **Platform operations — not started**: a standalone bootstrap installer
+   web UI, the shared `services.yml`, its idempotent Ansible reconciliation
+   playbook, the later Schlussel `/admin` Services front door, and tag-push
+   deployment automation. The installer remains the first bare-server
+   component; installer and admin UI must use the same file and playbook.
+   Deployment remains simple pull-and-restart, not rolling or zero-downtime.
+5. **Localization rollout — pending**: extract and translate app strings
+   after the service/UI surface is stable, then expose the shared language
+   switcher. The library foundation alone does not make any app bilingual.
+6. **Mobile testing — not started**: dedicated cross-service pass after the
+   feature and localization surface stabilizes. A native/PWA app remains a
+   separate unscheduled idea.
+7. **Per-service hardening and v1.0.0 — not started**: explicitly last and
+   user-led, one service at a time: manual testing, help screenshots, code
+   cleanup, developer docs, and release hardening. Current stabilization
+   must not be counted as this phase.
+8. **Real-server deployment — not started**: follows v1 hardening.
 
 ## Repo locations
 

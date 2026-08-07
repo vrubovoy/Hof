@@ -23,6 +23,11 @@ Docker images, its own issue tracker). This repo exists to answer "what
 versions of each service go together" and to hold cross-cutting planning
 docs that don't belong in any single service's history.
 
+Kuvert, Tafel, and Zettel keep application code in `backend/` and
+`frontend/`. Schloss is frontend-only and keeps that frontend at its repo
+root; Schlussel keeps its backend at its repo root and its frontend in
+`frontend/`.
+
 ## Services, ports, and API docs
 
 Only `tor` publishes a host port - everything else is reached through it by
@@ -65,7 +70,7 @@ address, no ports to remember.
 
 This repo is committed to rarely, by design — only when bumping a submodule
 pointer to a service's new release, or updating cross-cutting docs. Regular
-development happens in the four service repos themselves, each with its own
+development happens in the submodule repos themselves, each with its own
 issue/PR workflow. There's no branch protection here for that reason.
 
 ## License
