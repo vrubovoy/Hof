@@ -512,3 +512,11 @@ submodule's own `CHANGELOG.md` for that).
   preference. Only the producer rollout is complete: the
   shared header bell/unread work is next, while Browser Push and Telegram remain
   future phases.
+- Completed the platform-wide shared header bell and unread-state rollout.
+  Every authenticated app now uses the shared accessible Glocke bell, exact
+  unread state, auth-safe token refresh, active-page polling, recovery refresh,
+  and same-origin/cross-tab invalidation. Glocke applies private response
+  headers and exact platform CORS at the outer HTTP boundary, while Tor provides
+  one validated Glocke origin to all browser builds and verifies all frontend
+  images with initialized shared-package submodules. Browser Push is the next
+  notification phase; Telegram remains later.
