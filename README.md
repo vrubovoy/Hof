@@ -24,6 +24,33 @@ Docker images, its own issue tracker). This repo exists to answer "what
 versions of each service go together" and to hold cross-cutting planning
 docs that don't belong in any single service's history.
 
+## Notifications
+
+The in-app notification producer rollout is complete. Glocke centrally
+registers, validates, and renders the current event catalog; producers send
+domain data, not presentation text:
+
+- `schlussel.security.password_changed.v1`
+- `kuvert.goal.completed.v1`
+- `tafel.task.due.v1`
+- `zettel.note.backlink_added.v1`
+
+Mutation-originated producers write events transactionally with their domain
+change. Tafel's clock-driven scanner atomically records the due occurrence and
+its outbox row. Every producer uses a leased, retained outbox with bounded
+retries; Glocke's durable inbox and notification uniqueness constraints make
+duplicate delivery idempotent.
+At processing time Glocke reads the recipient's current preference from
+Schlüssel and durably suppresses disabled or missing recipients. Glocke alone
+owns rendering, including trusted deployment-configured Kuvert and Tafel action
+origins; producer payloads cannot supply action URLs.
+
+Tafel's due scanner records persistent occurrence identities separately from
+the outbox, so pruning retained terminal delivery rows cannot re-emit an old
+due or overdue occurrence. The deployment uses five distinct directional HMAC
+secrets: one from each of Schlüssel, Kuvert, Tafel, and Zettel to Glocke, plus
+a separate Glocke-to-Schlüssel secret for recipient and preference lookup.
+
 ## Data exports
 
 The platform keeps direct service exports and the platform archive separate.

@@ -20,7 +20,7 @@ the source of truth for what happened and why.
 - `schloss-ui` — shared React component library
 - `schloss-server-kit` — shared backend auth/CORS kit
 
-**Status as of 2026-08-07**: platform foundation (auth, CI/Docker/GHCR,
+**Status as of 2026-08-17**: platform foundation (auth, CI/Docker/GHCR,
 gateway, shared design system, SSO) and the five established app repos' core
 feature sets are merged; Glocke's notification foundation is the sixth app
 repo. The small visual-signature pass (service-specific
@@ -47,6 +47,16 @@ direct JSON export and adds standardized `/exports/me` snapshots plus
 Schlüssel's asynchronous, delegated all-services ZIP jobs with partial-success
 manifests, retries, expiring private artifacts, and storage/user quotas.
 
+The notification producer rollout is complete for the four registered events:
+`schlussel.security.password_changed.v1`, `kuvert.goal.completed.v1`,
+`tafel.task.due.v1`, and `zettel.note.backlink_added.v1`. Producers use
+transactional retained outboxes with bounded retries; Glocke provides
+idempotent duplicate intake, central registry validation/rendering,
+current-preference-at-processing-time suppression, and trusted Kuvert/Tafel
+action origins. Tafel
+keeps a separate due-occurrence ledger across outbox retention, and the four
+producer directions plus Glocke's Schlüssel lookup use five distinct secrets.
+
 ## Standing workflow (every stage)
 
 - Milestone = umbrella of issues, not one-per-issue. One branch per
@@ -71,7 +81,7 @@ manifests, retries, expiring private artifacts, and storage/user quotas.
 ## Roadmap in dependency order
 
 Originally recorded 2026-08-04; status reconciled with the checked-out
-implementations on 2026-08-07.
+implementations on 2026-08-17.
 
 1. **Zettel quick wins and expansion — done**: favicon, minimal text help,
    tags, Ctrl+K/Cmd+K quick switching, minimal virtual folders as tag
@@ -86,17 +96,15 @@ implementations on 2026-08-07.
    preference storage, connected-account status, and service-scoped JSON
    export. Platform-wide asynchronous ZIP export is implemented and merged
    across all data-bearing services. Timezone/date-format/week-start
-   propagation to consumers is implemented end to end. Glocke now provides the
-   durable in-app notification and transactional-delivery foundation;
-   notification preferences and existing services are not yet fully connected
-   to it.
-3. **Notification rollout — foundation done, rollout pending**: after
-   Glocke's foundation, integrate every producer service with its delivery
-   contract first; then add the notification entry/unread state to the global
-   shared header; then implement Browser Push through a central Glocke-owned
-   service worker and VAPID configuration; finally add the Telegram bot and
-   account-linking flow. Browser Push and Telegram are future phases and are
-   not implemented today.
+    propagation to consumers is implemented end to end. Glocke now provides the
+    durable in-app notification and transactional-delivery foundation, and all
+    four current producer services are connected to it.
+3. **Notification rollout — producer rollout done**: Glocke's foundation and
+   the four-producer event rollout are complete. The shared header bell and
+   unread state are next. Browser Push through a central Glocke-owned service
+   worker and VAPID configuration follows later; the Telegram bot and
+   account-linking flow remain a future final phase. Neither Browser Push nor
+   Telegram is implemented today.
 4. **New content services — not started**: Drive-like file storage with
    real nested folders and browser-native image/PDF preview; and a webmail
    client for external IMAP/SMTP accounts, not a mail server/MTA. Sharing,
