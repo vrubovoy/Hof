@@ -45,6 +45,14 @@ Schlüssel and durably suppresses disabled or missing recipients. Glocke alone
 owns rendering, including trusted deployment-configured Kuvert and Tafel action
 origins; producer payloads cannot supply action URLs.
 
+Every authenticated application header now includes the same accessible Glocke
+bell. It fetches the exact unread count with the existing in-memory bearer token,
+shows `99+` visually without losing the exact accessible count, polls while the
+page is active, and refreshes after focus, connectivity recovery, or a Glocke
+read/delete mutation. Requests use one validated browser-facing Glocke origin;
+tokens never enter links, and Glocke's notification responses are private and
+no-store with an exact platform-origin CORS allowlist.
+
 Tafel's due scanner records persistent occurrence identities separately from
 the outbox, so pruning retained terminal delivery rows cannot re-emit an old
 due or overdue occurrence. The deployment uses five distinct directional HMAC

@@ -57,6 +57,13 @@ action origins. Tafel
 keeps a separate due-occurrence ledger across outbox retention, and the four
 producer directions plus Glocke's Schlüssel lookup use five distinct secrets.
 
+The shared header bell and unread-state rollout is also complete. All
+authenticated application headers use the shared controlled bell, exact unread
+state, auth-safe refresh, active-page polling, focus/connectivity recovery, and
+same-origin/cross-tab invalidation. Glocke applies private cache headers and an
+exact platform CORS allowlist at its outer HTTP boundary; Tor supplies one
+validated browser-facing Glocke origin to every frontend build.
+
 ## Standing workflow (every stage)
 
 - Milestone = umbrella of issues, not one-per-issue. One branch per
@@ -99,10 +106,10 @@ implementations on 2026-08-17.
     propagation to consumers is implemented end to end. Glocke now provides the
     durable in-app notification and transactional-delivery foundation, and all
     four current producer services are connected to it.
-3. **Notification rollout — producer rollout done**: Glocke's foundation and
-   the four-producer event rollout are complete. The shared header bell and
-   unread state are next. Browser Push through a central Glocke-owned service
-   worker and VAPID configuration follows later; the Telegram bot and
+3. **Notification rollout — in-app rollout done**: Glocke's foundation, the
+   four-producer event rollout, and the shared authenticated header bell with
+   unread state are complete. Browser Push through a central Glocke-owned
+   service worker and VAPID configuration follows next; the Telegram bot and
    account-linking flow remain a future final phase. Neither Browser Push nor
    Telegram is implemented today.
 4. **New content services — not started**: Drive-like file storage with
