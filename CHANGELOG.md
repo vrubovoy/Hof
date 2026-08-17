@@ -494,3 +494,21 @@ submodule's own `CHANGELOG.md` for that).
   Verified all service and shared test/build suites, populated migration
   upgrades, gateway contracts, a full Tor Compose image build, and production
   outbox response-loss/recovery with exactly one visible notification.
+- Documented the completed notification producer rollout for
+  `schlussel.security.password_changed.v1`, `kuvert.goal.completed.v1`,
+  `tafel.task.due.v1`, and `zettel.note.backlink_added.v1`. Glocke now owns the
+  event registry, validation, and rendering, including trusted Kuvert/Tafel
+  action origins and current-preference-at-processing-time suppression. All
+  producers use transactional retained outboxes with bounded retries and
+  duplicate-tolerant delivery into Glocke's idempotent intake; Tafel also
+  retains a separate due-occurrence ledger. Four producer-to-Glocke credentials
+  and the separate Glocke-to-Schlüssel lookup credential use five distinct
+  directional secrets.
+  Verification passed: shared 219, Glocke 122+10, Kuvert 299+375, Tafel
+  179+61, and Zettel 137+82 backend/frontend tests; all 11 images built; and an
+  isolated live end-to-end run delivered all four events, recovered from a
+  Glocke outage with exactly one
+  visible notification, and suppressed delivery under the current disabled
+  preference. Only the producer rollout is complete: the
+  shared header bell/unread work is next, while Browser Push and Telegram remain
+  future phases.
