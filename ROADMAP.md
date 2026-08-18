@@ -88,7 +88,7 @@ validated browser-facing Glocke origin to every frontend build.
 ## Roadmap in dependency order
 
 Originally recorded 2026-08-04; status reconciled with the checked-out
-implementations on 2026-08-17.
+implementations on 2026-08-18.
 
 1. **Zettel quick wins and expansion — done**: favicon, minimal text help,
    tags, Ctrl+K/Cmd+K quick switching, minimal virtual folders as tag
@@ -106,12 +106,15 @@ implementations on 2026-08-17.
     propagation to consumers is implemented end to end. Glocke now provides the
     durable in-app notification and transactional-delivery foundation, and all
     four current producer services are connected to it.
-3. **Notification rollout — in-app rollout done**: Glocke's foundation, the
-   four-producer event rollout, and the shared authenticated header bell with
-   unread state are complete. Browser Push through a central Glocke-owned
-   service worker and VAPID configuration follows next; the Telegram bot and
-   account-linking flow remain a future final phase. Neither Browser Push nor
-   Telegram is implemented today.
+3. **Notification rollout — in-app and Browser Push done**: Glocke's
+   foundation, the four-producer event rollout, the shared authenticated
+   header bell with unread state, and Browser Push (Glocke-owned VAPID keys,
+   subscriptions, retry worker, and service worker; Schlüssel owns only the
+   global on/off switch) are all complete and merged. Disabled by default -
+   an operator sets `GLOCKE_BROWSER_PUSH_ENABLED` and a generated VAPID
+   keypair to turn it on. The Telegram bot and account-linking flow remain
+   the one still-unscheduled future phase, as does iOS/PWA installation
+   (this rollout supports desktop and Android).
 4. **New content services — not started**: Drive-like file storage with
    real nested folders and browser-native image/PDF preview; and a webmail
    client for external IMAP/SMTP accounts, not a mail server/MTA. Sharing,

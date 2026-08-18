@@ -59,6 +59,21 @@ due or overdue occurrence. The deployment uses five distinct directional HMAC
 secrets: one from each of Schlüssel, Kuvert, Tafel, and Zettel to Glocke, plus
 a separate Glocke-to-Schlüssel secret for recipient and preference lookup.
 
+Browser Push is implemented and disabled by default. Schlüssel owns only a
+global `notifyBrowserPush` switch on the account profile; Glocke owns
+everything else - VAPID keys, per-browser subscriptions, a leased retry
+worker around `web-push`, and a push-only service worker
+(`glocke/frontend/public/sw.js`). Materialization gates the in-app row and
+each active subscription's delivery row independently inside the same
+fenced inbox write, so either channel can be on without the other. A push
+notification carries only generic text and a trusted destination URL -
+never the event's rendered title/body - and a click focuses an existing
+Glocke tab before opening a new one. The retry worker re-checks the global
+preference at send time, deletes a subscription and settles its deliveries
+on 404/410, and reconciles orphaned subscriptions for deleted accounts on a
+schedule. Telegram bot/account-linking remains the one still-unimplemented
+notification channel.
+
 ## Data exports
 
 The platform keeps direct service exports and the platform archive separate.
