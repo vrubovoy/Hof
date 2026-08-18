@@ -520,3 +520,21 @@ submodule's own `CHANGELOG.md` for that).
   one validated Glocke origin to all browser builds and verifies all frontend
   images with initialized shared-package submodules. Browser Push is the next
   notification phase; Telegram remains later.
+- Completed Browser Push delivery. Schlüssel gained a global
+  `notifyBrowserPush` switch on the account profile, linking into Glocke to
+  register a browser once enabled. Glocke gained VAPID configuration,
+  per-browser subscriptions, a leased retry worker around `web-push` with
+  full-jitter backoff and 404/410 cleanup, authenticated
+  `GET/PUT/DELETE /notifications/push/*` with a provider-host allowlist and
+  SSRF guards, and a push-only service worker with generic notification
+  content and trusted-destination click handling. Tor provisions VAPID
+  runtime configuration to Glocke's backend only, never a frontend build, and
+  serves `/sw.js` with a real JS content type and no-cache. Disabled by
+  default. Verified live end-to-end against the running stack: a signed
+  producer event correctly materialized both an in-app notification and a
+  push delivery row atomically, the retry worker made a real network call to
+  Google's FCM endpoint and correctly deleted the (deliberately fake) test
+  subscription on the resulting 404/410, and the VAPID private key was
+  confirmed absent from every frontend's build arguments in the live
+  Compose config. Telegram bot/account-linking and iOS/PWA installation
+  remain the still-unscheduled future phases.
