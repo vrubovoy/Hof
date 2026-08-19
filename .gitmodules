@@ -25,3 +25,6 @@
 [submodule "glocke"]
 	path = glocke
 	url = git@github.com:zudaR107/glocke.git
+[submodule "schrank"]
+	path = schrank
+	url = git@github.com:zudaR107/schrank.git

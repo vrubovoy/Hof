@@ -13,6 +13,7 @@ the service repos to the commits that make up the current release.
 - [`tafel`](https://github.com/zudaR107/tafel) — task/project tracking
 - [`zettel`](https://github.com/zudaR107/zettel) — markdown note-taking
 - [`glocke`](https://github.com/zudaR107/glocke) — in-app notification center and delivery foundation
+- [`schrank`](https://github.com/zudaR107/schrank) — file storage with nested folders
 - [`tor`](https://github.com/zudaR107/tor) — reverse-proxy gateway all of the above sit behind
 - [`schloss-ui`](https://github.com/zudaR107/schloss-ui) — shared frontend
   components, consumed by every service's web app
@@ -133,6 +134,7 @@ admins only.
 | `tafel` | Task/project tracking | `3002` (api), `80` (web) | `https://tafel.<domain>/` | `/docs` (admin only) |
 | `zettel` | Markdown note-taking | `3003` (api), `80` (web) | `https://zettel.<domain>/` | `/docs` (admin only) |
 | `glocke` | In-app notification center and delivery foundation | `3004` (api), `80` (web) | `https://glocke.<domain>/` | `/docs` (admin only) |
+| `schrank` | File storage with nested folders | `3005` (api), `80` (web) | `https://schrank.<domain>/` | `/docs` (admin only) |
 | `tor` | Reverse-proxy gateway | `80`/`443` | entry point for all of the above | — |
 
 Glocke's direct frontend development server uses port `5177`; production
@@ -142,9 +144,9 @@ full-stack apps.
 ## What's in here
 
 - `ROADMAP.md` — development history and status across all repos.
-- Nine git submodules (`schlussel/`, `schloss/`, `kuvert/`, `tafel/`,
-  `zettel/`, `glocke/`, `tor/`, `schloss-ui/`, `schloss-server-kit/`), each
-  pinned to a specific commit.
+- Ten git submodules (`schlussel/`, `schloss/`, `kuvert/`, `tafel/`,
+  `zettel/`, `glocke/`, `schrank/`, `tor/`, `schloss-ui/`,
+  `schloss-server-kit/`), each pinned to a specific commit.
 
 ## Getting the code
 
@@ -158,8 +160,8 @@ git submodule update --init --recursive
 
 See [`tor/README.md`](https://github.com/zudaR107/tor#readme) — one
 `docker compose up` from `tor/` starts everything (`schloss`, `schlussel`,
-`kuvert`, `tafel`, `zettel`, `glocke`, and the gateway itself) behind a single
-address, no ports to remember.
+`kuvert`, `tafel`, `zettel`, `glocke`, `schrank`, and the gateway itself)
+behind a single address, no ports to remember.
 
 ## Updating this repo
 
