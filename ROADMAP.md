@@ -16,7 +16,10 @@ the source of truth for what happened and why.
 - `glocke` — durable in-app notification center and transactional delivery
   foundation (API `3004`, frontend development server `5177`)
 - `schrank` — file storage with nested folders (API `3005`, frontend
-  development server `5178`) - bootstrapped 2026-08-19, feature not yet built
+  development server `5178`) - v1 complete (2026-08-19): folders, upload/
+  download/rename/move/delete, quota, its own wardrobe mascot. No
+  sharing/permissions, no in-app preview, and the shared notification
+  bell isn't wired up (nothing here emits or needs one yet)
 - `tor` — Caddy reverse-proxy gateway, single entry point, no host ports
   published by any other service
 - `schloss-ui` — shared React component library
@@ -25,11 +28,12 @@ the source of truth for what happened and why.
 **Status as of 2026-08-19**: platform foundation (auth, CI/Docker/GHCR,
 gateway, shared design system, SSO) and the five established app repos' core
 feature sets are merged; Glocke's notification foundation is the sixth app
-repo, and Schrank (file storage) is the seventh - bootstrapped only, its
-feature set not yet built. The small visual-signature pass (service-specific
-illustration, badge, and motion details where applicable) is complete
-across all five original apps: schloss, schlussel, kuvert, tafel, and
-zettel - not yet extended to Glocke or Schrank.
+repo, and Schrank (file storage) is the seventh - v1 complete the same day
+it was bootstrapped (folders, files, quota, a file browser UI, and its own
+mascot). The small visual-signature pass (service-specific illustration,
+badge, and motion details where applicable) is complete across all six
+apps that have one: schloss, schlussel, kuvert, tafel, zettel, and now
+Schrank - not yet extended to Glocke, which has none.
 
 Browser Push is now complete (central Glocke-owned service worker, VAPID
 config, per-device registration in Schlüssel's `/account`, header-bell
@@ -141,16 +145,18 @@ implementations on 2026-08-17 and 2026-08-18, then again on 2026-08-19
    Telegram bot and account-linking flow are **explicitly deferred** (user
    decision 2026-08-19) - not scheduled next; revisit after phase 4 or
    later, whenever it's picked back up.
-4. **New content services — file storage bootstrapped, webmail not
-   started**: `schrank` (new repo, 2026-08-19) is a Drive-like file
-   storage service with real nested folders and browser-native image/PDF
-   preview. Only its scaffold has landed so far - auth, shared layout/
-   sidebar, CI/Docker/gateway wiring, reachable at
-   `https://schrank.localhost` - the actual folders/upload/download/
-   preview/quota feature is still to come. A webmail client for external
-   IMAP/SMTP accounts (not a mail server/MTA) hasn't been started at all.
-   Sharing, permissions, office/video preview, and other expansion stay
-   outside v1 unless a concrete need appears.
+4. **New content services — file storage done, webmail not started**:
+   `schrank` (new repo, 2026-08-19) is a Drive-like file storage service:
+   real nested folders (create/rename/move with cycle-detection/
+   recursive delete), file upload/download/rename/move/delete, a per-
+   file and per-account storage quota with a usage bar in Settings, a
+   metadata-only export, and a file browser UI - scaffolded and fully
+   built out the same day. In-app image/PDF preview did not land (files
+   download instead of previewing inline) and the shared notification
+   bell isn't wired up (nothing here emits or needs one). A webmail
+   client for external IMAP/SMTP accounts (not a mail server/MTA) hasn't
+   been started at all. Sharing, permissions, office/video preview, and
+   other expansion stay outside v1 unless a concrete need appears.
 5. **Platform operations — not started**: a standalone bootstrap installer
    web UI, the shared `services.yml`, its idempotent Ansible reconciliation
    playbook, the later Schlussel `/admin` Services front door, and tag-push
