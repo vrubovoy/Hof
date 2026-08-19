@@ -47,11 +47,17 @@ direct JSON export and adds standardized `/exports/me` snapshots plus
 Schlüssel's asynchronous, delegated all-services ZIP jobs with partial-success
 manifests, retries, expiring private artifacts, and storage/user quotas.
 
-The notification producer rollout is complete for the four registered events:
+The notification producer rollout is complete for the seven registered events:
 `schlussel.security.password_changed.v1`, `kuvert.goal.completed.v1`,
-`tafel.task.due.v1`, and `zettel.note.backlink_added.v1`. Producers use
-transactional retained outboxes with bounded retries; Glocke provides
-idempotent duplicate intake, central registry validation/rendering,
+`kuvert.debt.paid_off.v1`, `kuvert.envelope.overdrawn.v1`,
+`tafel.task.due.v1`, `tafel.project.completed.v1`, and
+`zettel.note.backlink_added.v1`. The debt/envelope/project events (2026-08-19)
+follow the same "milestone transition, computed fresh from current state, no
+stored notified-flag" shape as the original goal/task events - envelope
+overdrawn is the trickiest of the three (period-scoped "available" crossing
+zero, deliberately excluding bulk CSV import as a non-real-time path).
+Producers use transactional retained outboxes with bounded retries; Glocke
+provides idempotent duplicate intake, central registry validation/rendering,
 current-preference-at-processing-time suppression, and trusted Kuvert/Tafel
 action origins. Tafel
 keeps a separate due-occurrence ledger across outbox retention, and the four

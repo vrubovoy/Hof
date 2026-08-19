@@ -32,7 +32,10 @@ domain data, not presentation text:
 
 - `schlussel.security.password_changed.v1`
 - `kuvert.goal.completed.v1`
+- `kuvert.debt.paid_off.v1`
+- `kuvert.envelope.overdrawn.v1`
 - `tafel.task.due.v1`
+- `tafel.project.completed.v1`
 - `zettel.note.backlink_added.v1`
 
 Mutation-originated producers write events transactionally with their domain
