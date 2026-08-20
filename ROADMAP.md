@@ -16,24 +16,33 @@ the source of truth for what happened and why.
 - `glocke` — durable in-app notification center and transactional delivery
   foundation (API `3004`, frontend development server `5177`)
 - `schrank` — file storage with nested folders (API `3005`, frontend
-  development server `5178`) - v1 complete (2026-08-19): folders, upload/
-  download/rename/move/delete, quota, its own wardrobe mascot. No
-  sharing/permissions, no in-app preview, and the shared notification
-  bell isn't wired up (nothing here emits or needs one yet)
+  development server `5178`) - **complete** (2026-08-20): folders,
+  upload/download/rename/move/delete, quota, its own wardrobe mascot, a
+  gallery-grid file browser with eager per-file-type thumbnails, and
+  full in-app preview (image/PDF/markdown/text) - PDF renders via
+  client-side pdf.js into a real page thumbnail plus a bespoke
+  near-fullscreen viewer dialog, markdown through the same
+  react-markdown/remark-gfm pipeline Zettel uses. Sharing/permissions
+  and the shared notification bell (nothing here emits or needs one
+  yet) are deliberately out of scope for now, not blocking anything -
+  revisit only if a concrete need appears
 - `tor` — Caddy reverse-proxy gateway, single entry point, no host ports
   published by any other service
 - `schloss-ui` — shared React component library
 - `schloss-server-kit` — shared backend auth/CORS kit
 
-**Status as of 2026-08-19**: platform foundation (auth, CI/Docker/GHCR,
+**Status as of 2026-08-20**: platform foundation (auth, CI/Docker/GHCR,
 gateway, shared design system, SSO) and the five established app repos' core
 feature sets are merged; Glocke's notification foundation is the sixth app
-repo, and Schrank (file storage) is the seventh - v1 complete the same day
-it was bootstrapped (folders, files, quota, a file browser UI, and its own
-mascot). The small visual-signature pass (service-specific illustration,
-badge, and motion details where applicable) is complete across all six
-apps that have one: schloss, schlussel, kuvert, tafel, zettel, and now
-Schrank - not yet extended to Glocke, which has none.
+repo, and Schrank (file storage) is the seventh - bootstrapped 2026-08-19
+and declared **complete** the next day, after a full in-app preview pass
+(image/PDF/markdown/text, gallery-grid thumbnails, breadcrumb trail
+navigation that keeps the visited path visible instead of truncating it,
+and illustrated loading/error states) on top of its initial folders/
+files/quota/mascot v1. The small visual-signature pass (service-specific
+illustration, badge, and motion details where applicable) is complete
+across all six apps that have one: schloss, schlussel, kuvert, tafel,
+zettel, and Schrank - not yet extended to Glocke, which has none.
 
 Browser Push is now complete (central Glocke-owned service worker, VAPID
 config, per-device registration in Schlüssel's `/account`, header-bell
@@ -115,7 +124,8 @@ validated browser-facing Glocke origin to every frontend build.
 
 Originally recorded 2026-08-04; status reconciled with the checked-out
 implementations on 2026-08-17 and 2026-08-18, then again on 2026-08-19
-(Browser Push landed, Telegram explicitly deferred, Schrank bootstrapped).
+(Browser Push landed, Telegram explicitly deferred, Schrank bootstrapped)
+and 2026-08-20 (Schrank declared complete).
 
 1. **Zettel quick wins and expansion — done**: favicon, minimal text help,
    tags, Ctrl+K/Cmd+K quick switching, minimal virtual folders as tag
@@ -145,18 +155,24 @@ implementations on 2026-08-17 and 2026-08-18, then again on 2026-08-19
    Telegram bot and account-linking flow are **explicitly deferred** (user
    decision 2026-08-19) - not scheduled next; revisit after phase 4 or
    later, whenever it's picked back up.
-4. **New content services — file storage done, webmail not started**:
-   `schrank` (new repo, 2026-08-19) is a Drive-like file storage service:
-   real nested folders (create/rename/move with cycle-detection/
-   recursive delete), file upload/download/rename/move/delete, a per-
-   file and per-account storage quota with a usage bar in Settings, a
-   metadata-only export, and a file browser UI - scaffolded and fully
-   built out the same day. In-app image/PDF preview did not land (files
-   download instead of previewing inline) and the shared notification
-   bell isn't wired up (nothing here emits or needs one). A webmail
-   client for external IMAP/SMTP accounts (not a mail server/MTA) hasn't
-   been started at all. Sharing, permissions, office/video preview, and
-   other expansion stay outside v1 unless a concrete need appears.
+4. **New content services — file storage complete, webmail not started**:
+   `schrank` (new repo, 2026-08-19) is a Drive-like file storage service,
+   declared **complete** 2026-08-20: real nested folders (create/rename/
+   move with cycle-detection/recursive delete), file upload/download/
+   rename/move/delete, a per-file and per-account storage quota with a
+   usage bar in Settings, a metadata-only export, a gallery-grid file
+   browser with eager per-file-type thumbnails, and full in-app preview
+   for image/PDF/markdown/text - PDF via client-side pdf.js (a real
+   page-content thumbnail plus a bespoke near-fullscreen viewer dialog,
+   since the shared Modal's caps are deliberately sized for forms, not
+   documents), markdown through the same react-markdown/remark-gfm
+   pipeline Zettel uses. Breadcrumb navigation keeps the full visited
+   trail on screen when stepping back instead of truncating it. The
+   shared notification bell isn't wired up (nothing here emits or needs
+   one) - deliberately out of scope, not blocking. A webmail client for
+   external IMAP/SMTP accounts (not a mail server/MTA) hasn't been
+   started at all. Sharing, permissions, office/video preview, and other
+   expansion stay outside v1 unless a concrete need appears later.
 5. **Platform operations — not started**: a standalone bootstrap installer
    web UI, the shared `services.yml`, its idempotent Ansible reconciliation
    playbook, the later Schlussel `/admin` Services front door, and tag-push
