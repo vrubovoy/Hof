@@ -22,10 +22,11 @@ the source of truth for what happened and why.
   full in-app preview (image/PDF/markdown/text) - PDF renders via
   client-side pdf.js into a real page thumbnail plus a bespoke
   near-fullscreen viewer dialog, markdown through the same
-  react-markdown/remark-gfm pipeline Zettel uses. Sharing/permissions
-  and the shared notification bell (nothing here emits or needs one
-  yet) are deliberately out of scope for now, not blocking anything -
-  revisit only if a concrete need appears
+  react-markdown/remark-gfm pipeline Zettel uses. The shared Glocke
+  bell is wired up like every service's header - Schrank just doesn't
+  emit any notification events of its own yet (same as Zettel).
+  Sharing/permissions are deliberately deferred, same standing as the
+  Telegram bot/account-linking flow - not blocking, revisit later
 - `tor` — Caddy reverse-proxy gateway, single entry point, no host ports
   published by any other service
 - `schloss-ui` — shared React component library
@@ -168,10 +169,11 @@ and 2026-08-20 (Schrank declared complete).
    documents), markdown through the same react-markdown/remark-gfm
    pipeline Zettel uses. Breadcrumb navigation keeps the full visited
    trail on screen when stepping back instead of truncating it. The
-   shared notification bell isn't wired up (nothing here emits or needs
-   one) - deliberately out of scope, not blocking. A webmail client for
-   external IMAP/SMTP accounts (not a mail server/MTA) hasn't been
-   started at all. Sharing, permissions, office/video preview, and other
+   shared Glocke bell is wired up like every service's header - Schrank
+   just doesn't emit any notification events yet (same as Zettel). A
+   webmail client for external IMAP/SMTP accounts (not a mail
+   server/MTA) hasn't been started at all. Sharing, permissions, office/
+   video preview, and other
    expansion stay outside v1 unless a concrete need appears later.
 5. **Platform operations — not started**: a standalone bootstrap installer
    web UI, the shared `services.yml`, its idempotent Ansible reconciliation
