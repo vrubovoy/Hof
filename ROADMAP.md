@@ -185,18 +185,21 @@ bootstrapped, platform wiring only).
    outside Schrank's v1 unless a concrete need appears later.
 
    `herold` (new repo, 2026-08-21) is a webmail client for external
-   IMAP/SMTP accounts (explicitly not a mail server/MTA) - bootstrapped
-   with platform wiring only: repo scaffold, backend skeleton (Hono +
-   Drizzle/SQLite, Schlüssel JWT/JWKS auth, `/health`+`/ready`+
-   `/users/me`), frontend skeleton (shared header/sidebar/Glocke bell,
-   NotFoundPage, a herald's-letter-and-wax-seal mascot), CI, Docker, and
-   the tor gateway entry. Mail account management, IMAP/SMTP sync, and
-   sending are not implemented yet - the staged plan (recorded
-   2026-08-21) is account management next, then read-only folder/
-   message sync, then compose/send, then actions/search/polish. Design
-   decisions already settled: multiple external accounts per user;
-   username/password (or app-password) auth only for v1, no OAuth;
-   mirrors message headers and plain-text body locally, never
+   IMAP/SMTP accounts (explicitly not a mail server/MTA) - platform
+   wiring (repo scaffold, backend skeleton, shared header/sidebar/
+   Glocke bell, NotFoundPage, a herald's-letter-and-wax-seal mascot,
+   CI, Docker, the tor gateway entry) plus mail account management,
+   both shipped the same day: connect/edit/disconnect an external
+   account (`/accounts` CRUD), a "test connection" round-trip against
+   the real IMAP server before saving (`imapflow`, mocked in tests -
+   never a real network call in CI), and passwords encrypted at rest
+   (AES-256-GCM, `HEROLD_CREDENTIAL_ENCRYPTION_KEY`). IMAP/SMTP sync
+   and sending are not implemented yet - a connected account just sits
+   there for now. Staged plan (recorded 2026-08-21): read-only folder/
+   message sync next, then compose/send, then actions/search/polish.
+   Design decisions already settled: multiple external accounts per
+   user; username/password (or app-password) auth only for v1, no
+   OAuth; mirrors message headers and plain-text body locally, never
    attachment bytes (streamed from IMAP on demand) or raw HTML bodies
    (sidesteps stored-XSS/sanitization entirely for v1 - HTML-only
    emails show mailparser's stripped-text fallback).
