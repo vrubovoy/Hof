@@ -48,9 +48,10 @@ navigation that keeps the visited path visible instead of truncating it,
 and illustrated loading/error states) on top of its initial folders/
 files/quota/mascot v1 - and Herold (webmail client) is the eighth,
 bootstrapped 2026-08-21 and, the same day, brought through mail account
-management and read-only IMAP folder/message sync (Stages 1-3 of its
-staged rollout) - a connected account's mail is browsable, nothing can
-be composed/sent yet. The small visual-signature pass (service-specific
+management, read-only IMAP folder/message sync, and compose/send
+(Stages 1-4 of its staged rollout) - a connected account's mail is
+browsable and a new message/reply/reply-all/forward can be sent
+through it. The small visual-signature pass (service-specific
 illustration,
 badge, and motion details where applicable) is complete
 across all seven apps that have one: schloss, schlussel, kuvert, tafel,
@@ -139,8 +140,8 @@ Originally recorded 2026-08-04; status reconciled with the checked-out
 implementations on 2026-08-17 and 2026-08-18, then again on 2026-08-19
 (Browser Push landed, Telegram explicitly deferred, Schrank bootstrapped),
 2026-08-20 (Schrank declared complete), and 2026-08-21 (Herold
-bootstrapped, then brought through account management and read-only
-mail sync the same day).
+bootstrapped, then brought through account management, read-only mail
+sync, and compose/send the same day).
 
 1. **Zettel quick wins and expansion — done**: favicon, minimal text help,
    tags, Ctrl+K/Cmd+K quick switching, minimal virtual folders as tag
@@ -170,7 +171,7 @@ mail sync the same day).
    Telegram bot and account-linking flow are **explicitly deferred** (user
    decision 2026-08-19) - not scheduled next; revisit after phase 4 or
    later, whenever it's picked back up.
-4. **New content services — file storage complete, webmail readable**:
+4. **New content services — file storage complete, webmail read+send**:
    `schrank` (new repo, 2026-08-19) is a Drive-like file storage service,
    declared **complete** 2026-08-20: real nested folders (create/rename/
    move with cycle-detection/recursive delete), file upload/download/
@@ -190,8 +191,9 @@ mail sync the same day).
 
    `herold` (new repo, 2026-08-21) is a webmail client for external
    IMAP/SMTP accounts (explicitly not a mail server/MTA) - platform
-   wiring, mail account management, and read-only IMAP sync all shipped
-   the same day (Stages 1-3 of its staged plan). Account management:
+   wiring, mail account management, read-only IMAP sync, and
+   compose/send all shipped the same day (Stages 1-4 of its staged
+   plan). Account management:
    connect/edit/disconnect an external account (`/accounts` CRUD), a
    "test connection" round-trip against the real IMAP server before
    saving (`imapflow`, mocked in tests - never a real network call in
@@ -206,7 +208,13 @@ mail sync the same day).
    sidebar, message list, message detail. Attachments are never
    mirrored - `GET /messages/:id/attachments/:attachmentId` streams
    them live from IMAP on request, a fresh connection per download.
-   Composing/sending are not implemented yet. Design decisions already
+   Compose/send: `POST /accounts/:accountId/messages/send` sends via
+   nodemailer using the account's own SMTP settings, with a compose
+   modal (new/reply/reply-all/forward, prefilled recipient/subject/
+   quoted body/In-Reply-To) and a best-effort mirror of the sent
+   message into the local database and the real Sent folder (IMAP
+   APPEND) once one has been discovered by sync - never required for
+   the send itself to succeed. Design decisions already
    settled: multiple external accounts per user; username/password (or
    app-password) auth only for v1, no OAuth; mirrors message headers
    and plain-text body locally, never raw HTML bodies (sidesteps
