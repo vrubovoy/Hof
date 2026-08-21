@@ -27,23 +27,32 @@ the source of truth for what happened and why.
   emit any notification events of its own yet (same as Zettel).
   Sharing/permissions are deliberately deferred, same standing as the
   Telegram bot/account-linking flow - not blocking, revisit later
+- `herold` — webmail client for external IMAP/SMTP accounts (API `3006`,
+  frontend development server `5179`) - bootstrapped (2026-08-21):
+  platform wiring only (auth, CORS, the shared header/sidebar/Glocke
+  bell, `/health`+`/ready`, CI, Docker, the tor gateway entry, a herald
+  mascot). No mail account management, IMAP/SMTP sync, or sending yet -
+  see the staged rollout below
 - `tor` — Caddy reverse-proxy gateway, single entry point, no host ports
   published by any other service
 - `schloss-ui` — shared React component library
 - `schloss-server-kit` — shared backend auth/CORS kit
 
-**Status as of 2026-08-20**: platform foundation (auth, CI/Docker/GHCR,
+**Status as of 2026-08-21**: platform foundation (auth, CI/Docker/GHCR,
 gateway, shared design system, SSO) and the five established app repos' core
 feature sets are merged; Glocke's notification foundation is the sixth app
-repo, and Schrank (file storage) is the seventh - bootstrapped 2026-08-19
+repo, Schrank (file storage) is the seventh - bootstrapped 2026-08-19
 and declared **complete** the next day, after a full in-app preview pass
 (image/PDF/markdown/text, gallery-grid thumbnails, breadcrumb trail
 navigation that keeps the visited path visible instead of truncating it,
 and illustrated loading/error states) on top of its initial folders/
-files/quota/mascot v1. The small visual-signature pass (service-specific
-illustration, badge, and motion details where applicable) is complete
-across all six apps that have one: schloss, schlussel, kuvert, tafel,
-zettel, and Schrank - not yet extended to Glocke, which has none.
+files/quota/mascot v1 - and Herold (webmail client) is the eighth,
+bootstrapped 2026-08-21 with platform wiring only (no mail features
+yet). The small visual-signature pass (service-specific illustration,
+badge, and motion details where applicable) is complete
+across all seven apps that have one: schloss, schlussel, kuvert, tafel,
+zettel, Schrank, and now Herold (a herald's letter/wax seal) - not yet
+extended to Glocke, which has none.
 
 Browser Push is now complete (central Glocke-owned service worker, VAPID
 config, per-device registration in Schlüssel's `/account`, header-bell
@@ -125,8 +134,9 @@ validated browser-facing Glocke origin to every frontend build.
 
 Originally recorded 2026-08-04; status reconciled with the checked-out
 implementations on 2026-08-17 and 2026-08-18, then again on 2026-08-19
-(Browser Push landed, Telegram explicitly deferred, Schrank bootstrapped)
-and 2026-08-20 (Schrank declared complete).
+(Browser Push landed, Telegram explicitly deferred, Schrank bootstrapped),
+2026-08-20 (Schrank declared complete), and 2026-08-21 (Herold
+bootstrapped, platform wiring only).
 
 1. **Zettel quick wins and expansion — done**: favicon, minimal text help,
    tags, Ctrl+K/Cmd+K quick switching, minimal virtual folders as tag
@@ -156,7 +166,7 @@ and 2026-08-20 (Schrank declared complete).
    Telegram bot and account-linking flow are **explicitly deferred** (user
    decision 2026-08-19) - not scheduled next; revisit after phase 4 or
    later, whenever it's picked back up.
-4. **New content services — file storage complete, webmail not started**:
+4. **New content services — file storage complete, webmail bootstrapped**:
    `schrank` (new repo, 2026-08-19) is a Drive-like file storage service,
    declared **complete** 2026-08-20: real nested folders (create/rename/
    move with cycle-detection/recursive delete), file upload/download/
@@ -170,11 +180,26 @@ and 2026-08-20 (Schrank declared complete).
    pipeline Zettel uses. Breadcrumb navigation keeps the full visited
    trail on screen when stepping back instead of truncating it. The
    shared Glocke bell is wired up like every service's header - Schrank
-   just doesn't emit any notification events yet (same as Zettel). A
-   webmail client for external IMAP/SMTP accounts (not a mail
-   server/MTA) hasn't been started at all. Sharing, permissions, office/
-   video preview, and other
-   expansion stay outside v1 unless a concrete need appears later.
+   just doesn't emit any notification events yet (same as Zettel).
+   Sharing, permissions, office/video preview, and other expansion stay
+   outside Schrank's v1 unless a concrete need appears later.
+
+   `herold` (new repo, 2026-08-21) is a webmail client for external
+   IMAP/SMTP accounts (explicitly not a mail server/MTA) - bootstrapped
+   with platform wiring only: repo scaffold, backend skeleton (Hono +
+   Drizzle/SQLite, Schlüssel JWT/JWKS auth, `/health`+`/ready`+
+   `/users/me`), frontend skeleton (shared header/sidebar/Glocke bell,
+   NotFoundPage, a herald's-letter-and-wax-seal mascot), CI, Docker, and
+   the tor gateway entry. Mail account management, IMAP/SMTP sync, and
+   sending are not implemented yet - the staged plan (recorded
+   2026-08-21) is account management next, then read-only folder/
+   message sync, then compose/send, then actions/search/polish. Design
+   decisions already settled: multiple external accounts per user;
+   username/password (or app-password) auth only for v1, no OAuth;
+   mirrors message headers and plain-text body locally, never
+   attachment bytes (streamed from IMAP on demand) or raw HTML bodies
+   (sidesteps stored-XSS/sanitization entirely for v1 - HTML-only
+   emails show mailparser's stripped-text fallback).
 5. **Platform operations — not started**: a standalone bootstrap installer
    web UI, the shared `services.yml`, its idempotent Ansible reconciliation
    playbook, the later Schlussel `/admin` Services front door, and tag-push
@@ -195,7 +220,7 @@ and 2026-08-20 (Schrank declared complete).
 
 ## Repo locations
 
-`/home/zudar/Sandbox/Hof/{schlussel,schloss,kuvert,tafel,zettel,glocke,schrank,tor,schloss-ui,schloss-server-kit}/`
+`/home/zudar/Sandbox/Hof/{schlussel,schloss,kuvert,tafel,zettel,glocke,schrank,herold,tor,schloss-ui,schloss-server-kit}/`
 — same names at `https://github.com/zudaR107/<name>`. This directory
 itself is the `Hof` meta-repo (docs + submodule pins only, no CI, no
 branch protection).

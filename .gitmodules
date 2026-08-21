@@ -28,3 +28,6 @@
 [submodule "schrank"]
 	path = schrank
 	url = git@github.com:zudaR107/schrank.git
+[submodule "herold"]
+	path = herold
+	url = git@github.com:zudaR107/herold.git
