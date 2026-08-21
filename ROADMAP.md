@@ -47,12 +47,13 @@ and declared **complete** the next day, after a full in-app preview pass
 navigation that keeps the visited path visible instead of truncating it,
 and illustrated loading/error states) on top of its initial folders/
 files/quota/mascot v1 - and Herold (webmail client) is the eighth,
-bootstrapped 2026-08-21 and, the same day, brought through mail account
-management, read-only IMAP folder/message sync, compose/send, and
-message actions/search/exports (Stages 1-5 of its staged rollout) - a
-connected account's mail is browsable, a new message/reply/reply-all/
-forward can be sent through it, and read/unread, flag/star, delete,
-and search are all in place. The small visual-signature pass (service-specific
+bootstrapped 2026-08-21 and, the same day, brought through all six
+stages of its staged rollout - mail account management, read-only
+IMAP folder/message sync, compose/send, message actions/search/
+exports, and a cross-service docs pass. A connected account's mail is
+browsable, a new message/reply/reply-all/forward can be sent through
+it, and read/unread, flag/star, delete, and search are all in place.
+The small visual-signature pass (service-specific
 illustration,
 badge, and motion details where applicable) is complete
 across all seven apps that have one: schloss, schlussel, kuvert, tafel,
@@ -141,8 +142,9 @@ Originally recorded 2026-08-04; status reconciled with the checked-out
 implementations on 2026-08-17 and 2026-08-18, then again on 2026-08-19
 (Browser Push landed, Telegram explicitly deferred, Schrank bootstrapped),
 2026-08-20 (Schrank declared complete), and 2026-08-21 (Herold
-bootstrapped, then brought through account management, read-only mail
-sync, compose/send, and message actions/search/exports the same day).
+bootstrapped and taken through all six stages of its staged rollout -
+account management, read-only mail sync, compose/send, message
+actions/search/exports, and a cross-service docs pass - the same day).
 
 1. **Zettel quick wins and expansion — done**: favicon, minimal text help,
    tags, Ctrl+K/Cmd+K quick switching, minimal virtual folders as tag
@@ -193,9 +195,18 @@ sync, compose/send, and message actions/search/exports the same day).
    `herold` (new repo, 2026-08-21) is a webmail client for external
    IMAP/SMTP accounts (explicitly not a mail server/MTA) - platform
    wiring, mail account management, read-only IMAP sync, compose/send,
-   and message actions/search/exports all shipped the same day (Stages
-   1-5 of its staged plan; only Stage 6, a cross-service docs pass,
-   remains). Account management:
+   message actions/search/exports, and the cross-service docs pass all
+   shipped the same day (all six stages of its staged plan complete):
+   herold now appears in the platform-services list of every sibling
+   repo's own README (schloss, schlussel, kuvert, tafel, zettel,
+   schrank, tor, schloss-ui, schloss-server-kit - glocke already had
+   it), and a pre-existing gap from its original bootstrap was found
+   and fixed along the way - `tor`'s own `.env.example`/
+   `.env.production.example` and CI workflow were missing
+   `HEROLD_CREDENTIAL_ENCRYPTION_KEY` entirely (the real `tor/.env`
+   already had it set, so the running deployment was unaffected; only
+   the example files and CI validation were out of sync). Account
+   management:
    connect/edit/disconnect an external account (`/accounts` CRUD), a
    "test connection" round-trip against the real IMAP server before
    saving (`imapflow`, mocked in tests - never a real network call in
