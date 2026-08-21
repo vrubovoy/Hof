@@ -47,8 +47,11 @@ and declared **complete** the next day, after a full in-app preview pass
 navigation that keeps the visited path visible instead of truncating it,
 and illustrated loading/error states) on top of its initial folders/
 files/quota/mascot v1 - and Herold (webmail client) is the eighth,
-bootstrapped 2026-08-21 with platform wiring only (no mail features
-yet). The small visual-signature pass (service-specific illustration,
+bootstrapped 2026-08-21 and, the same day, brought through mail account
+management and read-only IMAP folder/message sync (Stages 1-3 of its
+staged rollout) - a connected account's mail is browsable, nothing can
+be composed/sent yet. The small visual-signature pass (service-specific
+illustration,
 badge, and motion details where applicable) is complete
 across all seven apps that have one: schloss, schlussel, kuvert, tafel,
 zettel, Schrank, and now Herold (a herald's letter/wax seal) - not yet
@@ -136,7 +139,8 @@ Originally recorded 2026-08-04; status reconciled with the checked-out
 implementations on 2026-08-17 and 2026-08-18, then again on 2026-08-19
 (Browser Push landed, Telegram explicitly deferred, Schrank bootstrapped),
 2026-08-20 (Schrank declared complete), and 2026-08-21 (Herold
-bootstrapped, platform wiring only).
+bootstrapped, then brought through account management and read-only
+mail sync the same day).
 
 1. **Zettel quick wins and expansion — done**: favicon, minimal text help,
    tags, Ctrl+K/Cmd+K quick switching, minimal virtual folders as tag
@@ -166,7 +170,7 @@ bootstrapped, platform wiring only).
    Telegram bot and account-linking flow are **explicitly deferred** (user
    decision 2026-08-19) - not scheduled next; revisit after phase 4 or
    later, whenever it's picked back up.
-4. **New content services — file storage complete, webmail bootstrapped**:
+4. **New content services — file storage complete, webmail readable**:
    `schrank` (new repo, 2026-08-19) is a Drive-like file storage service,
    declared **complete** 2026-08-20: real nested folders (create/rename/
    move with cycle-detection/recursive delete), file upload/download/
@@ -186,23 +190,28 @@ bootstrapped, platform wiring only).
 
    `herold` (new repo, 2026-08-21) is a webmail client for external
    IMAP/SMTP accounts (explicitly not a mail server/MTA) - platform
-   wiring (repo scaffold, backend skeleton, shared header/sidebar/
-   Glocke bell, NotFoundPage, a herald's-letter-and-wax-seal mascot,
-   CI, Docker, the tor gateway entry) plus mail account management,
-   both shipped the same day: connect/edit/disconnect an external
-   account (`/accounts` CRUD), a "test connection" round-trip against
-   the real IMAP server before saving (`imapflow`, mocked in tests -
-   never a real network call in CI), and passwords encrypted at rest
-   (AES-256-GCM, `HEROLD_CREDENTIAL_ENCRYPTION_KEY`). IMAP/SMTP sync
-   and sending are not implemented yet - a connected account just sits
-   there for now. Staged plan (recorded 2026-08-21): read-only folder/
-   message sync next, then compose/send, then actions/search/polish.
-   Design decisions already settled: multiple external accounts per
-   user; username/password (or app-password) auth only for v1, no
-   OAuth; mirrors message headers and plain-text body locally, never
-   attachment bytes (streamed from IMAP on demand) or raw HTML bodies
-   (sidesteps stored-XSS/sanitization entirely for v1 - HTML-only
-   emails show mailparser's stripped-text fallback).
+   wiring, mail account management, and read-only IMAP sync all shipped
+   the same day (Stages 1-3 of its staged plan). Account management:
+   connect/edit/disconnect an external account (`/accounts` CRUD), a
+   "test connection" round-trip against the real IMAP server before
+   saving (`imapflow`, mocked in tests - never a real network call in
+   CI), passwords encrypted at rest (AES-256-GCM,
+   `HEROLD_CREDENTIAL_ENCRYPTION_KEY`). Sync: a background worker
+   (`sync/worker.ts`, `HEROLD_SYNC_INTERVAL_MS`, default 3 minutes)
+   mirrors every account's IMAP folders and messages into the local
+   database - first-time sync, incremental new-UID fetch, a flags-only
+   refresh pass for already-mirrored messages, UIDVALIDITY-reset
+   re-sync, and per-account failure isolation. The `/mail` page (now
+   what `/` redirects to) reads that mirror: account switcher, folder
+   sidebar, message list, message detail. Attachments are never
+   mirrored - `GET /messages/:id/attachments/:attachmentId` streams
+   them live from IMAP on request, a fresh connection per download.
+   Composing/sending are not implemented yet. Design decisions already
+   settled: multiple external accounts per user; username/password (or
+   app-password) auth only for v1, no OAuth; mirrors message headers
+   and plain-text body locally, never raw HTML bodies (sidesteps
+   stored-XSS/sanitization entirely for v1 - HTML-only emails show
+   mailparser's stripped-text fallback).
 5. **Platform operations — not started**: a standalone bootstrap installer
    web UI, the shared `services.yml`, its idempotent Ansible reconciliation
    playbook, the later Schlussel `/admin` Services front door, and tag-push
