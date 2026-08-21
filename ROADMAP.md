@@ -28,11 +28,12 @@ the source of truth for what happened and why.
   Sharing/permissions are deliberately deferred, same standing as the
   Telegram bot/account-linking flow - not blocking, revisit later
 - `herold` — webmail client for external IMAP/SMTP accounts (API `3006`,
-  frontend development server `5179`) - bootstrapped (2026-08-21):
-  platform wiring only (auth, CORS, the shared header/sidebar/Glocke
-  bell, `/health`+`/ready`, CI, Docker, the tor gateway entry, a herald
-  mascot). No mail account management, IMAP/SMTP sync, or sending yet -
-  see the staged rollout below
+  frontend development server `5179`) - **complete** (2026-08-21):
+  account management, read-only IMAP sync, compose/send, message
+  actions/search, a metadata-only export, and its own mascot (a paper
+  airplane, after two earlier concepts didn't read clearly), bootstrapped
+  through all six staged-rollout stages and a live-testing polish round
+  the same day
 - `tor` — Caddy reverse-proxy gateway, single entry point, no host ports
   published by any other service
 - `schloss-ui` — shared React component library
@@ -47,18 +48,29 @@ and declared **complete** the next day, after a full in-app preview pass
 navigation that keeps the visited path visible instead of truncating it,
 and illustrated loading/error states) on top of its initial folders/
 files/quota/mascot v1 - and Herold (webmail client) is the eighth,
-bootstrapped 2026-08-21 and, the same day, brought through all six
-stages of its staged rollout - mail account management, read-only
-IMAP folder/message sync, compose/send, message actions/search/
-exports, and a cross-service docs pass. A connected account's mail is
+bootstrapped 2026-08-21 and declared **complete** the same day, after
+all six stages of its staged rollout (mail account management,
+read-only IMAP folder/message sync, compose/send, message
+actions/search/exports, and a cross-service docs pass) plus a
+live-testing polish round: localized connection/send error messages
+(was leaking raw English library text), an SMTP-security default that
+now follows the IMAP side's own choice, a sender-email field that
+auto-follows the IMAP login (most providers reject a mismatch), the
+account list rebuilt as clickable cards, a real `.inline-error` style
+(was referenced but never defined, so error banners rendered
+unstyled), an SMTP socket timeout (nodemailer's own default is
+effectively unbounded - a stalled send could hang for minutes), and a
+`Modal` body-scroll-lock fix upstreamed into schloss-ui itself (a tall
+dialog showed two adjacent scrollbars). A connected account's mail is
 browsable, a new message/reply/reply-all/forward can be sent through
 it, and read/unread, flag/star, delete, and search are all in place.
-The small visual-signature pass (service-specific
-illustration,
-badge, and motion details where applicable) is complete
-across all seven apps that have one: schloss, schlussel, kuvert, tafel,
-zettel, Schrank, and now Herold (a herald's letter/wax seal) - not yet
-extended to Glocke, which has none.
+The small visual-signature pass (service-specific illustration, badge,
+and motion details where applicable) is complete across all seven apps
+that have one: schloss, schlussel, kuvert, tafel, zettel, Schrank, and
+now Herold - whose own mascot took three attempts (a scroll+wax-seal
+and a herald's horn both read as an unrelated object once actually
+rendered; a paper airplane finally landed) - not yet extended to
+Glocke, which has none.
 
 Browser Push is now complete (central Glocke-owned service worker, VAPID
 config, per-device registration in Schlüssel's `/account`, header-bell
@@ -142,9 +154,8 @@ Originally recorded 2026-08-04; status reconciled with the checked-out
 implementations on 2026-08-17 and 2026-08-18, then again on 2026-08-19
 (Browser Push landed, Telegram explicitly deferred, Schrank bootstrapped),
 2026-08-20 (Schrank declared complete), and 2026-08-21 (Herold
-bootstrapped and taken through all six stages of its staged rollout -
-account management, read-only mail sync, compose/send, message
-actions/search/exports, and a cross-service docs pass - the same day).
+bootstrapped, taken through all six stages of its staged rollout, and
+declared complete after a live-testing polish round - the same day).
 
 1. **Zettel quick wins and expansion — done**: favicon, minimal text help,
    tags, Ctrl+K/Cmd+K quick switching, minimal virtual folders as tag
@@ -174,7 +185,7 @@ actions/search/exports, and a cross-service docs pass - the same day).
    Telegram bot and account-linking flow are **explicitly deferred** (user
    decision 2026-08-19) - not scheduled next; revisit after phase 4 or
    later, whenever it's picked back up.
-4. **New content services — file storage complete, webmail feature-complete**:
+4. **New content services — both complete**:
    `schrank` (new repo, 2026-08-19) is a Drive-like file storage service,
    declared **complete** 2026-08-20: real nested folders (create/rename/
    move with cycle-detection/recursive delete), file upload/download/
@@ -193,20 +204,29 @@ actions/search/exports, and a cross-service docs pass - the same day).
    outside Schrank's v1 unless a concrete need appears later.
 
    `herold` (new repo, 2026-08-21) is a webmail client for external
-   IMAP/SMTP accounts (explicitly not a mail server/MTA) - platform
-   wiring, mail account management, read-only IMAP sync, compose/send,
-   message actions/search/exports, and the cross-service docs pass all
-   shipped the same day (all six stages of its staged plan complete):
-   herold now appears in the platform-services list of every sibling
-   repo's own README (schloss, schlussel, kuvert, tafel, zettel,
-   schrank, tor, schloss-ui, schloss-server-kit - glocke already had
-   it), and a pre-existing gap from its original bootstrap was found
-   and fixed along the way - `tor`'s own `.env.example`/
-   `.env.production.example` and CI workflow were missing
-   `HEROLD_CREDENTIAL_ENCRYPTION_KEY` entirely (the real `tor/.env`
-   already had it set, so the running deployment was unaffected; only
-   the example files and CI validation were out of sync). Account
-   management:
+   IMAP/SMTP accounts (explicitly not a mail server/MTA), declared
+   **complete** the same day it was bootstrapped: platform wiring,
+   mail account management, read-only IMAP sync, compose/send,
+   message actions/search/exports, and the cross-service docs pass
+   (all six stages of its staged plan) shipped first, followed by a
+   live-testing polish round against a real Yandex account that fixed
+   raw-English error leakage, an SMTP-security default mismatched from
+   IMAP's own choice, an undefined `.inline-error` style, an
+   effectively-unbounded SMTP send timeout, a sender-email field that
+   didn't follow the IMAP login (most providers reject a mismatch), an
+   edit-only-via-small-pencil-icon account list (rebuilt as clickable
+   cards), a favicon that was a shrunk mascot copy instead of the real
+   service glyph, and the mascot itself (two earlier concepts didn't
+   read clearly once rendered; a paper airplane did). herold now
+   appears in the platform-services list of every sibling repo's own
+   README (schloss, schlussel, kuvert, tafel, zettel, schrank, tor,
+   schloss-ui, schloss-server-kit - glocke already had it), and a
+   pre-existing gap from its original bootstrap was found and fixed
+   along the way - `tor`'s own `.env.example`/`.env.production.example`
+   and CI workflow were missing `HEROLD_CREDENTIAL_ENCRYPTION_KEY`
+   entirely (the real `tor/.env` already had it set, so the running
+   deployment was unaffected; only the example files and CI validation
+   were out of sync). Account management:
    connect/edit/disconnect an external account (`/accounts` CRUD), a
    "test connection" round-trip against the real IMAP server before
    saving (`imapflow`, mocked in tests - never a real network call in
