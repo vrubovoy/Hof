@@ -31,3 +31,6 @@
 [submodule "herold"]
 	path = herold
 	url = git@github.com:zudaR107/herold.git
+[submodule "wachter"]
+	path = wachter
+	url = https://github.com/vrubovoy/wachter.git

@@ -34,12 +34,25 @@ the source of truth for what happened and why.
   airplane, after two earlier concepts didn't read clearly), bootstrapped
   through all six staged-rollout stages and a live-testing polish round
   the same day
+- `wachter` — server resource monitoring (API `3007`, no frontend of its
+  own) - **complete** (2026-08-25): auxiliary/infrastructure service, not
+  a content app - backend-only, no `DIENSTE` launcher card, no accent
+  color. Reports host CPU/memory/disk/uptime (parsed from `/proc`, three
+  read-only bind mounts - the only service with any host-level access)
+  and per-container Docker status (raw HTTP over the bind-mounted Docker
+  socket), in-memory ring buffer only, no database. Surfaced as an
+  admin-only widget embedded directly into Schloss's own home page
+  (stat tiles + two sparklines + a down-container badge strip), reached
+  same-origin via Schloss's own Caddyfile at `/wachter/*` - not a `tor`
+  subdomain. First new repo created after the GitHub account rename
+  (`zudaR107` → `vrubovoy`); its own URLs use `vrubovoy` throughout since
+  it has no legacy alias to redirect from.
 - `tor` — Caddy reverse-proxy gateway, single entry point, no host ports
   published by any other service
 - `schloss-ui` — shared React component library
 - `schloss-server-kit` — shared backend auth/CORS kit
 
-**Status as of 2026-08-21**: platform foundation (auth, CI/Docker/GHCR,
+**Status as of 2026-08-25**: platform foundation (auth, CI/Docker/GHCR,
 gateway, shared design system, SSO) and the five established app repos' core
 feature sets are merged; Glocke's notification foundation is the sixth app
 repo, Schrank (file storage) is the seventh - bootstrapped 2026-08-19
@@ -64,7 +77,13 @@ effectively unbounded - a stalled send could hang for minutes), and a
 dialog showed two adjacent scrollbars). A connected account's mail is
 browsable, a new message/reply/reply-all/forward can be sent through
 it, and read/unread, flag/star, delete, and search are all in place.
-The small visual-signature pass (service-specific illustration, badge,
+Wächter (server resource monitoring) is the ninth repo and the
+platform's first auxiliary/infrastructure service rather than a
+content app - bootstrapped and declared **complete** 2026-08-25:
+backend-only (no frontend, no launcher card, no accent color), it
+reports host CPU/memory/disk/uptime and per-container Docker status
+through an admin-only widget embedded directly into Schloss's home
+page, with no database of its own. The small visual-signature pass (service-specific illustration, badge,
 and motion details where applicable) is complete across all seven apps
 that have one: schloss, schlussel, kuvert, tafel, zettel, Schrank, and
 now Herold - whose own mascot took three attempts (a scroll+wax-seal
@@ -282,7 +301,8 @@ declared complete after a live-testing polish round - the same day).
 
 ## Repo locations
 
-`/home/zudar/Sandbox/Hof/{schlussel,schloss,kuvert,tafel,zettel,glocke,schrank,herold,tor,schloss-ui,schloss-server-kit}/`
-— same names at `https://github.com/zudaR107/<name>`. This directory
-itself is the `Hof` meta-repo (docs + submodule pins only, no CI, no
-branch protection).
+`/home/zudar/Sandbox/Hof/{schlussel,schloss,kuvert,tafel,zettel,glocke,schrank,herold,wachter,tor,schloss-ui,schloss-server-kit}/`
+— same names at `https://github.com/zudaR107/<name>`, except `wachter`
+at `https://github.com/vrubovoy/wachter` (created after the account
+rename, no legacy `zudaR107` alias). This directory itself is the `Hof`
+meta-repo (docs + submodule pins only, no CI, no branch protection).
