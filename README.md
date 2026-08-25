@@ -73,21 +73,33 @@ worker around `web-push`, and a push-only service worker
 each active subscription's delivery row independently inside the same
 fenced inbox write, so either channel can be on without the other. A push
 notification carries only generic text and a trusted destination URL -
-never the event's rendered title/body - and a click focuses an existing
-Glocke tab before opening a new one. The retry worker re-checks the global
-preference at send time, deletes a subscription and settles its deliveries
-on 404/410, and reconciles orphaned subscriptions for deleted accounts on a
-schedule. Telegram bot/account-linking remains the one still-unimplemented
-notification channel.
+never the event's rendered title/body - and a click navigates and focuses an
+existing Glocke tab before opening a new one. Subscriptions are matched to
+the current browser by endpoint hash and bound to the Schlüssel session that
+registered them. Logout revokes the server binding and visits Glocke to
+unsubscribe that browser locally. The retry worker fences lease settlement,
+re-checks current preferences and sessions, expires stale VAPID bindings,
+deletes subscriptions on 404/410, and purges retained terminal deliveries.
+Telegram bot/account-linking remains the one still-unimplemented channel.
+
+Wächter separates its public admin API from a small authenticated host agent.
+Only that agent receives the Docker socket and narrow host probes; the API
+container runs non-root with a read-only filesystem and cannot issue Docker
+requests directly. The agent exposes fixed list/stats/restart operations,
+and restart additionally requires an explicit per-container
+`hof.wachter.restartable=true` label. Schloss reports stale, unavailable, and
+unknown samples instead of presenting collection failures as healthy zeros.
 
 ## Data exports
 
 The platform keeps direct service exports and the platform archive separate.
-Kuvert, Tafel, Zettel, and Glocke expose synchronous `GET /exports/me` JSON
-snapshots; their Settings pages download those responses directly. Schlüssel
-retains its synchronous `GET /auth/export` JSON. Only Schlüssel's authenticated
-`POST /auth/export-jobs` API creates the asynchronous ZIP containing snapshots
-from Schlüssel and all four consumer services.
+Kuvert, Tafel, Zettel, Glocke, Schrank, and Herold expose synchronous
+`GET /exports/me` JSON snapshots; their Settings pages can download those
+responses directly. Schlüssel retains its synchronous `GET /auth/export`
+JSON. Only Schlüssel's authenticated `POST /auth/export-jobs` API creates the
+asynchronous ZIP containing snapshots from Schlüssel and all six consumer
+services. Schrank and Herold exports are metadata-only: file bytes, message
+content, attachments, and credentials are excluded.
 
 For collection, Schlüssel mints a short-lived RS256 delegation for one exact
 service audience. Services verify it through Schlüssel's JWKS and exact issuer
@@ -114,7 +126,15 @@ task, note, and notification data; protect and delete downloaded files as
 appropriate. They exclude passwords/hashes, token and signing/HMAC material,
 runtime configuration, logs, worker leases, notification inbox payloads and
 hashes, internal audit state, other users, and services outside the fixed
-Schlüssel/Kuvert/Tafel/Zettel/Glocke registry.
+Schlüssel/Kuvert/Tafel/Zettel/Glocke/Schrank/Herold registry.
+
+Deleting an account in Schlüssel creates a durable per-service cleanup saga
+before removing the identity. Kuvert, Tafel, Zettel, Glocke, Schrank, and
+Herold accept only short-lived, audience-bound deletion delegations, record a
+tombstone to reject old access tokens, and idempotently remove that subject's
+data. Schrank completes filesystem deletion through its retryable storage
+queue. Schlüssel tracks each target independently and retries bounded
+failures, so a temporary service outage cannot silently abandon user data.
 
 Kuvert, Tafel, Zettel, and Glocke keep application code in `backend/` and
 `frontend/`. Schloss is frontend-only and keeps that frontend at its repo
@@ -173,7 +193,9 @@ the gateway itself) behind a single address, no ports to remember.
 This repo is committed to rarely, by design — only when bumping a submodule
 pointer to a service's new release, or updating cross-cutting docs. Regular
 development happens in the submodule repos themselves, each with its own
-issue/PR workflow. There's no branch protection here for that reason.
+issue/PR workflow. Root CI validates the exact recursive gitlinks and Tor
+configuration contracts; it never substitutes service default branches for
+the pinned release graph.
 
 ## License
 

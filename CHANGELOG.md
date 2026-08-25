@@ -538,3 +538,25 @@ submodule's own `CHANGELOG.md` for that).
   confirmed absent from every frontend's build arguments in the live
   Compose config. Telegram bot/account-linking and iOS/PWA installation
   remain the still-unscheduled future phases.
+- Completed the platform hardening and correctness audit. Wächter now keeps
+  Docker and host access inside a narrow authenticated agent; Schloss exposes
+  freshness and collection failures instead of healthy-looking stale zeros.
+  Glocke matches the exact local browser, binds subscriptions to Schlüssel
+  sessions, cleans them up on logout, validates VAPID material, fences delivery
+  settlement, and bounds retention. Herold now enforces outbound address and
+  STARTTLS policy, bounds synchronization and attachments, reconciles remote
+  deletion, deduplicates sent mail, and paginates the mailbox. Schrank now
+  reserves quota atomically, routes filesystem work through a durable queue,
+  and bounds preview traffic. Schlüssel archives Schrank and Herold metadata
+  alongside the five original snapshots without rewriting historical jobs.
+- Added durable platform account deletion. Schlüssel records one target per
+  data service before deleting an identity and retries short-lived,
+  audience-bound cleanup requests. Kuvert, Tafel, Zettel, Glocke, Schrank,
+  and Herold tombstone deleted subjects, reject old tokens, and idempotently
+  purge owned data; Schrank also retries owner-directory removal.
+- Repaired release operations. Browser Push remains disabled in deployment
+  examples until an operator supplies a stable VAPID pair, Tor validates the
+  real built service worker and the isolated Wächter topology, local secret
+  files use mode `0600`, and five previously broken publish pipelines now
+  publish under `ghcr.io/vrubovoy` only after successful tests. Hof CI checks
+  the exact recursive submodule graph and Tor configuration contracts.
