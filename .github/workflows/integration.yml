@@ -1,0 +1,57 @@
+name: Integration
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  exact-pins:
+    runs-on: ubuntu-latest
+    env:
+      SCHLUSSEL_TO_GLOCKE_HMAC_SECRET: ci-only-producer-secret-at-least-32-bytes
+      GLOCKE_TO_SCHLUSSEL_HMAC_SECRET: ci-only-recipient-secret-at-least-32-bytes
+      KUVERT_TO_GLOCKE_HMAC_SECRET: ci-only-kuvert-secret-at-least-32-bytes
+      TAFEL_TO_GLOCKE_HMAC_SECRET: ci-only-tafel-secret-at-least-32-bytes
+      ZETTEL_TO_GLOCKE_HMAC_SECRET: ci-only-zettel-secret-at-least-32-bytes
+      WACHTER_AGENT_TOKEN: ci-only-wachter-agent-token-at-least-32-bytes
+      GLOCKE_VAPID_SUBJECT: mailto:push-ci@example.invalid
+      GLOCKE_VAPID_PUBLIC_KEY: BG4K7M8AHsPWw4WdwJLwXL0ELAxKM_WfdUsGfxgkaT7ZfAIN1MbsHhgk6HsfFoYXs34tS4Eeg2gxeYEHssNkyCE
+      GLOCKE_VAPID_PRIVATE_KEY: buJ8MeuiDFugpvAMEPf3vgV_bz3tlNVECD0MoMgryUw
+      HEROLD_CREDENTIAL_ENCRYPTION_KEY: ci-only-herold-key-at-least-32-bytes
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+
+      - name: Verify exact recursive pins
+        run: |
+          git submodule status --recursive
+          if git submodule status --recursive | grep -Eq '^[+-U]'; then
+            echo 'Submodule checkout differs from the recorded gitlinks.' >&2
+            exit 1
+          fi
+
+      - name: Validate Caddy configuration
+        run: >
+          docker run --rm -v "$PWD/tor/Caddyfile:/etc/caddy/Caddyfile:ro"
+          caddy:2-alpine caddy validate --config /etc/caddy/Caddyfile
+
+      - name: Validate gateway contracts
+        run: sh tor/test/validate-gateway.sh
+
+      - name: Validate public origins
+        working-directory: tor
+        run: node test/validate-public-origin.mjs --self-test
+
+      - name: Validate local Compose example
+        working-directory: tor
+        run: sh test/validate-compose.sh .env.example
+
+      - name: Validate production Compose example
+        working-directory: tor
+        run: sh test/validate-compose.sh .env.production.example
+
+      - name: Validate Browser Push modes
+        working-directory: tor
+        run: sh test/validate-push-config.sh

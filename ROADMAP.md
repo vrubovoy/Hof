@@ -18,7 +18,7 @@ the source of truth for what happened and why.
 - `schrank` — file storage with nested folders (API `3005`, frontend
   development server `5178`) - **complete** (2026-08-20): folders,
   upload/download/rename/move/delete, quota, its own wardrobe mascot, a
-  gallery-grid file browser with eager per-file-type thumbnails, and
+  gallery-grid file browser with bounded viewport-lazy thumbnails, and
   full in-app preview (image/PDF/markdown/text) - PDF renders via
   client-side pdf.js into a real page thumbnail plus a bespoke
   near-fullscreen viewer dialog, markdown through the same
@@ -37,10 +37,11 @@ the source of truth for what happened and why.
 - `wachter` — server resource monitoring (API `3007`, no frontend of its
   own) - **complete** (2026-08-25): auxiliary/infrastructure service, not
   a content app - backend-only, no `DIENSTE` launcher card, no accent
-  color. Reports host CPU/memory/disk/uptime (parsed from `/proc`, two
-  read-only bind mounts) and per-container Docker status/CPU/memory
-  (over the bind-mounted Docker socket - the only service with any
-  host-level access). Sampled every 5s (down from an initial 30s, after
+  color. Reports host CPU/memory/disk/uptime and per-container Docker
+  status/CPU/memory through a separately hardened host agent. The web API
+  has no Docker socket or host-root mount; the agent exposes only fixed,
+  authenticated operations and label-gated restart. Sampled every 5s
+  (down from an initial 30s, after
   live-testing feedback that the widget felt static); three in-memory
   history tiers per metric (raw 5s/1h, 1min-rollup/24h, 1hr-rollup/7d,
   no database) back an hour/day/week range selector on the detailed
@@ -51,8 +52,8 @@ the source of truth for what happened and why.
   all hosted inside Schloss's own frontend since Wächter has none:
   `/server-stats` (full graphs + the container list), `/server-stats/
   :name` (one container's own graphs plus a restart action - admin-only,
-  confirmation-gated, the one write operation this service performs
-  over an otherwise read-only Docker socket, scoped in its SECURITY.md),
+  confirmation-gated, cooldown-protected, and limited to explicitly
+  restartable non-critical containers),
   and `/server-stats/docs` (its Swagger UI). First new repo created
   after the GitHub account rename (`zudaR107` → `vrubovoy`); its own
   URLs use `vrubovoy` throughout since it has no legacy alias to
@@ -102,8 +103,9 @@ rendered; a paper airplane finally landed) - not yet extended to
 Glocke, which has none.
 
 Browser Push is now complete (central Glocke-owned service worker, VAPID
-config, per-device registration in Schlüssel's `/account`, header-bell
-pop-up toast on new arrivals). The Telegram bot and account-linking flow
+config, exact current-device registration, session-bound cleanup on logout,
+leased delivery retention, and a header-bell pop-up toast on new arrivals).
+The Telegram bot and account-linking flow
 are explicitly **deferred** (user decision 2026-08-19) - revisit after
 the phases below, not blocking any of them. The notification event
 catalog also grew this pass (Kuvert's `debt.paid_off`/`envelope.overdrawn`,
@@ -112,6 +114,18 @@ round of polish: hover-preview dropdown with mark-read/clear-all/delete-all,
 avatar rendering, relative-actionUrl resolution, and a `Sidebar` component
 shared by kuvert/tafel/zettel/glocke (was independently hand-copied by the
 first three; Glocke now has full parity instead of a visibly different rail).
+
+The 2026-08-25 platform hardening release closed the cross-service audit.
+Herold now enforces outbound public-address policy with explicit operator
+exceptions, mandatory STARTTLS semantics, bounded mail ingestion, mirror
+reconciliation, sent-message deduplication, and UI pagination. Schrank now
+uses atomic quota reservations, a durable filesystem operation queue, and
+bounded thumbnail fetching. Schlüssel's archive includes metadata snapshots
+from all seven data owners, while retained older jobs keep their historical
+five-service manifest. Account deletion is a durable, audience-bound saga
+across every data service. Wächter isolates host authority in its narrow
+agent, and GHCR publication is gated on successful tests under the current
+`vrubovoy` namespace.
 
 Full-stack consumer apps use `backend/` and `frontend/`. There are two
 repository-layout exceptions: schloss is frontend-only and keeps its
@@ -315,4 +329,4 @@ declared complete after a live-testing polish round - the same day).
 — same names at `https://github.com/zudaR107/<name>`, except `wachter`
 at `https://github.com/vrubovoy/wachter` (created after the account
 rename, no legacy `zudaR107` alias). This directory itself is the `Hof`
-meta-repo (docs + submodule pins only, no CI, no branch protection).
+meta-repo (docs + submodule pins and exact-pin integration CI).
