@@ -37,16 +37,26 @@ the source of truth for what happened and why.
 - `wachter` — server resource monitoring (API `3007`, no frontend of its
   own) - **complete** (2026-08-25): auxiliary/infrastructure service, not
   a content app - backend-only, no `DIENSTE` launcher card, no accent
-  color. Reports host CPU/memory/disk/uptime (parsed from `/proc`, three
-  read-only bind mounts - the only service with any host-level access)
-  and per-container Docker status (raw HTTP over the bind-mounted Docker
-  socket), in-memory ring buffer only, no database. Surfaced as an
-  admin-only widget embedded directly into Schloss's own home page
-  (stat tiles + two sparklines + a down-container badge strip), reached
-  same-origin via Schloss's own Caddyfile at `/wachter/*` - not a `tor`
-  subdomain. First new repo created after the GitHub account rename
-  (`zudaR107` → `vrubovoy`); its own URLs use `vrubovoy` throughout since
-  it has no legacy alias to redirect from.
+  color. Reports host CPU/memory/disk/uptime (parsed from `/proc`, two
+  read-only bind mounts) and per-container Docker status/CPU/memory
+  (over the bind-mounted Docker socket - the only service with any
+  host-level access). Sampled every 5s (down from an initial 30s, after
+  live-testing feedback that the widget felt static); three in-memory
+  history tiers per metric (raw 5s/1h, 1min-rollup/24h, 1hr-rollup/7d,
+  no database) back an hour/day/week range selector on the detailed
+  stats pages. Surfaced as an admin-only widget on Schloss's home page
+  (stat tiles, sparklines, a live "N of M containers active" line),
+  reached same-origin via Schloss's own Caddyfile at `/wachter/*` - not
+  a `tor` subdomain. Every clickable area on the widget leads deeper,
+  all hosted inside Schloss's own frontend since Wächter has none:
+  `/server-stats` (full graphs + the container list), `/server-stats/
+  :name` (one container's own graphs plus a restart action - admin-only,
+  confirmation-gated, the one write operation this service performs
+  over an otherwise read-only Docker socket, scoped in its SECURITY.md),
+  and `/server-stats/docs` (its Swagger UI). First new repo created
+  after the GitHub account rename (`zudaR107` → `vrubovoy`); its own
+  URLs use `vrubovoy` throughout since it has no legacy alias to
+  redirect from.
 - `tor` — Caddy reverse-proxy gateway, single entry point, no host ports
   published by any other service
 - `schloss-ui` — shared React component library
