@@ -311,6 +311,12 @@ declared complete after a live-testing polish round - the same day).
    deployment automation. The installer remains the first bare-server
    component; installer and admin UI must use the same file and playbook.
    Deployment remains simple pull-and-restart, not rolling or zero-downtime.
+   User-authored recommended plan for this phase (new `hof-ops` repo,
+   release-lock/signed-image supply chain, `hofctl`, Ansible reconciliation,
+   restic backup/restore, upgrade/rollback, claim-token admin bootstrap,
+   installer UI, later `hof-opsd` + `/admin/services`) recorded 2026-08-25
+   in [`PLATFORM-OPS-PLAN.md`](PLATFORM-OPS-PLAN.md) - not yet started, and
+   not yet revised after that file's own open scope-review notes.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.
