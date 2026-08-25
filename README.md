@@ -15,6 +15,7 @@ the service repos to the commits that make up the current release.
 - [`glocke`](https://github.com/zudaR107/glocke) — in-app notification center and delivery foundation
 - [`schrank`](https://github.com/zudaR107/schrank) — file storage with nested folders
 - [`herold`](https://github.com/zudaR107/herold) — webmail client for external IMAP/SMTP accounts
+- [`wachter`](https://github.com/vrubovoy/wachter) — server resource monitoring (backend only; its admin UI lives inside `schloss`, see below)
 - [`tor`](https://github.com/zudaR107/tor) — reverse-proxy gateway all of the above sit behind
 - [`schloss-ui`](https://github.com/zudaR107/schloss-ui) — shared frontend
   components, consumed by every service's web app
@@ -125,7 +126,8 @@ root; Schlussel keeps its backend at its repo root and its frontend in
 Only `tor` publishes a host port - everything else is reached through it by
 subdomain. Where a service has its own REST API, its OpenAPI spec and a
 Swagger UI viewer live at `/docs` in that service's own web app, visible to
-admins only.
+admins only - **except `wachter`**, which has no web app of its own: its
+Swagger UI is served from `schloss` instead, at `/server-stats/docs`.
 
 | Service | Purpose | Internal ports | Public path | API docs |
 |---|---|---|---|---|
@@ -137,6 +139,7 @@ admins only.
 | `glocke` | In-app notification center and delivery foundation | `3004` (api), `80` (web) | `https://glocke.<domain>/` | `/docs` (admin only) |
 | `schrank` | File storage with nested folders | `3005` (api), `80` (web) | `https://schrank.<domain>/` | `/docs` (admin only) |
 | `herold` | Webmail client for external IMAP/SMTP accounts | `3006` (api), `80` (web) | `https://herold.<domain>/` | `/docs` (admin only) |
+| `wachter` | Server resource monitoring | `3007` (api only, no web app) | none (no subdomain - reached via `schloss`'s `/wachter/*` proxy) | `/server-stats/docs` on `schloss` (admin only) |
 | `tor` | Reverse-proxy gateway | `80`/`443` | entry point for all of the above | — |
 
 Glocke's direct frontend development server uses port `5177`; production
@@ -146,9 +149,9 @@ full-stack apps.
 ## What's in here
 
 - `ROADMAP.md` — development history and status across all repos.
-- Eleven git submodules (`schlussel/`, `schloss/`, `kuvert/`, `tafel/`,
-  `zettel/`, `glocke/`, `schrank/`, `herold/`, `tor/`, `schloss-ui/`,
-  `schloss-server-kit/`), each pinned to a specific commit.
+- Twelve git submodules (`schlussel/`, `schloss/`, `kuvert/`, `tafel/`,
+  `zettel/`, `glocke/`, `schrank/`, `herold/`, `wachter/`, `tor/`,
+  `schloss-ui/`, `schloss-server-kit/`), each pinned to a specific commit.
 
 ## Getting the code
 
@@ -162,8 +165,8 @@ git submodule update --init --recursive
 
 See [`tor/README.md`](https://github.com/zudaR107/tor#readme) — one
 `docker compose up` from `tor/` starts everything (`schloss`, `schlussel`,
-`kuvert`, `tafel`, `zettel`, `glocke`, `schrank`, `herold`, and the gateway
-itself) behind a single address, no ports to remember.
+`kuvert`, `tafel`, `zettel`, `glocke`, `schrank`, `herold`, `wachter`, and
+the gateway itself) behind a single address, no ports to remember.
 
 ## Updating this repo
 
