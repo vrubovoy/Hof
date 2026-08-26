@@ -2,29 +2,36 @@
 
 Authored by the user 2026-08-25, as the recommended plan for
 [`ROADMAP.md`](ROADMAP.md)'s phase 5 ("Platform operations"). Saved
-verbatim here (Russian, as written) as the reference spec for that
-phase's implementation — not yet started, not yet revised after the
-scope-review discussion below.
+here (Russian, as written) as the reference spec for that phase's
+implementation.
 
-**Open review notes (2026-08-25, not yet resolved with the user):**
-- Whether `hof-ops` targets *personal* redeployability (this operator,
-  this one install) or a *distributable* product other people install
-  their own copy of — the plan's rigor (keyless Cosign/OIDC signing,
-  SBOM, provenance, a two-distro host matrix, a 20+ scenario
-  verification matrix, a disposable-VM restore drill) fits the second
-  framing much more than the first, and that distinction should decide
-  how much of this v1 actually gets built.
-- Stage 11–12 (`hof-opsd` as a network-reachable on-host agent, plus
-  `/admin/services` mutation controls) adds real attack surface for a
-  single-operator platform where "SSH in and run `hofctl`" is already a
-  complete answer - candidate for cutting entirely, or admin/services
-  staying read-only-only.
-- Stage 1 ("Portable Runtime Images") is the most invasive stage,
-  touching all nine existing services' frontends and backends. It's only
-  a hard prerequisite if the installer must toggle services on/off
-  without rebuilding images - if rebuilding per-install with the right
-  build args is an acceptable v1 shortcut, this stage (and its
-  destabilization risk to already-working services) goes away.
+**Scope review resolved (2026-08-26):** `hof-ops` is a distributable
+single-host product; portable runtime images remain required; `hof-opsd`
+starts read-only and mutation controls retain a separate security gate.
+
+**Implementation progress:**
+- [x] Foundation (delivery item 1): public `vrubovoy/hof-ops` repository
+  (standard docs, branch protection on `main`), accepted ADRs, versioned
+  desired-state/catalog/release-lock schemas, release-owned service catalog,
+  examples, cross-contract validation, and CI definition. Published and
+  pinned as a `Hof` submodule 2026-08-26.
+- [x] Portable runtime frontend configuration (delivery item 2): all eight
+  frontend images (glocke, herold, kuvert, schloss, schlussel, schrank,
+  tafel, zettel) now consume a versioned, JSON-safe `window.__HOF_CONFIG__`
+  generated at container startup; deployment URLs are no longer Vite build
+  arguments; `/config.js` is non-cacheable; Tor's `validate-runtime-config`
+  builds and starts every image and proves reconfiguration without rebuild.
+  Landed and merged in all nine repos (incl. Tor) 2026-08-26.
+- [~] Backend `*_FILE` secrets and explicit migrations (delivery item 3),
+  in progress: **done** in kuvert, tafel, and schlussel (`resolveSecret`
+  mutual-exclusion/size/UTF-8 validation, `db/migrate.ts` +
+  `MIGRATE_ON_STARTUP`-gated `prepareDatabase`), and in wachter (agent
+  token via the same `*_FILE` pattern, no database). **Not yet done** in
+  glocke, herold, schrank, and zettel — glocke and herold each hold a real
+  secret (Glocke's own producer/VAPID keys; Herold's credential encryption
+  key) that still reads only from a plain env var; all four backends still
+  migrate implicitly on every startup instead of behind
+  `MIGRATE_ON_STARTUP`.
 
 ---
 
@@ -536,9 +543,13 @@ Schlüssel остаётся authorization authority, но не получает 
 
 Рекомендуемый merge order:
 
-1. Создать hof-ops, ADRs и schemas.
-2. Добавить runtime frontend configuration.
-3. Добавить backend *_FILE secrets и explicit migrations.
+1. [x] Создать hof-ops, ADRs и schemas. Completed 2026-08-26; details
+   collapsed into the implementation-progress entry above.
+2. [x] Добавить runtime frontend configuration. Completed 2026-08-26;
+   details collapsed into the implementation-progress entry above.
+3. [~] Добавить backend *_FILE secrets и explicit migrations. Done in
+   kuvert, tafel, schlussel, wachter; remaining: glocke, herold, schrank,
+   zettel — details collapsed into the implementation-progress entry above.
 4. Сделать platform registries topology-aware.
 5. Унифицировать GHCR publishing, signing, SBOM и provenance.
 6. Реализовать signed release lock.

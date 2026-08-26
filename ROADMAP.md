@@ -305,18 +305,23 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — not started**: a standalone bootstrap installer
-   web UI, the shared `services.yml`, its idempotent Ansible reconciliation
-   playbook, the later Schlussel `/admin` Services front door, and tag-push
-   deployment automation. The installer remains the first bare-server
-   component; installer and admin UI must use the same file and playbook.
-   Deployment remains simple pull-and-restart, not rolling or zero-downtime.
+5. **Platform operations — in progress (2/18 delivery gates complete, a
+   third under way)**: a standalone bootstrap installer web UI, the shared
+   `services.yml`, its idempotent Ansible reconciliation playbook, the later
+   Schlussel `/admin` Services front door, and tag-push deployment
+   automation. The installer remains the first bare-server component;
+   installer and admin UI must use the same file and playbook. Deployment
+   remains simple pull-and-restart, not rolling or zero-downtime.
    User-authored recommended plan for this phase (new `hof-ops` repo,
    release-lock/signed-image supply chain, `hofctl`, Ansible reconciliation,
    restic backup/restore, upgrade/rollback, claim-token admin bootstrap,
    installer UI, later `hof-opsd` + `/admin/services`) recorded 2026-08-25
-   in [`PLATFORM-OPS-PLAN.md`](PLATFORM-OPS-PLAN.md) - not yet started, and
-   not yet revised after that file's own open scope-review notes.
+   in [`PLATFORM-OPS-PLAN.md`](PLATFORM-OPS-PLAN.md). Scope review is
+   resolved; the `hof-ops` contract foundation (published, branch-protected)
+   and portable runtime frontend images (all eight frontends + Tor
+   validation) are merged. Backend `*_FILE` secrets and explicit migrations
+   are landed in kuvert, tafel, schlussel, and wachter; still pending in
+   glocke, herold, schrank, and zettel.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.
