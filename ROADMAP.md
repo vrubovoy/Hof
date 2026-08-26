@@ -306,7 +306,7 @@ declared complete after a live-testing polish round - the same day).
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
 5. **Platform operations — in progress (2/18 delivery gates complete, a
-   third under way)**: a standalone bootstrap installer web UI, the shared
+   third nearly done)**: a standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
    automation. The installer remains the first bare-server component;
@@ -320,8 +320,8 @@ declared complete after a live-testing polish round - the same day).
    resolved; the `hof-ops` contract foundation (published, branch-protected)
    and portable runtime frontend images (all eight frontends + Tor
    validation) are merged. Backend `*_FILE` secrets and explicit migrations
-   are landed in kuvert, tafel, schlussel, and wachter; still pending in
-   glocke, herold, schrank, and zettel.
+   are landed in kuvert, tafel, schlussel, glocke, herold, schrank, and
+   wachter; only zettel remains, in progress.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.

@@ -23,15 +23,11 @@ starts read-only and mutation controls retain a separate security gate.
   builds and starts every image and proves reconfiguration without rebuild.
   Landed and merged in all nine repos (incl. Tor) 2026-08-26.
 - [~] Backend `*_FILE` secrets and explicit migrations (delivery item 3),
-  in progress: **done** in kuvert, tafel, and schlussel (`resolveSecret`
-  mutual-exclusion/size/UTF-8 validation, `db/migrate.ts` +
-  `MIGRATE_ON_STARTUP`-gated `prepareDatabase`), and in wachter (agent
-  token via the same `*_FILE` pattern, no database). **Not yet done** in
-  glocke, herold, schrank, and zettel — glocke and herold each hold a real
-  secret (Glocke's own producer/VAPID keys; Herold's credential encryption
-  key) that still reads only from a plain env var; all four backends still
-  migrate implicitly on every startup instead of behind
-  `MIGRATE_ON_STARTUP`.
+  nearly done: kuvert, tafel, schlussel, glocke, herold, and schrank
+  (`resolveSecret` mutual-exclusion/size/UTF-8 validation, `db/migrate.ts` +
+  `MIGRATE_ON_STARTUP`-gated `prepareDatabase`; schrank has no secret of its
+  own, so migration-gating only), and wachter (agent token via the same
+  `*_FILE` pattern, no database). **Only zettel remains**, in progress.
 
 ---
 
@@ -548,7 +544,7 @@ Schlüssel остаётся authorization authority, но не получает 
 2. [x] Добавить runtime frontend configuration. Completed 2026-08-26;
    details collapsed into the implementation-progress entry above.
 3. [~] Добавить backend *_FILE secrets и explicit migrations. Done in
-   kuvert, tafel, schlussel, wachter; remaining: glocke, herold, schrank,
+   kuvert, tafel, schlussel, glocke, herold, schrank, wachter; remaining:
    zettel — details collapsed into the implementation-progress entry above.
 4. Сделать platform registries topology-aware.
 5. Унифицировать GHCR publishing, signing, SBOM и provenance.
