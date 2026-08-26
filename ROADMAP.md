@@ -305,7 +305,7 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — in progress (4/18 delivery gates complete)**: a
+5. **Platform operations — in progress (5/18 delivery gates complete)**: a
    standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
@@ -325,9 +325,14 @@ declared complete after a live-testing polish round - the same day).
    requires Kuvert/Tafel's origins at startup, Schlüssel's export/deletion
    sagas skip disabled services instead of failing against them, and every
    frontend (Schloss's launcher grid and all eight frontends' shared
-   notification bell) hides UI for a service with no configured URL. Next:
-   unifying GHCR publishing, signing, SBOM, and provenance (delivery item
-   5).
+   notification bell) hides UI for a service with no configured URL. Every
+   image-publishing repo (all except Tor, which ships no custom image) now
+   signs published digests with keyless Cosign, attests an SPDX SBOM and
+   SLSA build provenance, and publishes an immutable `vX.Y.Z` release tag
+   that refuses to be overwritten - fixed two latent CI bugs along the way
+   (kuvert/glocke/zettel/tafel were publishing ungated and to the
+   pre-rename `zudaR107` GHCR namespace). Next: the signed release lock
+   (delivery item 6), owned by `hof-ops`.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.

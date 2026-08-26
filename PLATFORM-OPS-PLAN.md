@@ -46,6 +46,27 @@ starts read-only and mutation controls retain a separate security gate.
   deliberately deferred to hof-ops's own manifest-driven Compose
   generation (a later delivery stage), per ADR 0001. Landed and merged in
   all eight frontends plus schlussel's backend 2026-08-26.
+- [x] Image supply chain (delivery item 5): every image-publishing repo
+  (kuvert, tafel, zettel, glocke, schrank, herold, schlussel, schloss,
+  wachter — Tor publishes no custom image, it runs stock `caddy:2-alpine`)
+  now signs every pushed digest with keyless Cosign (GitHub OIDC, no
+  stored key), generates and attests an SPDX SBOM, and attests SLSA build
+  provenance, all via `actions/attest-sbom`/`actions/attest-build-provenance`
+  pushed to the registry alongside the image and independently verifiable
+  with `gh attestation verify`. A `vX.Y.Z` git tag push additionally
+  publishes that exact semver tag and a preflight check refuses to
+  overwrite one that already exists (validated live: deleting and
+  re-pushing a test tag correctly fails the job). Builds are pinned to
+  `linux/amd64`. Fixed two latent bugs along the way: kuvert, glocke,
+  zettel, and tafel published via a separate ungated `publish.yml` with no
+  dependency on tests passing, and to the pre-rename `ghcr.io/zudar107`
+  namespace instead of `ghcr.io/vrubovoy` — both fixed. Landed and merged
+  in all nine image-publishing repos 2026-08-26. The "Hof release
+  workflow" (get exact component commits → verify CI → resolve digest →
+  verify signatures/provenance → assemble and sign a release lock →
+  integration matrix → publish) that consumes this per-repo signing to
+  produce an actual platform release is delivery item 6 ("signed release
+  lock"), owned by `hof-ops` per ADR 0001 — not part of this item.
 
 ---
 
@@ -566,7 +587,9 @@ Schlüssel остаётся authorization authority, но не получает 
    collapsed into the implementation-progress entry above.
 4. [x] Сделать platform registries topology-aware. Completed 2026-08-26;
    details collapsed into the implementation-progress entry above.
-5. Унифицировать GHCR publishing, signing, SBOM и provenance.
+5. [x] Унифицировать GHCR publishing, signing, SBOM и provenance.
+   Completed 2026-08-26; details collapsed into the implementation-progress
+   entry above.
 6. Реализовать signed release lock.
 7. Реализовать hofctl validate/preflight/plan.
 8. Реализовать Ansible fresh install.
