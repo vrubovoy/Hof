@@ -21,6 +21,8 @@ the service repos to the commits that make up the current release.
   components, consumed by every service's web app
 - [`schloss-server-kit`](https://github.com/zudaR107/schloss-server-kit) —
   shared backend auth/CORS kit, consumed by every service's API
+- [`hof-ops`](https://github.com/vrubovoy/hof-ops) — deployment contracts
+  and operations tooling; deploys the platform, isn't deployed as part of it
 
 Each is independently developed, tested, and deployed (its own CI, its own
 Docker images, its own issue tracker). This repo exists to answer "what
@@ -169,9 +171,14 @@ full-stack apps.
 ## What's in here
 
 - `ROADMAP.md` — development history and status across all repos.
-- Twelve git submodules (`schlussel/`, `schloss/`, `kuvert/`, `tafel/`,
+- `PLATFORM-OPS-PLAN.md` — the recommended plan for phase 5 (Platform
+  operations), implemented in `hof-ops`.
+- Thirteen git submodules (`schlussel/`, `schloss/`, `kuvert/`, `tafel/`,
   `zettel/`, `glocke/`, `schrank/`, `herold/`, `wachter/`, `tor/`,
-  `schloss-ui/`, `schloss-server-kit/`), each pinned to a specific commit.
+  `hof-ops/`, `schloss-ui/`, `schloss-server-kit/`), each pinned to a
+  specific commit. `hof-ops` is deployment tooling, not an application
+  service — it isn't part of the running platform in `tor`'s `docker
+  compose up`, and has no row in the services table above.
 
 ## Getting the code
 

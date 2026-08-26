@@ -34,3 +34,6 @@
 [submodule "wachter"]
 	path = wachter
 	url = https://github.com/vrubovoy/wachter.git
+[submodule "hof-ops"]
+	path = hof-ops
+	url = git@github.com:vrubovoy/hof-ops.git
