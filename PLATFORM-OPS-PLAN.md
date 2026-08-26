@@ -22,12 +22,13 @@ starts read-only and mutation controls retain a separate security gate.
   arguments; `/config.js` is non-cacheable; Tor's `validate-runtime-config`
   builds and starts every image and proves reconfiguration without rebuild.
   Landed and merged in all nine repos (incl. Tor) 2026-08-26.
-- [~] Backend `*_FILE` secrets and explicit migrations (delivery item 3),
-  nearly done: kuvert, tafel, schlussel, glocke, herold, and schrank
-  (`resolveSecret` mutual-exclusion/size/UTF-8 validation, `db/migrate.ts` +
-  `MIGRATE_ON_STARTUP`-gated `prepareDatabase`; schrank has no secret of its
-  own, so migration-gating only), and wachter (agent token via the same
-  `*_FILE` pattern, no database). **Only zettel remains**, in progress.
+- [x] Backend `*_FILE` secrets and explicit migrations (delivery item 3):
+  done in every backend. kuvert, tafel, schlussel, glocke, herold, and
+  zettel got `resolveSecret` (mutual-exclusion/size/UTF-8 validation) plus
+  `db/migrate.ts` + `MIGRATE_ON_STARTUP`-gated `prepareDatabase`; schrank
+  has no secret of its own, so migration-gating only; wachter's agent token
+  uses the same `*_FILE` pattern (no database). Landed and merged in all
+  seven database-backed backends plus wachter 2026-08-26.
 
 ---
 
@@ -543,9 +544,9 @@ Schlüssel остаётся authorization authority, но не получает 
    collapsed into the implementation-progress entry above.
 2. [x] Добавить runtime frontend configuration. Completed 2026-08-26;
    details collapsed into the implementation-progress entry above.
-3. [~] Добавить backend *_FILE secrets и explicit migrations. Done in
-   kuvert, tafel, schlussel, glocke, herold, schrank, wachter; remaining:
-   zettel — details collapsed into the implementation-progress entry above.
+3. [x] Добавить backend *_FILE secrets и explicit migrations. Completed
+   2026-08-26 in all seven database-backed backends plus wachter; details
+   collapsed into the implementation-progress entry above.
 4. Сделать platform registries topology-aware.
 5. Унифицировать GHCR publishing, signing, SBOM и provenance.
 6. Реализовать signed release lock.
