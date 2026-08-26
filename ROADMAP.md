@@ -305,7 +305,7 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — in progress (5/18 delivery gates complete)**: a
+5. **Platform operations — in progress (6/18 delivery gates complete)**: a
    standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
@@ -331,8 +331,14 @@ declared complete after a live-testing polish round - the same day).
    SLSA build provenance, and publishes an immutable `vX.Y.Z` release tag
    that refuses to be overwritten - fixed two latent CI bugs along the way
    (kuvert/glocke/zettel/tafel were publishing ungated and to the
-   pre-rename `zudaR107` GHCR namespace). Next: the signed release lock
-   (delivery item 6), owned by `hof-ops`.
+   pre-rename `zudaR107` GHCR namespace). `hof-ops` now resolves and signs
+   a real release lock too:
+   [`v0.1.0`](https://github.com/vrubovoy/hof-ops/releases/tag/v0.1.0) is
+   a genuine signed lock built from live platform state, not a fixture -
+   fixed three catalog/GHCR artifact-name mismatches along the way (Tor
+   ships no image of its own, Schlüssel/Schloss don't use a
+   `-backend`/`-frontend` suffix, Wächter's API and agent share one
+   image). Next: `hofctl validate/preflight/plan` (delivery item 7).
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.

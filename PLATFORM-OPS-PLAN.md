@@ -67,6 +67,26 @@ starts read-only and mutation controls retain a separate security gate.
   integration matrix → publish) that consumes this per-repo signing to
   produce an actual platform release is delivery item 6 ("signed release
   lock"), owned by `hof-ops` per ADR 0001 — not part of this item.
+- [x] Signed release lock (delivery item 6): fixed three catalog/GHCR
+  artifact-name mismatches the earlier fake example had been hiding (Tor
+  publishes no image of its own; Schlüssel and Schloss don't use a
+  `-backend`/`-frontend` suffix; Wächter's API and agent share one image),
+  and extended the release-lock schema with a `thirdParty` branch for
+  artifacts Hof doesn't build or sign itself (Tor's pinned upstream Caddy
+  base). `hof-ops/scripts/build-release-lock.mjs` resolves every catalog
+  artifact against its real, currently published GHCR digest and
+  independently re-verifies its Cosign signature and SBOM/provenance
+  attestations (a component can't resolve without a valid one, so this
+  step doubles as "verify component CI"/"verify signatures and
+  provenance"); `.github/workflows/release.yml` signs the assembled file
+  with its own keyless Cosign signature and publishes it as a GitHub
+  Release. Run for real against live platform state 2026-08-26:
+  [`v0.1.0`](https://github.com/vrubovoy/hof-ops/releases/tag/v0.1.0) - a
+  genuine signed release lock, not a fixture, kept published rather than
+  deleted as a test artifact. No integration matrix yet (delivery items
+  7–9's reconciler doesn't exist to bring the platform up against pinned
+  digests); `ansibleEnvironment` stays schema-optional until item 8 ships
+  a real image.
 
 ---
 
@@ -590,7 +610,8 @@ Schlüssel остаётся authorization authority, но не получает 
 5. [x] Унифицировать GHCR publishing, signing, SBOM и provenance.
    Completed 2026-08-26; details collapsed into the implementation-progress
    entry above.
-6. Реализовать signed release lock.
+6. [x] Реализовать signed release lock. Completed 2026-08-26; details
+   collapsed into the implementation-progress entry above.
 7. Реализовать hofctl validate/preflight/plan.
 8. Реализовать Ansible fresh install.
 9. Реализовать idempotent update/remove reconciliation.
