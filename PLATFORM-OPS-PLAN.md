@@ -29,6 +29,23 @@ starts read-only and mutation controls retain a separate security gate.
   has no secret of its own, so migration-gating only; wachter's agent token
   uses the same `*_FILE` pattern (no database). Landed and merged in all
   seven database-backed backends plus wachter 2026-08-26.
+- [x] Dynamic platform topology (delivery item 4): a service is "enabled"
+  iff its URL/origin env var is set in the deployment (no new
+  manifest-reading mechanism yet — that's a later, not-yet-built delivery
+  stage). Glocke no longer requires `KUVERT_ORIGIN`/`TAFEL_ORIGIN` at
+  startup; Schlüssel's export/deletion registries drop their
+  internal-hostname fallback and skip disabled services entirely instead
+  of dispatching to them and failing (a deletion job with zero enabled
+  targets now completes immediately instead of hanging at `pending`);
+  Schloss's launcher hides a card when its service has no configured URL.
+  Every frontend's runtime config gained an explicit `services.glocke`
+  flag (URL-truthiness alone can't signal "disabled" once a dev-fallback
+  default exists) gating the shared notification bell and its polling in
+  all eight frontends. Health aggregation and readiness checks needed no
+  change — neither assumed a fixed service list. Tor's routing is
+  deliberately deferred to hof-ops's own manifest-driven Compose
+  generation (a later delivery stage), per ADR 0001. Landed and merged in
+  all eight frontends plus schlussel's backend 2026-08-26.
 
 ---
 
@@ -547,7 +564,8 @@ Schlüssel остаётся authorization authority, но не получает 
 3. [x] Добавить backend *_FILE secrets и explicit migrations. Completed
    2026-08-26 in all seven database-backed backends plus wachter; details
    collapsed into the implementation-progress entry above.
-4. Сделать platform registries topology-aware.
+4. [x] Сделать platform registries topology-aware. Completed 2026-08-26;
+   details collapsed into the implementation-progress entry above.
 5. Унифицировать GHCR publishing, signing, SBOM и provenance.
 6. Реализовать signed release lock.
 7. Реализовать hofctl validate/preflight/plan.

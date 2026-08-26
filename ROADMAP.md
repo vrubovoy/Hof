@@ -305,7 +305,7 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — in progress (3/18 delivery gates complete)**: a
+5. **Platform operations — in progress (4/18 delivery gates complete)**: a
    standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
@@ -321,7 +321,13 @@ declared complete after a live-testing polish round - the same day).
    and portable runtime frontend images (all eight frontends + Tor
    validation) are merged. Backend `*_FILE` secrets and explicit migrations
    are also merged, in every database-backed backend plus wachter's agent
-   token. Next: making platform registries topology-aware (delivery item 4).
+   token. Platform registries are now topology-aware too: Glocke no longer
+   requires Kuvert/Tafel's origins at startup, Schlüssel's export/deletion
+   sagas skip disabled services instead of failing against them, and every
+   frontend (Schloss's launcher grid and all eight frontends' shared
+   notification bell) hides UI for a service with no configured URL. Next:
+   unifying GHCR publishing, signing, SBOM, and provenance (delivery item
+   5).
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.
