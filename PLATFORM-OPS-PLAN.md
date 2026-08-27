@@ -146,6 +146,50 @@ starts read-only and mutation controls retain a separate security gate.
     `stable-channel.json` alongside the lock. Every fix independently
     re-verified (test suites, `docker compose config`, a live Tor
     Browser-Push/gateway validation run) rather than trusted on read.
+- [x] **Second hardening round (2026-08-27):** a follow-up review issued a
+  no-go on 6/18 pending four blockers. All four addressed:
+  - **Generated Wächter topology was broken**: `APP_PORTS` had no `wachter`
+    entry (`PORT` rendered as the literal string `"undefined"`; the
+    healthcheck URL was `http://localhost:undefined/ready`), the agent
+    container had no `command` override so it silently ran the API's
+    default CMD instead of `backend/dist/agent.js`, and neither container
+    carried the reference `docker-compose.yml`'s `read_only`/`cap_drop`/
+    `no-new-privileges` hardening. A related gap the review didn't
+    explicitly name: **no service anywhere got a
+    `hof.wachter.critical`/`restartable` label**, so Wächter's own
+    restart-control feature would have had nothing to act on in a real
+    deployment. All fixed in `render-topology.mjs`, covered by two new
+    regression tests (one of which caught a second bug in the fix itself —
+    Schloss briefly ended up labeled restartable, which the platform's
+    own convention reserves for frontends only).
+  - **Readiness checked only the database, never a mandatory dependency**:
+    every consuming backend now calls `checkJwksReachable` (new,
+    `schloss-server-kit`) against Schlüssel's JWKS alongside its existing
+    schema check. Schlüssel itself was reviewed and correctly *not*
+    given one — it's the JWKS issuer, not a consumer, so there's no
+    analogous dependency to probe; its own gap was `/ready` having zero
+    HTTP-level test coverage, fixed instead. Landing this surfaced two
+    recurring test-fidelity bugs across the backends: several test
+    harnesses reconstructed their own `/ready` route as a static
+    always-ready stub (or didn't mount it at all) independent of the real
+    handler, so the new dependency check would have gone completely
+    untested; and several mock test databases applied migrations by
+    hand-running raw SQL instead of calling the real `migrateDatabase()`,
+    leaving `__drizzle_migrations` empty so `assertSchemaCurrent` would
+    always throw once actually exercised. Both fixed everywhere they
+    occurred.
+  - **The new release pipeline had never actually produced a release**:
+    the only published lock was still the old `:latest`-based `v0.1.0`.
+    Cutting a real one needs persistent `vX.Y.Z` tags on every component
+    repo (a bigger, more permanent action than anything else in this
+    round) - next, once the other three blockers are closed and every
+    component's `main` reflects them.
+  - **The integration matrix's `--runtime` mode never started anything**:
+    `create` alone starts no process, so a wrong port, wrong command, or
+    a migration that never runs all passed silently. Now `docker compose
+    up --wait`, which fails loudly if any service doesn't report healthy
+    within its timeout - this is what actually caught the Wächter bugs
+    above once real image digests existed to test against.
 
 ---
 
