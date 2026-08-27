@@ -395,12 +395,17 @@ declared complete after a live-testing polish round - the same day).
    operations carry their own argv/volume, upgrade migrations verify the
    baseline's schema and back up before running, and "the inspector
    couldn't reach the host" is now a distinct, explicit state instead of
-   defaulting to "nothing is running". Remaining for item 7: a real
-   `TargetInspector` (SSH-backed for
-   production, local only via an explicit dev/test flag) to actually
-   collect that Docker/host observation, wiring `hofctl plan` to it, and
-   fixing a real bug this surfaced - `hofctl preflight` currently checks
-   the operator's own workstation instead of `target.host`/`target.user`.
+   defaulting to "nothing is running". A `TargetInspector` is landed too:
+   a single fixed, read-only, versioned probe script plus a hardened SSH
+   transport (exactly one of a known_hosts file or a verified host-key
+   fingerprint required, real OpenSSH SHA256 fingerprinting, `--target-
+   mode local` only ever explicit) - real transport tested against a
+   genuinely ephemeral, pinned Debian 12 sshd container in CI, not just
+   mocked. `hofctl preflight` now checks `target.host`/`target.user` for
+   real (the bug above is fixed) as pure evaluation over that inspector's
+   snapshot. Remaining for item 7: wire an actual `hofctl plan` CLI
+   subcommand around the already-landed pieces, plus a deferred
+   `--repair-drift` flag.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.

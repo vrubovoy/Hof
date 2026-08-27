@@ -378,6 +378,38 @@ starts read-only and mutation controls retain a separate security gate.
     CORS-only cascade onto an unrelated database-backed service
     spuriously triggering that service's own migration) - see the PR for
     both. Same pause point as before: `TargetInspector` next.
+  - **Item 7 progress, TargetInspector (2026-08-27):** landed in
+    [#19](https://github.com/vrubovoy/hof-ops/pull/19), closing the real
+    architectural bug the previous rounds surfaced but hadn't yet fixed -
+    `hofctl preflight` was checking the operator's own workstation, not
+    `target.host`. `scripts/target-probe.sh` is a single fixed, read-only,
+    versioned protocol script; `scripts/target-inspector.mjs`'s
+    `inspectTarget()` is the only export (no generic "run this on the
+    target" escape hatch) - a hardened SSH transport by default
+    (requires exactly one of `--known-hosts` or `--host-key-sha256`,
+    real OpenSSH SHA256 fingerprinting, a temp known_hosts holding only
+    the matched key, always cleaned up) and `--target-mode local` only
+    ever explicit, never inferred from the hostname. `preflight.mjs` is
+    now pure evaluation over one atomic snapshot - added OS/architecture
+    checks (Debian 12/Ubuntu 24.04, x86_64 only), a port policy where a
+    repeat apply no longer treats its own gateway as a conflict, and a
+    managed-state check that reuses `resolveBaseline()`'s own corruption/
+    fail-closed rules. `resolveBaseline()` itself is now pure too - takes
+    `managedState` from the snapshot instead of reading files itself.
+    110/110 tests passing (unit tests with an injected process runner,
+    since a real SSH transport needed real verification, not mocks
+    alone) plus a genuinely new real-transport layer: an ephemeral,
+    pinned Debian 12 sshd container (`pnpm test:ssh`, now its own CI
+    step) exercising a real OpenSSH handshake in both trust modes, a
+    real rejected stale known_hosts entry, and a real rejected wrong
+    identity - run for real in this session (not just asserted to work)
+    before landing, and confirmed running for real in CI too. Two real
+    bugs surfaced building the fixture itself (a duplicate `Subsystem
+    sftp` directive that kept sshd from starting; a stale host-key
+    `.pub` file that didn't match the mounted private key). Remaining
+    for item 7: wire an actual `hofctl plan` CLI subcommand around the
+    already-landed `buildPlan`/`resolveBaseline`/`inspectTarget` pieces,
+    and the deferred `--repair-drift` CLI flag.
 
 ---
 
