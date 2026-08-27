@@ -236,6 +236,93 @@ starts read-only and mutation controls retain a separate security gate.
       lock's own signature are currently only checked ad hoc (by
       `integration-matrix.mjs`, or by hand as above) - `hofctl validate`
       should make all of that a first-class, always-run check.
+  - **Item 7 progress (2026-08-27):** `hofctl validate`
+    ([#14](https://github.com/vrubovoy/hof-ops/pull/14)) and `hofctl
+    preflight` ([#15](https://github.com/vrubovoy/hof-ops/pull/15)) are
+    landed and tested; `validate` closes the third non-blocking note above
+    (catalogDigest/composeTemplateDigest/minimumHofctlVersion/signature are
+    now always-run checks, and `release.yml` runs `hofctl validate` against
+    a live cosign signature on every real release). `hofctl plan` design,
+    decided this session:
+    - **State model - hybrid, not file-only or Docker-only:** an
+      authoritative last-applied state file drives the *desired* diff
+      (what `apply` should do); live Docker/host inspection drives a
+      separate *drift* diff (what changed outside `apply`'s control). A
+      file alone can't see manual changes or broken containers; Docker
+      alone doesn't know the previous release, schema versions,
+      checksums, or backup policy - `plan` needs both diffs, kept
+      distinct, so an operator can tell "services.yml changed" apart
+      from "someone touched Docker by hand" apart from both at once.
+    - **Bootstrap on a truly clean host is not an error:** read
+      `/var/lib/hof/state/current.json`; if absent, check for any
+      `hof.managed=true`-labeled Docker resource. Neither present ->
+      synthetic empty baseline (`{mode: "bootstrap", generation: 0,
+      release: null, services: {}, volumes: []}`) and `plan` shows
+      creating the whole selected topology. `plan` itself never writes
+      state - only a fully successful `apply` does (out of scope for
+      item 7, but the contract is decided now so `plan`'s shape doesn't
+      need to change under it later). If state is absent but Hof-labeled
+      resources already exist, **fail closed** ("managed resources exist
+      but the authoritative state is missing") rather than silently
+      adopting them - a future typed `hofctl adopt`, not automatic
+      adoption, is the only sanctioned recovery path.
+    - **State layout:** `/var/lib/hof/state/{current.json, topology.json,
+      generations/NNNNNN/{state.json, topology.json, release-lock.json}}`.
+      `current.json` (schema `hof.dev/state/v1`) carries
+      `installationId`, `generation`, `lastSuccessfulOperationId`,
+      `appliedAt`, `release`, and digests for the manifest/release-lock/
+      catalog/compose-template/topology/each generated artifact -
+      never secrets or plaintext environment values.
+    - **Observed state via a fixed label set, not raw `docker inspect`:**
+      every generated resource gets `hof.managed`, `hof.installation-id`,
+      `hof.service`, `hof.artifact`, `hof.generation` labels (added in
+      the renderer). The Docker inspector reads only a whitelist -
+      labels, image digest, container state/health, network/volume
+      names, published ports - explicitly never `Config.Env` or a full
+      `docker inspect`, since secrets can appear there.
+    - **Plan contract** (schema `hof.dev/plan/v1`): `planId` (a digest of
+      inputs+baseline, deterministic - no timestamp in it, since a future
+      `apply` needs to reject a stale plan whose inputs changed
+      underneath it), `mode`, `executable`, `baseline`, `desired`,
+      `drift[]`, a `summary` (create/update/remove/migrate counts), and
+      `operations[]` that are typed and ordered - never shell strings.
+      Action types: `host.prepare`, `secret.ensure`, `volume.ensure`,
+      `image.verify`, `image.pull`, `config.write`, `backup.create`,
+      `service.stop`, `database.migrate`, `service.start`,
+      `readiness.wait`, `state.commit` (always last, only after a
+      success gate).
+    - **Migrations become typed operations, not an env flag:**
+      `MIGRATE_ON_STARTUP` moves from `true` (item 6's interim default)
+      to `false` in the renderer. `plan` surfaces `database.migrate`
+      explicitly - always on bootstrap, on upgrade whenever a DB
+      component/release/schema changed, never on a no-op re-apply. The
+      catalog gains typed per-service `database: {component, command,
+      volume}` metadata (item 8's Ansible role and the integration
+      matrix both run migration jobs explicitly, before `up --wait`,
+      instead of hardcoding a command by repo name).
+    - **Real bug found while designing this: `hofctl preflight` checks
+      the operator's own workstation, not `target.host`/`target.user`**
+      (`os.totalmem()`, local `statfsSync`, binding `0.0.0.0` locally,
+      local `docker version` - `scripts/preflight.mjs`, landed in PR #15).
+      This contradicts the architecture (`hofctl`/the installer run on
+      the operator's machine, `target.*` names the host being
+      provisioned). Before `plan` is implemented, `preflight` needs a
+      `TargetInspector` abstraction (`collectHostFacts`,
+      `collectPortOwners`, `collectDockerState`, `readManagedState`,
+      `checksumGeneratedArtifacts`) with a real SSH-backed implementation
+      for production and a `LocalTargetInspector` reachable only via an
+      explicit `--target-mode local` for tests/dev. A repeat `apply`
+      must also not treat 80/443 as failed-occupied when the occupant is
+      Hof's own gateway - needs the same managed-state/label read
+      `preflight` is gaining.
+    - **Implementation order agreed:** state-v1/plan-v1 schemas -> pure
+      `buildPlan(desired, lastApplied, observed)` -> synthetic empty
+      baseline -> `TargetInspector` interface + preflight's local/remote
+      fix -> ownership labels in the renderer -> desired diff + drift
+      diff -> migrations as typed operations -> bootstrap/no-op/topology-
+      change/drift/missing-state-with-resources/upgrade fixtures ->
+      deterministic `planId`. `apply` accepting and rejecting a stale
+      `planId` is explicitly future work, not item 7.
 
 ---
 
