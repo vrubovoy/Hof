@@ -410,6 +410,39 @@ starts read-only and mutation controls retain a separate security gate.
     for item 7: wire an actual `hofctl plan` CLI subcommand around the
     already-landed `buildPlan`/`resolveBaseline`/`inspectTarget` pieces,
     and the deferred `--repair-drift` CLI flag.
+  - **Item 7 progress, inspection contract hardening (2026-08-27):** a
+    security-focused review of the inspector/preflight before wiring
+    `hofctl plan` to it found a critical OpenSSH option-injection gap
+    (an unvalidated `manifest.target.host`/`user` reaching a real SSH
+    argv - closed with schema validation before use, a second
+    independent validation inside the inspector itself, and a `--`
+    option-terminator as a third layer) plus ten further real gaps, all
+    closed in [#20](https://github.com/vrubovoy/hof-ops/pull/20) - the
+    probe protocol bumped to `HOF-PROBE-V2`. Highlights: Docker/state-
+    file inspection failures no longer look identical to "genuinely
+    nothing there" (new `docker-resources-status`/state-file
+    present|absent|unreadable statuses, sudo used as the fixed-path
+    fallback it was always checked for but never used); port ownership
+    and managed-resource matching now check `installationId` and
+    `state=running`, not just a bare label; `current.json` is schema-
+    validated against `state-v1` before a snapshot is ever returned; the
+    protocol parser is now fully fail-closed (every singleton mandatory,
+    strict base64, field-count/range/enum checks, no duplicate ports);
+    invalid numeric CLI flags are a usage error instead of silently
+    comparing against NaN; and a real, separate plan-contract bug -
+    `configFingerprint` included the generation/installation-id labels,
+    so a routine generation bump alone would have made every unit look
+    "changed" and defeated the no-op guarantee - is fixed and covered by
+    a test proven to fail without the fix. 136/136 tests passing plus
+    9/9 real containerized SSH acceptance tests (up from 5, now also
+    covering Docker-genuinely-absent and real state-file present/
+    absent/unreadable scenarios over a real transport). **Explicitly
+    deferred, not silently dropped:** orphan Hof-managed volumes/
+    networks (no container currently running) aren't yet covered by the
+    bootstrap fail-closed check - needs new ownership labels on Compose
+    volumes/networks (none exist today) plus new probe records; a real
+    scope of its own for a future pass, not folded into this PR. Same
+    remaining item-7 work as before: the `hofctl plan` CLI itself.
 
 ---
 

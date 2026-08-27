@@ -403,9 +403,17 @@ declared complete after a live-testing polish round - the same day).
    genuinely ephemeral, pinned Debian 12 sshd container in CI, not just
    mocked. `hofctl preflight` now checks `target.host`/`target.user` for
    real (the bug above is fixed) as pure evaluation over that inspector's
-   snapshot. Remaining for item 7: wire an actual `hofctl plan` CLI
-   subcommand around the already-landed pieces, plus a deferred
-   `--repair-drift` flag.
+   snapshot. A follow-up security review before wiring `hofctl plan` in
+   found (and closed) a critical OpenSSH option-injection gap plus ten
+   further real gaps - Docker/state inspection failures no longer look
+   like "nothing's there", port/managed-resource ownership checks the
+   actual installation ID, the protocol is now fully fail-closed, and a
+   real plan-contract bug (a routine generation bump alone would have
+   made every unit look changed) is fixed. Orphan Hof-managed volume/
+   network detection is explicitly deferred, not silently dropped.
+   Remaining for item 7: wire an actual `hofctl plan` CLI subcommand
+   around the already-landed pieces, plus a deferred `--repair-drift`
+   flag.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.
