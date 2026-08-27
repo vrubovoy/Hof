@@ -497,6 +497,46 @@ starts read-only and mutation controls retain a separate security gate.
     `hofctl plan` CLI itself lands; operation journal, lock, stale-plan
     recheck, and `apply` remain explicitly out of scope for both this PR
     and the CLI PR after it.
+  - **Item 7 closed, `hofctl plan` CLI (2026-08-27):** landed in
+    [#22](https://github.com/vrubovoy/hof-ops/pull/22), wiring every
+    already-landed pure piece (`buildPlan`/`resolveBaseline`/
+    `inspectTarget`) into a real subcommand, in its own
+    `scripts/plan-command.mjs` rather than growing `hofctl.mjs` itself.
+    Sequence: validate the deployment exactly like `hofctl validate`
+    does (schema, cross-contract, digest freshness, the release lock's
+    real Cosign signature - never skippable here, `--skip-signature` is
+    rejected outright) before any network access; inspect the target
+    exactly once; explicitly check state/artifact/Docker completeness
+    for BOTH a bootstrap and an already-applied host (closing a real gap
+    - `buildPlan`'s own blocker only re-checks `containersStatus`, and
+    `resolveBaseline` only re-derives this for the bootstrap branch, so
+    an applied host with an unreadable volumes/networks/generated-
+    artifacts listing could otherwise have silently planned with a
+    blind spot); resolve the baseline; render the desired topology in
+    memory with the correct installation/generation semantics (an
+    applied host's next plan is its own real installationId one
+    generation ahead of disk; a bootstrap gets a fixed, deterministic
+    placeholder, never a fresh random id, so `planId` stays reproducible
+    between two back-to-back plans against the same untouched host);
+    call `buildPlan()`; schema-validate its own output against
+    `plan-v1` before ever printing it. CLI contract: its own flag parser
+    (distinct from every other subcommand's) rejects a duplicate flag,
+    an unknown flag, and `--skip-signature` specifically; stdout carries
+    exactly one raw `hof.dev/plan/v1` JSON document (or nothing), every
+    diagnostic on stderr; exit 0 executable, 1 blocked/runtime-failure,
+    2 usage error; writes nothing, anywhere, ever. 187/187 in the fast
+    suite (was 168) - a new `plan-command.test.mjs` covers every blocked
+    branch plus a genuine schema-valid bootstrap and applied no-op,
+    against a real (fake) `cosign` binary on `PATH` so the signature
+    gate genuinely runs rather than being mocked away; a new
+    `plan-cli-acceptance.test.mjs` spawns the real `hofctl.mjs plan`
+    binary as a subprocess for one genuine end-to-end bootstrap plan
+    (real `sh` + `target-probe.sh` + the fake docker/sudo pair from
+    #21 + the fake cosign, real schema/cross-contract validation, a
+    real `buildPlan()` call) verifying stdout is exactly one line.
+    **Gate 7 closes here.** Operation journal, lock, stale-plan recheck,
+    and `apply` remain explicitly out of scope, as agreed before this
+    PR started - the next delivery items.
 
 ---
 

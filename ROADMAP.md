@@ -305,7 +305,7 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — in progress (item 7 of 18: validate/preflight/plan's pure core/TargetInspector/resource completeness landed, the `hofctl plan` CLI remaining)**: a
+5. **Platform operations — in progress (item 7 of 18 closed: `hofctl validate`/`preflight`/`plan` all landed and read-only end to end; operation journal, lock, stale-plan recheck, and `apply` are the next delivery items)**: a
    standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
@@ -365,7 +365,7 @@ declared complete after a live-testing polish round - the same day).
    [`v0.1.1`](https://github.com/vrubovoy/hof-ops/releases/tag/v0.1.1)
    (the earlier `v0.1.0`, built under the pre-hardening pipeline, stays
    published as a historical artifact). Delivery item 7 (`hofctl
-   validate/preflight/plan`) is two-thirds landed: `hofctl validate`
+   validate/preflight/plan`) is now fully landed: `hofctl validate`
    checks a real deployment's services.yml/catalog/release-lock at
    arbitrary paths (not just the repo's own examples) against schema
    and cross-contract rules, plus four checks the final hardening
@@ -423,11 +423,27 @@ declared complete after a live-testing polish round - the same day).
    pass) now drive real repair/blocker drift, including a Caddyfile
    regeneration correctly forcing the gateway to restart; a missing
    persistent volume is a hard blocker, never silently recreated empty,
-   while a missing network safely self-heals. Remaining for item 7: the
-   `hofctl plan` CLI subcommand itself, wiring the already-landed
-   pieces together end to end - the last piece before gate 7 closes
-   (operation journal, lock, stale-plan recheck, and `apply` stay
-   explicitly out of scope beyond that).
+   while a missing network safely self-heals. **Item 7 closes with the
+   real `hofctl plan` CLI itself**: its own subcommand (a new
+   `scripts/plan-command.mjs`) wires every already-landed piece together
+   end to end - validates the deployment exactly like `hofctl validate`
+   does (never skippable, unlike `validate`), inspects the target
+   exactly once, explicitly refuses to plan against an incomplete
+   observation on both a bootstrap and an already-applied host (closing
+   a real gap `buildPlan`/`resolveBaseline` alone didn't cover for an
+   applied host), resolves the baseline, renders the desired topology in
+   memory with the correct installation/generation semantics (a fixed,
+   deterministic placeholder installationId on bootstrap - never a fresh
+   random one, so two back-to-back plans against the same untouched host
+   stay identical), and prints exactly one `plan-v1` JSON document to
+   stdout, diagnostics only on stderr, exit code 0/1/2 for executable/
+   blocked/usage-error. Verified through a real (fake) `cosign` binary
+   on `PATH` so the release-lock signature gate genuinely runs, and one
+   genuine end-to-end bootstrap plan through the real CLI binary itself
+   (real `sh` + `target-probe.sh` + a fake docker/sudo pair + fake
+   cosign, real schema validation, a real `buildPlan()` call). Operation
+   journal, lock, stale-plan recheck, and `apply` remain the next
+   delivery items, explicitly out of scope for item 7.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.
