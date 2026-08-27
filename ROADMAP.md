@@ -331,27 +331,40 @@ declared complete after a live-testing polish round - the same day).
    SLSA build provenance, and publishes an immutable `vX.Y.Z` release tag
    that refuses to be overwritten - fixed two latent CI bugs along the way
    (kuvert/glocke/zettel/tafel were publishing ungated and to the
-   pre-rename `zudaR107` GHCR namespace). `hof-ops` now resolves and signs
-   a real release lock too:
-   [`v0.1.0`](https://github.com/vrubovoy/hof-ops/releases/tag/v0.1.0) is
-   a genuine signed lock built from live platform state, not a fixture -
-   fixed three catalog/GHCR artifact-name mismatches along the way (Tor
-   ships no image of its own, Schlüssel/Schloss don't use a
-   `-backend`/`-frontend` suffix, Wächter's API and agent share one
-   image). A review of items 3-6 then found several real gaps behind
-   those checkmarks, all fixed and re-verified 2026-08-26: a secret still
-   bypassing `resolveSecret` in Schrank, production migrations invoking a
-   devDependency CLI absent from the built image, startup defaulting to
-   auto-migrate instead of schema-check-only, missing readiness/build-info
-   endpoints, shipped Compose files re-enabling every "disabled" service
-   via default URLs (including a genuinely missing `GLOCKE_BASE_URL` in
-   Tor that broke Glocke delivery outright), Schlüssel still requiring
-   Glocke's secrets unconditionally, CI accepting non-semver release tags,
-   and the release lock resolving `:latest` and never actually running
-   `cosign verify`. Closing the last two also delivered `hof-ops render`
-   (services.yml + catalog + lock → Compose/Caddyfile/env/backup
-   inventory - the piece that lets `services.yml` actually drive a
-   deployment) and a real integration matrix. Next: `hofctl validate/
+   pre-rename `zudaR107` GHCR namespace). `hof-ops` resolves and signs a
+   real release lock too - `hof-ops render` (new: services.yml + catalog +
+   lock → Compose/Caddyfile/env/backup inventory, the piece that lets
+   `services.yml` actually drive a deployment) and a real integration
+   matrix (renders topology fixtures against the pinned lock and runs
+   `docker compose up --wait` against the result) landed alongside it.
+   A review of items 3-6 found several real gaps behind those checkmarks
+   twice over - once in the code, once again in the release pipeline
+   itself once it was actually run for real rather than only unit-tested -
+   and every one was fixed and re-verified, not just noted: a secret
+   still bypassing `resolveSecret` in Schrank; production migrations
+   invoking a devDependency CLI absent from the built image; startup
+   defaulting to auto-migrate instead of schema-check-only; missing
+   readiness/build-info endpoints, plus readiness never checking the
+   mandatory Schlüssel JWKS dependency (only its own database) anywhere,
+   with two recurring test-fidelity bugs found while landing that fix
+   (reconstructed `/ready` stubs and mock databases that never populated
+   `__drizzle_migrations`); shipped Compose files re-enabling every
+   "disabled" service via default URLs, including a genuinely missing
+   `GLOCKE_BASE_URL` in Tor that broke Glocke delivery outright;
+   Schlüssel still requiring Glocke's secrets unconditionally; CI
+   accepting non-semver release tags; the release lock resolving
+   `:latest` and never actually running `cosign verify`; Wächter's
+   generated topology being broken (undefined port, wrong agent command,
+   missing hardening/labels); and six more bugs the hardened integration
+   matrix caught only once it started real containers for the first
+   time (a cosign/GitHub-attestation incompatibility, release-pinned
+   topology fixtures, a missing rendered Caddyfile, a too-short shared
+   placeholder secret, Glocke needing real P-256 VAPID key material, and
+   a wrong Docker-socket GID for Wächter's agent). The result is a
+   genuine signed release built from real platform state end to end:
+   [`v0.1.1`](https://github.com/vrubovoy/hof-ops/releases/tag/v0.1.1)
+   (the earlier `v0.1.0`, built under the pre-hardening pipeline, stays
+   published as a historical artifact). Next: `hofctl validate/
    preflight/plan` (delivery item 7).
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language

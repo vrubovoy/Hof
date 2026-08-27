@@ -180,16 +180,39 @@ starts read-only and mutation controls retain a separate security gate.
     occurred.
   - **The new release pipeline had never actually produced a release**:
     the only published lock was still the old `:latest`-based `v0.1.0`.
-    Cutting a real one needs persistent `vX.Y.Z` tags on every component
-    repo (a bigger, more permanent action than anything else in this
-    round) - next, once the other three blockers are closed and every
-    component's `main` reflects them.
+    Cut a real one: persistent `v0.1.1` tags pushed to all nine
+    image-publishing repos, a concrete `releases/0.1.1.yml` selection
+    resolved and independently re-verified against every one of them, and
+    a genuine signed release published -
+    [`v0.1.1`](https://github.com/vrubovoy/hof-ops/releases/tag/v0.1.1) -
+    superseding the old `v0.1.0` (kept published as a historical
+    artifact, not deleted).
   - **The integration matrix's `--runtime` mode never started anything**:
     `create` alone starts no process, so a wrong port, wrong command, or
     a migration that never runs all passed silently. Now `docker compose
     up --wait`, which fails loudly if any service doesn't report healthy
-    within its timeout - this is what actually caught the Wächter bugs
-    above once real image digests existed to test against.
+    within its timeout - this single change is what actually surfaced
+    six further real, previously-invisible bugs once it ran against real
+    image digests for the first time: the Wächter port/command/hardening
+    bugs above; `cosign verify-attestation` being incompatible with how
+    `actions/attest-sbom`/`attest-build-provenance` publish (dropped -
+    `gh attestation verify`, called right after, already does full
+    cryptographic verification; `cosign verify` stays for the one gap
+    that call alone doesn't close, the plain image signature); topology
+    fixtures hardcoding `release: 1.0.0`; the gateway's own invented
+    healthcheck failing against a real (necessarily-rejected) ACME
+    domain, mirrored to remove it entirely, matching Tor's actual
+    `docker-compose.yml`, which never had one; the rendered Caddyfile
+    never being written next to the rendered Compose file; every
+    `:?required` placeholder secret sharing one identical, too-short
+    value even though Schlüssel demands its directional HMAC secrets be
+    both distinct and ≥32 bytes; Glocke's VAPID keys needing real P-256
+    key material, not an arbitrary string; and `wachter-agent` getting a
+    real `EACCES` on the Docker socket because the rendered
+    `DOCKER_GID:-998` fallback doesn't match this runner's actual group.
+    Every one of those was invisible to `pnpm test`/`docker compose
+    config` alone and would have stayed invisible without actually
+    running the pipeline for real, repeatedly, against its own failures.
 
 ---
 
