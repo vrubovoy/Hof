@@ -443,6 +443,60 @@ starts read-only and mutation controls retain a separate security gate.
     volumes/networks (none exist today) plus new probe records; a real
     scope of its own for a future pass, not folded into this PR. Same
     remaining item-7 work as before: the `hofctl plan` CLI itself.
+  - **Item 7 progress, resource completeness (2026-08-27):** the
+    previously-deferred orphan volume/network scope, plus ten more
+    concrete gaps a follow-up review found before `hofctl plan` could
+    actually be wired to a CLI, all closed in
+    [#21](https://github.com/vrubovoy/hof-ops/pull/21) - the probe
+    protocol bumped to `HOF-PROBE-V3`. Every Compose volume/network is
+    now labeled (`hof.managed`/`installation-id`/`generation`/`kind`/
+    `resource`) and probed the same buffer-then-commit way containers
+    already were - one failed `docker inspect` among several now taints
+    the *whole* resource kind as `unavailable` with zero partial
+    records (previously a partial batch still reported `available`,
+    silently dropping the failed container); the bootstrap fail-closed
+    check now requires containers/volumes/networks all independently
+    available and unmanaged, closing the orphan gap for real. `buildPlan`
+    drift matching is now scoped by `installationId`, not a bare
+    service/unit label match - a different Hof installation sharing the
+    host can no longer mask a real "missing" or be silently treated as
+    "ours". `docker_run()`'s plain-then-sudo fallback (already used for
+    state-file reads) now covers every Docker CLI call too. Disabling a
+    service now backs up its volume exactly once per *service* (was
+    once per removed unit - a real double-backup bug) and actually
+    issues `service.remove` after `service.stop` (units were previously
+    only ever stopped, never removed, leaving orphans). Generated-file
+    checksums (collected since PR #20 but never used) now feed real
+    drift: a missing generated file is always auto-repaired via
+    `config.write`; a hand-modified one is a blocker unless
+    `--repair-drift`; a regenerated Caddyfile specifically forces the
+    gateway through a real stop/start/readiness cycle. A missing
+    baseline-expected persistent volume is a hard blocker (never
+    silently recreated empty - data may be gone); a missing network is
+    stateless and safely auto-repaired. Protocol status fields are now
+    strictly enum-validated with payload/status consistency checks (a
+    typo like `"presnt"` can no longer fall through silently);
+    `readiness.wait` operations carry an explicit `condition: "running"
+    | "healthy"` (the gateway has no Compose healthcheck by design);
+    `state-v1`'s `generation` minimum tightens to 1 (generation 0 is
+    exclusively the in-memory synthetic bootstrap baseline, never a
+    real `current.json`); the CLI's own `--connect-timeout-seconds`
+    parser now rejects `0`/fractional values at the boundary instead of
+    failing deeper inside a real SSH attempt; `preflight` now schema-
+    validates the full catalog, not just the manifest, before deriving
+    public hostnames from it. 168/168 tests passing (every test file
+    rewritten for the V3 shapes) plus a new `target-probe.test.mjs` that
+    runs the real, unmodified `target-probe.sh` under a real `sh` with a
+    fake `docker`/`sudo` pair on `PATH` - genuinely exercising "Docker
+    reachable only via sudo" and "one failed inspect taints the whole
+    batch" without a real Docker daemon or sudoers grant - plus 9/9 real
+    containerized SSH acceptance tests (one of which needed fixing: the
+    new positive-confirmation-only absence policy means a target with
+    no sudo access at all can never report a state file "absent", only
+    "unreadable" - correct, not a regression). Gate 7 closes once the
+    `hofctl plan` CLI itself lands; operation journal, lock, stale-plan
+    recheck, and `apply` remain explicitly out of scope for both this PR
+    and the CLI PR after it.
 
 ---
 

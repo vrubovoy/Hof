@@ -305,7 +305,7 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — in progress (item 7 of 18: validate and preflight landed, plan's pure core landed, TargetInspector remaining)**: a
+5. **Platform operations — in progress (item 7 of 18: validate/preflight/plan's pure core/TargetInspector/resource completeness landed, the `hofctl plan` CLI remaining)**: a
    standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
@@ -410,10 +410,24 @@ declared complete after a live-testing polish round - the same day).
    actual installation ID, the protocol is now fully fail-closed, and a
    real plan-contract bug (a routine generation bump alone would have
    made every unit look changed) is fixed. Orphan Hof-managed volume/
-   network detection is explicitly deferred, not silently dropped.
-   Remaining for item 7: wire an actual `hofctl plan` CLI subcommand
-   around the already-landed pieces, plus a deferred `--repair-drift`
-   flag.
+   network detection was deferred there, then landed for real in a
+   follow-up pass together with ten more concrete gaps: every Compose
+   volume/network is now labeled and probed the same fail-closed,
+   one-bad-inspect-taints-the-batch way containers already were;
+   `buildPlan` drift matching is scoped by installation ID, not a bare
+   label match, so a second Hof installation sharing a host can't mask
+   or be mistaken for this one's own resources; disabling a service now
+   backs up its volume exactly once per service (was once per removed
+   unit) and actually removes the container, not just stops it;
+   generated-file checksums (collected but unused since the previous
+   pass) now drive real repair/blocker drift, including a Caddyfile
+   regeneration correctly forcing the gateway to restart; a missing
+   persistent volume is a hard blocker, never silently recreated empty,
+   while a missing network safely self-heals. Remaining for item 7: the
+   `hofctl plan` CLI subcommand itself, wiring the already-landed
+   pieces together end to end - the last piece before gate 7 closes
+   (operation journal, lock, stale-plan recheck, and `apply` stay
+   explicitly out of scope beyond that).
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.
