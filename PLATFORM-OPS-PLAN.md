@@ -537,6 +537,32 @@ starts read-only and mutation controls retain a separate security gate.
     **Gate 7 closes here.** Operation journal, lock, stale-plan recheck,
     and `apply` remain explicitly out of scope, as agreed before this
     PR started - the next delivery items.
+  - **Gate 7 errata (2026-08-27):** a small, tightly-scoped follow-up
+    review of the closed gate found four concrete issues, all fixed in
+    [#23](https://github.com/vrubovoy/hof-ops/pull/23), deliberately
+    without reopening any of item 7's own design: Cosign was verifying a
+    mutable pathname instead of the exact bytes already read into
+    memory and used to build the plan - a real TOCTOU, closed by pinning
+    the already-read bytes into a fresh temp file before ever invoking
+    cosign; a generated file that existed but couldn't be hashed even
+    with sudo was indistinguishable from one confirmed absent, so the
+    planner could have auto-regenerated a file that wasn't actually
+    missing at all - closed with a new per-file present/absent/
+    unreadable status (protocol bumped to `HOF-PROBE-V4`) and a new
+    `generated-unreadable` drift kind that always blocks, never repaired
+    even with `--repair-drift`; a missing network was planned as
+    `volume.ensure` instead of its own typed `network.ensure` action;
+    and `hofctl validate`'s `--release-selection`/`--stable-channel`
+    flags were silently never wired through to `validateDeployment` at
+    all (a key-naming mismatch between the flag parser's own output and
+    what the code building its options object looked for), so a
+    supplied file was never actually read regardless of its content.
+    200/200 tests passing (was 187), including a deterministic real-
+    (fake-)cosign test proving the pinned bytes survive a mid-
+    verification mutation of the original file, two new real-transport
+    ssh-acceptance tests for the new per-file generated-artifact status,
+    and a real `hofctl validate` subprocess test proven to fail against
+    the pre-fix code before being confirmed passing against the fix.
 
 ---
 
@@ -1062,7 +1088,8 @@ Schlüssel остаётся authorization authority, но не получает 
    entry above.
 6. [x] Реализовать signed release lock. Completed 2026-08-26; details
    collapsed into the implementation-progress entry above.
-7. Реализовать hofctl validate/preflight/plan.
+7. [x] Реализовать hofctl validate/preflight/plan. Completed 2026-08-27;
+   details collapsed into the implementation-progress entries above.
 8. Реализовать Ansible fresh install.
 9. Реализовать idempotent update/remove reconciliation.
 10. Реализовать backup и tested restore.
