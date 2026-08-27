@@ -345,6 +345,39 @@ starts read-only and mutation controls retain a separate security gate.
     part of this whole delivery item that can't be verified against a
     genuine remote host inside this working environment (only against a
     mocked exec or, at best, SSH-to-localhost).
+  - **Item 7 progress, second review round (2026-08-27):** a follow-up
+    review of the pure core (before touching `TargetInspector`) found
+    six real gaps, all closed in
+    [#18](https://github.com/vrubovoy/hof-ops/pull/18): config-only
+    changes (domain/CORS/browserPush/TLS/backup-schedule) produced a
+    false no-op - fixed with a per-unit `configFingerprint` (the full
+    rendered Compose definition, not just the image) plus a
+    `topologyDigest` covering everything with no per-unit footprint at
+    all; Wächter's API and its agent shared one catalog artifact and
+    collapsed into a single state/diff entry - fixed with a new
+    `hof.unit` label, state/diff now keyed by unit everywhere; manual
+    drift produced a warning but never blocked or offered a repair path -
+    now `executable: false` by default, with an explicit (not yet
+    CLI-wired) `repairDrift` option that still never auto-adopts an
+    unmanaged resource; `database.migrate` operations didn't carry their
+    own `argv`/`volume`, so an approved plan wasn't self-sufficient -
+    fixed; upgrade migrations neither verified the baseline's schema
+    version against what the release lock expects to start from (now a
+    blocker) nor backed up before an in-place migration (now automatic,
+    stop → backup → migrate, skipped only on a fresh bootstrap);
+    `observedResources` defaulted to `[]`, conflating "couldn't reach the
+    host" with "confirmed clean" - `buildPlan`/`resolveBaseline` now both
+    require an explicit `observation: {status, resources}`, and
+    `"unavailable"` hard-blocks an applied host. Also corrected two wrong
+    comments in the catalog (Kuvert/Tafel do already gate their startup
+    migration on `MIGRATE_ON_STARTUP`, direct code inspection confirmed -
+    the earlier PR #16 comment claiming otherwise was simply a misread).
+    90/90 tests passing; two more real bugs were caught by the new
+    `configFingerprint`/`topologyDigest` fixtures themselves before this
+    ever shipped (a backup-only change producing zero operations; a
+    CORS-only cascade onto an unrelated database-backed service
+    spuriously triggering that service's own migration) - see the PR for
+    both. Same pause point as before: `TargetInspector` next.
 
 ---
 

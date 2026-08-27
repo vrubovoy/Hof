@@ -387,7 +387,16 @@ declared complete after a live-testing polish round - the same day).
    topology-change/drift/upgrade, with migrations now keyed to the
    release lock's own per-component schema version instead of the
    `MIGRATE_ON_STARTUP` env flag apps used to self-trigger on every
-   boot. Remaining for item 7: a real `TargetInspector` (SSH-backed for
+   boot. A second review pass hardened that core further: config-only
+   changes (domain/CORS/browserPush/TLS/backup-schedule) now register
+   even with no image change, Wächter's API and its agent are tracked as
+   two distinct units instead of collapsing into one, manual drift
+   blocks a plan by default instead of only warning, migration
+   operations carry their own argv/volume, upgrade migrations verify the
+   baseline's schema and back up before running, and "the inspector
+   couldn't reach the host" is now a distinct, explicit state instead of
+   defaulting to "nothing is running". Remaining for item 7: a real
+   `TargetInspector` (SSH-backed for
    production, local only via an explicit dev/test flag) to actually
    collect that Docker/host observation, wiring `hofctl plan` to it, and
    fixing a real bug this surfaced - `hofctl preflight` currently checks
