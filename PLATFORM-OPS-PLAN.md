@@ -87,6 +87,65 @@ starts read-only and mutation controls retain a separate security gate.
   7–9's reconciler doesn't exist to bring the platform up against pinned
   digests); `ansibleEnvironment` stays schema-optional until item 8 ships
   a real image.
+- [x] **Hardening round (2026-08-26):** a review of items 3–6 found real
+  gaps behind the "done" checkmarks above; each was fixed and re-verified,
+  not just noted:
+  - **Item 3:** Schrank's Zettel-sync secrets (`sync/{inbox,outbox}.ts`)
+    read `process.env` directly, bypassing `resolveSecret` — fixed.
+    Production `db:migrate` ran `drizzle-kit migrate`, a devDependency
+    absent from the built image, in kuvert/tafel/zettel/schlussel — fixed
+    to run the compiled `dist/migrate.js`. Normal startup defaulted to
+    auto-migrating; `MIGRATE_ON_STARTUP` now defaults to schema-check-only
+    across every backend, matching "explicit migrations" more literally.
+    `/ready` now asserts schema currency and `/health` carries
+    version/build metadata everywhere (both were unimplemented gaps from
+    Stage 1's own bullet list).
+  - **Item 4:** Glocke's own `KUVERT_ORIGIN`/`TAFEL_ORIGIN` fix from the
+    first pass never mattered in practice — every shipped `docker-compose.yml`
+    still defaulted every optional service's URL to its always-on
+    hostname, silently re-enabling everything the topology code was
+    supposed to let an operator disable. Fixed across kuvert, tafel,
+    zettel, glocke, schrank, herold, schloss, and Tor's own `.env.example`/
+    `.env.production.example` (which was also just missing `GLOCKE_BASE_URL`
+    outright — a real, separate delivery break, not a topology gap).
+    Schlüssel's notification dispatcher still required Glocke's HMAC
+    secrets unconditionally; `loadNotificationConfig` now returns `null`
+    when `GLOCKE_ENABLED !== 'true'`, and both callers handle that. Tor's
+    own dev/integration Compose gained a profile per optional service
+    (`--profile kuvert`, …) so a developer can start a subset locally;
+    two of Tor's own validation scripts had stopped seeing profiled
+    services entirely once profiles landed and needed the same profile
+    flags added to their own `docker compose config` calls.
+  - **Item 5:** the `v*` tag trigger accepted any ref matching that glob,
+    not just semver, and the immutability check shared a job with the
+    build instead of gating it. Every one of the nine image-publishing
+    repos now validates the tag against a strict `vX.Y.Z` regex and
+    checks for an existing image in a dedicated `publish-preflight` job
+    (with a `concurrency` group) before `publish` runs at all.
+  - **Item 6:** `build-release-lock.mjs` resolved every component from
+    the mutable `:latest` tag and only ran `gh attestation verify` — never
+    a real `cosign verify`/`cosign verify-attestation` against the image
+    signature. A new `release-selection.yml` contract now pins an
+    explicit version/commit tag, workflow identity, and OIDC issuer per
+    component; resolution verifies the plain Cosign signature and both
+    attestations, cross-checks the attesting workflow's own source
+    repository and revision, and directly queries GitHub's check-runs/
+    status API for each required check rather than inferring "tests
+    passed" from an attestation merely existing. The release lock now
+    carries `composeTemplateDigest` and real `database.{from,to,
+    rollbackCompatible}` per persistent component (previously always
+    omitted), resolved from `render-topology.mjs` (new — the actual
+    services.yml → Compose/Caddyfile/env/backup-inventory generator,
+    closing item 4's other open half: `services.yml` now genuinely
+    drives what gets deployed) and `integration-matrix.mjs` (new — renders
+    multiple topology fixtures against the pinned lock and runs
+    `docker compose config`/optionally `create`+`down` against the
+    result, closing the "no integration matrix" gap). The release
+    workflow rebuilds the lock a second time and diffs it against the
+    first to catch non-determinism, and now also signs and publishes
+    `stable-channel.json` alongside the lock. Every fix independently
+    re-verified (test suites, `docker compose config`, a live Tor
+    Browser-Push/gateway validation run) rather than trusted on read.
 
 ---
 

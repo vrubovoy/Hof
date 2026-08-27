@@ -338,7 +338,21 @@ declared complete after a live-testing polish round - the same day).
    fixed three catalog/GHCR artifact-name mismatches along the way (Tor
    ships no image of its own, Schlüssel/Schloss don't use a
    `-backend`/`-frontend` suffix, Wächter's API and agent share one
-   image). Next: `hofctl validate/preflight/plan` (delivery item 7).
+   image). A review of items 3-6 then found several real gaps behind
+   those checkmarks, all fixed and re-verified 2026-08-26: a secret still
+   bypassing `resolveSecret` in Schrank, production migrations invoking a
+   devDependency CLI absent from the built image, startup defaulting to
+   auto-migrate instead of schema-check-only, missing readiness/build-info
+   endpoints, shipped Compose files re-enabling every "disabled" service
+   via default URLs (including a genuinely missing `GLOCKE_BASE_URL` in
+   Tor that broke Glocke delivery outright), Schlüssel still requiring
+   Glocke's secrets unconditionally, CI accepting non-semver release tags,
+   and the release lock resolving `:latest` and never actually running
+   `cosign verify`. Closing the last two also delivered `hof-ops render`
+   (services.yml + catalog + lock → Compose/Caddyfile/env/backup
+   inventory - the piece that lets `services.yml` actually drive a
+   deployment) and a real integration matrix. Next: `hofctl validate/
+   preflight/plan` (delivery item 7).
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.
