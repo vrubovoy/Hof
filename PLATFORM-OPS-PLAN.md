@@ -323,6 +323,28 @@ starts read-only and mutation controls retain a separate security gate.
       change/drift/missing-state-with-resources/upgrade fixtures ->
       deterministic `planId`. `apply` accepting and rejecting a stale
       `planId` is explicitly future work, not item 7.
+  - **Item 7 progress, continued (2026-08-27):** foundational pieces
+    landed in [#16](https://github.com/vrubovoy/hof-ops/pull/16)
+    (typed per-service `database` catalog metadata; `MIGRATE_ON_STARTUP`
+    moved from the interim `"true"` default to `"false"`; Hof ownership
+    labels on every generated Compose service; the real integration
+    matrix now runs each service's migration job before `up --wait` -
+    verified against v0.1.1's actual published, signed release lock, not
+    just unit-tested) and [#17](https://github.com/vrubovoy/hof-ops/pull/17)
+    (`hofctl plan`'s pure core - `state-v1`/`plan-v1` schemas,
+    `resolveBaseline`'s bootstrap/fail-closed rules, `buildPlan`'s
+    desired+drift diffing and typed operation emission, all 75 tests
+    passing including every named fixture category). Still open: a real
+    `TargetInspector` (SSH-backed for production, local only via an
+    explicit dev/test flag) to actually collect the Docker/host
+    observation `buildPlan` takes as an input, wiring `hofctl plan` to
+    it, and fixing `hofctl preflight`'s real bug (checks the operator's
+    own workstation, not `target.host`/`target.user`) as part of the
+    same change. Paused here before that piece - it's a real
+    architecture change to already-shipped `preflight` code, and the one
+    part of this whole delivery item that can't be verified against a
+    genuine remote host inside this working environment (only against a
+    mocked exec or, at best, SSH-to-localhost).
 
 ---
 

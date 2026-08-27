@@ -305,7 +305,7 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — in progress (7/18 delivery gates in progress, 2 of 3 hofctl subcommands landed)**: a
+5. **Platform operations — in progress (item 7 of 18: validate and preflight landed, plan's pure core landed, TargetInspector remaining)**: a
    standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
@@ -376,10 +376,22 @@ declared complete after a live-testing polish round - the same day).
    just unit-tested). `hofctl preflight` runs the Ansible role's own
    disk/RAM/CPU/clock → DNS → ports → Docker checks standalone,
    fails closed on anything it can't verify (e.g. a privileged port
-   without root) rather than assuming pass. Next: `hofctl plan` - the
-   remaining open design question is how "current state" is read for a
-   diff on a host with no prior `apply` (paused here for review before
-   deciding).
+   without root) rather than assuming pass. `hofctl plan`'s state/diff
+   design is decided and its pure core is landed: a hybrid model (an
+   authoritative last-applied state file drives the desired diff, live
+   Docker observation drives an independent drift diff), a synthetic
+   empty baseline on a truly clean host, and fail-closed refusal - not
+   automatic adoption - when state is missing but Docker already holds
+   managed resources. `buildPlan()` computes typed, ordered operations
+   (twelve action types, never a shell string) across bootstrap/no-op/
+   topology-change/drift/upgrade, with migrations now keyed to the
+   release lock's own per-component schema version instead of the
+   `MIGRATE_ON_STARTUP` env flag apps used to self-trigger on every
+   boot. Remaining for item 7: a real `TargetInspector` (SSH-backed for
+   production, local only via an explicit dev/test flag) to actually
+   collect that Docker/host observation, wiring `hofctl plan` to it, and
+   fixing a real bug this surfaced - `hofctl preflight` currently checks
+   the operator's own workstation instead of `target.host`/`target.user`.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.
