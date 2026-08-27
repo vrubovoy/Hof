@@ -305,7 +305,7 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — in progress (6/18 delivery gates complete)**: a
+5. **Platform operations — in progress (7/18 delivery gates in progress, 2 of 3 hofctl subcommands landed)**: a
    standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
@@ -364,8 +364,22 @@ declared complete after a live-testing polish round - the same day).
    genuine signed release built from real platform state end to end:
    [`v0.1.1`](https://github.com/vrubovoy/hof-ops/releases/tag/v0.1.1)
    (the earlier `v0.1.0`, built under the pre-hardening pipeline, stays
-   published as a historical artifact). Next: `hofctl validate/
-   preflight/plan` (delivery item 7).
+   published as a historical artifact). Delivery item 7 (`hofctl
+   validate/preflight/plan`) is two-thirds landed: `hofctl validate`
+   checks a real deployment's services.yml/catalog/release-lock at
+   arbitrary paths (not just the repo's own examples) against schema
+   and cross-contract rules, plus four checks the final hardening
+   review named explicitly - `catalogDigest`/`composeTemplateDigest`
+   freshness, `minimumHofctlVersion` compatibility, and the release
+   lock's own Cosign signature (now a real gate in the release pipeline
+   itself, exercised against a live signature on every release run, not
+   just unit-tested). `hofctl preflight` runs the Ansible role's own
+   disk/RAM/CPU/clock → DNS → ports → Docker checks standalone,
+   fails closed on anything it can't verify (e.g. a privileged port
+   without root) rather than assuming pass. Next: `hofctl plan` - the
+   remaining open design question is how "current state" is read for a
+   diff on a host with no prior `apply` (paused here for review before
+   deciding).
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.
