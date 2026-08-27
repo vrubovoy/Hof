@@ -213,6 +213,29 @@ starts read-only and mutation controls retain a separate security gate.
     Every one of those was invisible to `pnpm test`/`docker compose
     config` alone and would have stayed invisible without actually
     running the pipeline for real, repeatedly, against its own failures.
+  - **Go verdict (2026-08-27):** a follow-up review confirmed 6/18 for
+    real - clean worktrees on published commits/tags, the Wächter fixes
+    verified by test, readiness/test-harness fidelity confirmed, a
+    successful live `--runtime` run
+    ([33049559813](https://github.com/vrubovoy/hof-ops/actions/runs/33049559813)),
+    and `v0.1.1`'s six assets independently checked (`catalogDigest`/
+    `composeTemplateDigest` match the current files, the stable-channel
+    digest matches the published lock). Three **non-blocking** notes to
+    carry into items 7-8, not yet acted on:
+    - Wächter's own `/ready` checks its agent/sampler but not Schlüssel's
+      JWKS the way every other backend now does - acceptable for now
+      (Schlüssel isn't Wächter's primary runtime dependency the way it is
+      for the others), but item 7's shared health model should make that
+      an explicit, deliberate choice rather than an unremarked asymmetry.
+    - `render-topology.mjs`'s `MIGRATE_ON_STARTUP: "true"` is the interim
+      default noted when it was added (delivery item 6 entry above) -
+      item 7's `hofctl plan` should already surface migrations as a
+      distinct, visible operation even before item 8 replaces this with
+      dedicated pre-start migration jobs.
+    - `catalogDigest`/`composeTemplateDigest`/`minimumHofctlVersion`/the
+      lock's own signature are currently only checked ad hoc (by
+      `integration-matrix.mjs`, or by hand as above) - `hofctl validate`
+      should make all of that a first-class, always-run check.
 
 ---
 
