@@ -563,6 +563,49 @@ starts read-only and mutation controls retain a separate security gate.
     ssh-acceptance tests for the new per-file generated-artifact status,
     and a real `hofctl validate` subprocess test proven to fail against
     the pre-fix code before being confirmed passing against the fix.
+  - **Item 8 progress, apply contracts and fresh-host planning
+    (2026-08-27):** the first item-8 PR - contracts only, per ADR 0004,
+    no real executor and no target mutation anywhere in it - landed in
+    [#24](https://github.com/vrubovoy/hof-ops/pull/24). ADR 0004 fixes
+    the shape of everything `hofctl apply` will need: exact target
+    binding (a plan is bound to the real accepted SSH host-key
+    fingerprint, not just the caller's trust anchor - a key change
+    invalidates it), explicit `--approve-plan-id <exact-plan-id>`
+    approval, bootstrap-only apply for item 8 (applied-mode
+    reconciliation stays item 9), a signed Ansible Execution Environment
+    (never the operator's own local Ansible), a durable host lock that
+    survives the invoking process dying, a durable operation journal
+    with no secrets ever, a stale-plan recheck under the lock, and safe
+    bounded resume where an unknown operation outcome blocks rather than
+    guesses. A new `plan-v2` schema and pure builder
+    (`scripts/plan-v2.mjs`) wrap the unchanged `buildPlan()` v1 core with
+    that target binding, planning policy, per-`image.verify` trust
+    policy pulled straight from the release lock (first-party components
+    get a real Cosign identity, third-party ones are digest-only), and
+    the bootstrap-only recovery age recipient / supplied-TLS certificate
+    fingerprint - `planId` now covers the target binding too, so a
+    host-key change alone changes it. `plan-v1` is untouched and stays
+    the historical contract; `plan-v2` is deliberately not wired into
+    the real CLI yet - that's `hofctl apply`'s own PR. `inspectTarget()`
+    now returns the real accepted host-key fingerprint in both trust
+    modes (parsed from a real `ssh -v` transcript - asking the client
+    that already connected, rather than reimplementing key selection).
+    Docker not being installed at all is now a real, distinct "absent"
+    state (protocol bumped to `HOF-PROBE-V5`), never confused with
+    "unavailable" (installed but unsafe to inspect) - a fresh host with
+    no Docker yet is a legitimate bootstrap candidate, and `hofctl
+    preflight` now says so instead of falsely reporting Docker
+    unreachable. Three new schemas (`operation-journal-v1`,
+    `operation-event-v1`, `operation-lock-v1`) and a pure bootstrap
+    action whitelist (`scripts/bootstrap-actions.mjs`, rejecting
+    `backup.create`/`service.stop`/`service.remove` and a non-bootstrap
+    plan mode by name) round out the contract. 253/253 tests passing
+    (was 213) plus 11/11 real containerized SSH acceptance tests,
+    including Docker-genuinely-absent and the host-key fingerprint
+    independently cross-checked against `ssh-keygen`'s own computation.
+    Remaining for item 8: durable lock/journal implementations, the
+    pinned/signed Execution Environment itself, and `hofctl apply` -
+    see the Delivery Order below for the full remaining PR sequence.
 
 ---
 
@@ -1090,7 +1133,24 @@ Schlüssel остаётся authorization authority, но не получает 
    collapsed into the implementation-progress entry above.
 7. [x] Реализовать hofctl validate/preflight/plan. Completed 2026-08-27;
    details collapsed into the implementation-progress entries above.
-8. Реализовать Ansible fresh install.
+8. Реализовать Ansible fresh install. In progress - contracts landed in
+   [#24](https://github.com/vrubovoy/hof-ops/pull/24) (see the
+   implementation-progress entry above). Recommended remaining PR
+   sequence for this item, as agreed 2026-08-27: #25 secret-safe
+   renderer/`_FILE`/recovery recipient/local supplied-TLS handling; #26
+   pinned Ansible Execution Environment + roles skeleton +
+   build/sign/SBOM/provenance; #27 `hofctl apply` itself (approval,
+   target lock, journal, stale-plan recheck); #28 host/Docker/
+   filesystem/secrets/volume/network/image/config roles; #29
+   migrations, Compose startup, readiness, atomic state commit; #30
+   interruption/resume, signed release, docs, and item-8 closure. Item 8
+   is done when: an approved bootstrap plan → exclusive target lock →
+   stale-plan verification → signed EE → host preparation → secrets →
+   volumes/networks → verified images → generated config → explicit
+   migrations → service startup → readiness → atomic generation-1
+   commit all work end to end, and an interruption before commit can be
+   safely continued through the same operation journal without a new
+   approval or a newly computed plan.
 9. Реализовать idempotent update/remove reconciliation.
 10. Реализовать backup и tested restore.
 11. Реализовать upgrade/rollback.

@@ -305,7 +305,7 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — in progress (item 7 of 18 closed: `hofctl validate`/`preflight`/`plan` all landed and read-only end to end; operation journal, lock, stale-plan recheck, and `apply` are the next delivery items)**: a
+5. **Platform operations — in progress (item 7 of 18 closed: `hofctl validate`/`preflight`/`plan` all landed and read-only end to end; item 8, Ansible fresh install, started - apply execution contracts (`plan-v2`, the operation journal/lock/event schemas, exact SSH host-key binding, Docker-absent bootstrap eligibility) landed, `hofctl apply` itself remaining)**: a
    standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
@@ -443,7 +443,47 @@ declared complete after a live-testing polish round - the same day).
    (real `sh` + `target-probe.sh` + a fake docker/sudo pair + fake
    cosign, real schema validation, a real `buildPlan()` call). Operation
    journal, lock, stale-plan recheck, and `apply` remain the next
-   delivery items, explicitly out of scope for item 7.
+   delivery items, explicitly out of scope for item 7. A small gate-7
+   errata pass then closed four concrete post-review issues without
+   reopening the design: Cosign now verifies the exact release-lock
+   bytes already read into memory (pinned into a temp file) rather than
+   a fresh, possibly-mutated re-read of the same path; a generated file
+   that exists but couldn't be hashed even with sudo is now a distinct
+   "unreadable" status, never folded into "missing" (which would have
+   let the planner silently regenerate a file that wasn't actually
+   gone); a missing network plans as its own typed `network.ensure`
+   action instead of a reused `volume.ensure`; and `hofctl validate`'s
+   `--release-selection`/`--stable-channel` flags, previously silently
+   dropped by a key-naming mismatch, are now actually wired through.
+
+   **Item 8 (Ansible fresh install) is now underway.** Its first PR
+   lands the apply execution contracts, per a new ADR: exact target
+   binding (a plan is bound to the real accepted SSH host-key
+   fingerprint from the same connection it was computed against, not
+   just the caller's trust anchor - a key change invalidates it),
+   explicit `--approve-plan-id` approval, bootstrap-only apply for this
+   item (applied-mode reconciliation is item 9), a signed Ansible
+   Execution Environment, a durable host lock that survives the
+   invoking process dying, a durable operation journal that never
+   records a secret, a stale-plan recheck under the lock, and safe
+   bounded resume (an operation whose outcome can't be determined blocks
+   resume rather than guessing). A new `plan-v2` contract wraps the
+   unchanged `plan-v1` diff engine with that target binding, planning
+   policy, per-image trust policy pulled from the release lock, and the
+   bootstrap-only recovery age recipient / supplied-TLS fingerprint -
+   deliberately not wired into the real CLI yet, since `hofctl apply`
+   doesn't exist to consume it. `inspectTarget()` now returns the real
+   accepted host-key fingerprint in both trust modes (parsed from a real
+   `ssh -v` transcript, cross-checked against an independent
+   `ssh-keygen` computation in the real SSH acceptance suite). Docker
+   genuinely not being installed is now its own distinct "absent" state,
+   never confused with "unavailable" - a fresh host with no Docker yet
+   is a legitimate bootstrap candidate, and `hofctl preflight` now says
+   so instead of falsely reporting Docker unreachable. Three new schemas
+   for the operation journal/event/lock and a pure bootstrap-action
+   whitelist round out the contract. `hofctl apply` itself, the durable
+   lock/journal implementations, and the pinned Execution Environment
+   remain the next delivery-item-8 work.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.
