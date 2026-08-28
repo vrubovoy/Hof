@@ -680,6 +680,106 @@ starts read-only and mutation controls retain a separate security gate.
     afterward with a real `cosign verify` - both attestations genuinely
     present. Interruption/resume was already covered by PR #27's own
     tests; nothing further was needed there.
+  - **Item 8 reopened (2026-08-28):** the "closed" call above was
+    premature. A review of PRs #25-30, against the exact merged pins
+    (`Hof` `bd0f83a`, `hof-ops` `419520d`), running no tests/containers,
+    found nine concrete blockers in item 8's own bootstrap/apply scope
+    (explicitly not item 9/reconciliation, backup, upgrade, or item 14's
+    clean-VM acceptance - those stay later items, unaffected). Two
+    Critical, re-verified directly against the code before accepting the
+    review:
+    1. **The approve workflow doesn't actually work.** `hofctl plan`
+       (`plan-command.mjs`) still prints a `plan-v1` document via
+       `buildPlan()`; `hofctl apply` (`apply.mjs`) independently builds
+       its own `plan-v2` via `buildPlanV2()`, which adds the target
+       binding, recovery recipient, and supplied-TLS fingerprint - fields
+       `plan-v1` never had. The two are structurally different documents
+       with different `planId`s, so the ID a real `hofctl plan` run
+       prints is never the ID `--approve-plan-id` actually needs - an
+       operator can never see and approve the exact bytes `apply` is
+       about to run. `test/apply-acceptance.mjs` papers over exactly this
+       by first submitting a wrong ID on purpose and regex-extracting the
+       real one out of the resulting error message; the same trick, not
+       a real approval, is what every apply test in the suite does.
+    2. **Resume cannot work after the first real mutation.**
+       `apply --resume` runs the ordinary bootstrap-baseline
+       `resolveBaseline()` check before ever reading the lock/journal
+       (`apply.mjs`, current code path). Once any managed resource
+       (`volume.ensure`, `network.ensure`, a started container) has
+       actually been created but `state.commit` hasn't run yet - the
+       exact case resume exists to recover from - that baseline check
+       necessarily rejects the host as "not a clean bootstrap target"
+       before the lock/journal are ever consulted. The resume tests only
+       exercise a still-clean target, never a genuinely partial one.
+    Seven more High/Critical findings, not independently re-verified line
+    by line but consistent with the codebase and not disputed: the
+    journal records input/EE digests but resume only compares
+    `approvedPlanId`, so an EE or input change outside the plan
+    projection can silently continue under a stale execution environment;
+    supplied-TLS certificate/key material is fingerprinted into the plan
+    but never actually delivered to the target (the renderer leaves
+    workstation-local paths in the generated Compose file, and the
+    `config` role only ever copies the six generated files); a successful
+    `state.commit` whose post-commit journal/lock cleanup then fails can
+    wedge a host permanently, since the next run sees "already applied"
+    before resume logic is reached; the `host` role skips Docker
+    installation whenever `docker --version` succeeds, even if the
+    Compose plugin specifically is missing; `apply` doesn't itself
+    enforce the exact supported-platform check `preflight` already has
+    (Debian 12/Ubuntu 24.04/x86_64) before its first real mutation; the
+    Execution Environment's own `ee-vX.Y.Z` tag isn't wired into
+    `build-release-lock.mjs`'s revision resolution (which looks up plain
+    `vX.Y.Z`) and no real signed platform release-lock actually carries
+    the published EE digest yet - `examples/release-lock.json` stays
+    illustrative; and the CI acceptance test that "closed" item 8
+    deliberately stops at the first expected image-pull failure with EE
+    signature verification disabled and a local image override, so it
+    never actually exercises config delivery, migrations, service start,
+    readiness, or a real generation-1 `state.commit` end to end - real,
+    but partial, evidence, not what the closure claim asserted.
+    **Not blocking item 8** (explicitly out of this review's scope):
+    applied-mode update/remove (item 9), backup/restore, upgrade/
+    rollback, the Ubuntu clean-VM acceptance pass (item 14), a stricter
+    operation schema, and network-reconciliation edge cases outside a
+    bootstrap plan. **Recovery plan, three stabilization PRs, no further
+    architecture growth needed:**
+    - **PR #31 (Approved Plan And Resume):** wire `hofctl plan` to the
+      real `plan-v2` (including the recovery-recipient/supplied-TLS plan
+      options it's currently missing); add `hofctl apply --plan <file>`
+      so `--approve-plan-id` is checked against that exact file's own ID;
+      `apply` recomputes the plan under the lock and diffs the full
+      canonical document, not just the ID; resume starts from lock/
+      journal, never the bootstrap baseline check; the journal gains the
+      real installation ID and immutable input/EE digests, all checked on
+      resume; partial resources found under lock are treated as this
+      operation's own checkpoint, not foreign state; a state already
+      committed by this exact operation lets resume finish journal/lock
+      cleanup instead of re-running; new crash fixtures after
+      volume-creation, after image-pull, after migration, and after
+      `current.json` but before the succeeded event.
+    - **PR #32 (Complete Bootstrap Modes):** real supplied-TLS delivery
+      (read/validate cert+key locally, key-match/SAN/validity checks,
+      safe fingerprints in the plan, deliver to fixed target paths, the
+      renderer stops embedding workstation paths); exact
+      Debian-12/Ubuntu-24.04/x86_64 enforcement before any mutation; the
+      `host` role checks/installs the Compose plugin independently of the
+      Engine check; journal/state documents schema-validated on read; SSH
+      `ProxyCommand`/`ProxyJump` either explicitly rejected or properly
+      bound into target identity.
+    - **PR #33 (Real Release And Full Acceptance):** teach the
+      release-lock builder to resolve `ee-vX.Y.Z` (and update the
+      release-lock schema/tag contract accordingly); cut a new EE after
+      PR #31/#32's fixes; publish a real signed platform release-lock
+      carrying that EE's real digest; rerun the disposable-VM acceptance
+      test with EE signature verification on, no local-image override,
+      real application images, real supplied-TLS material, and the full
+      path through migrations/startup/readiness/`state.commit`; assert a
+      schema-valid `current.json`, a full topology snapshot, a succeeded
+      journal, a released lock, and a second bootstrap `apply` against
+      the same host correctly refused as "already applied"; fix
+      `ansible/README.md`, which currently asserts both "apply is
+      implemented" and "hofctl apply (not yet implemented)" at once.
+    Item 8 stays open until all three land; item 9 does not start first.
 
 ---
 
@@ -1207,15 +1307,24 @@ Schlüssel остаётся authorization authority, но не получает 
    collapsed into the implementation-progress entry above.
 7. [x] Реализовать hofctl validate/preflight/plan. Completed 2026-08-27;
    details collapsed into the implementation-progress entries above.
-8. [x] Реализовать Ansible fresh install. Completed 2026-08-28 across
-   PRs [#24](https://github.com/vrubovoy/hof-ops/pull/24)-[#30](https://github.com/vrubovoy/hof-ops/pull/30);
-   details collapsed into the implementation-progress entry above. An
-   approved bootstrap plan → exclusive target lock → stale-plan
-   verification → signed EE → host preparation → secrets → volumes →
-   verified images → generated config → explicit migrations → service
-   startup → readiness → atomic generation-1 commit now all work end to
-   end, for real, against a genuinely clean host, with safe resume
-   before commit.
+8. [ ] Реализовать Ansible fresh install. PRs
+   [#24](https://github.com/vrubovoy/hof-ops/pull/24)-[#30](https://github.com/vrubovoy/hof-ops/pull/30)
+   landed a real, CI-exercised pipeline, but a 2026-08-28 review (against
+   clean worktrees, pins `Hof` `bd0f83a` / `hof-ops` `419520d`, no
+   tests/containers run - static code reading only) found the "closes
+   item 8" claim premature: nine concrete blockers in the bootstrap/apply
+   scope itself, two of them independently re-verified against the actual
+   code before accepting the review (`hofctl plan` still prints `plan-v1`
+   while `apply` independently builds and requires approval of a
+   different `plan-v2` document with extra fields, so an operator-approved
+   ID from a real `plan` run can never be the ID `apply` asks for;
+   `apply --resume` runs the ordinary bootstrap baseline check before
+   ever reading the lock/journal, so it necessarily refuses to resume
+   after any real mutation - `volume.ensure`, `network.ensure`, a created
+   container - already happened, i.e. exactly the case resume exists for).
+   See the "Item 8 reopened" log entry below for the full list and the
+   three-PR stabilization plan (#31-33) that closes it for real.
+   Completed-2026-08-28 claim retracted.
 9. Реализовать idempotent update/remove reconciliation.
 10. Реализовать backup и tested restore.
 11. Реализовать upgrade/rollback.
