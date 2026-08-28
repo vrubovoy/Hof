@@ -305,7 +305,7 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — in progress (item 7 of 18 closed: `hofctl validate`/`preflight`/`plan` all landed and read-only end to end; item 8, Ansible fresh install, started - apply execution contracts (`plan-v2`, the operation journal/lock/event schemas, exact SSH host-key binding, Docker-absent bootstrap eligibility) landed, `hofctl apply` itself remaining)**: a
+5. **Platform operations — in progress (item 8 of 18 closed: a real, signed `hofctl apply` bootstraps a genuinely clean host onto Debian/Ubuntu end to end - real target lock/journal, a pinned and now actually-published-and-verified Ansible Execution Environment, all ten roles' real implementation, safe resume; item 9, applied-mode reconciliation, next)**: a
    standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
@@ -481,9 +481,59 @@ declared complete after a live-testing polish round - the same day).
    is a legitimate bootstrap candidate, and `hofctl preflight` now says
    so instead of falsely reporting Docker unreachable. Three new schemas
    for the operation journal/event/lock and a pure bootstrap-action
-   whitelist round out the contract. `hofctl apply` itself, the durable
-   lock/journal implementations, and the pinned Execution Environment
-   remain the next delivery-item-8 work.
+   whitelist round out the contract.
+
+   **Item 8 closed.** Secret-safe Compose rendering landed first - every
+   real platform secret (inter-service HMAC secrets, Glocke's VAPID
+   key, Herold's/Wächter's own secrets) now flows through Compose's
+   native `secrets:` mechanism via a `<VAR>_FILE` convention every
+   consuming app already implements, sourced from a SOPS-encrypted
+   workstation store (`hofctl secrets ensure`) with a mandatory external
+   `age` recovery recipient. A pinned, digest-locked Ansible Execution
+   Environment followed - its own ten roles (one per plan operation
+   phase) started as a skeleton enforcing each operation's real variable
+   contract, then got their real implementation: `host` bootstraps
+   python3 and installs Docker only when genuinely absent; `secret`
+   delivers decrypted values over the real SSH/SFTP connection, never
+   through extra-vars or the journal; `volume`/`network` create
+   Hof-labeled Docker resources matching the renderer's own labels;
+   `image` runs a real keyless `cosign verify` (delegated to the control
+   node, never the target) for signed components and trusts third-party
+   images by digest pin alone; `config` delivers the rendered Compose/
+   Caddy/env files; `database` runs each service's own migration via
+   `docker compose run`, reusing its already-rendered definition;
+   `service` starts one Compose unit, scoped with `--no-deps`;
+   `readiness` polls the real container state by its own Compose
+   ownership labels; `state` atomically commits `current.json`/
+   `topology.json` (topology first, matching the corruption check the
+   baseline resolver already enforces). `hofctl apply` itself ties all
+   of this together: it recomputes the plan itself (never trusts one
+   handed to it), requires an exact `--approve-plan-id` match, verifies
+   the Execution Environment's own signature, acquires a durable target
+   lock, re-verifies the target under that lock before running anything,
+   dispatches only the bootstrap action whitelist into the Execution
+   Environment (never local Ansible, never a generic command), and
+   supports safe bounded resume - a step whose outcome can't be
+   determined from the journal blocks resume rather than guessing. A
+   real installation-id bug surfaced and got fixed along the way: every
+   real resource was being labeled with the same fixed placeholder
+   `hofctl plan` also uses for its own approval-matching computation,
+   which would have made two separate bootstraps indistinguishable to
+   later drift detection - real dispatch now renders a second time,
+   after the lock is held, with a real, unique id. The whole pipeline is
+   exercised for real in CI against a genuinely ephemeral, systemd-
+   enabled target container (real Docker install, real secret delivery,
+   real volume creation, then a real, expected failure at the first
+   illustrative image reference) - a real incident during that work
+   (a privileged, host-namespace-sharing test container briefly
+   disrupted a real desktop session during local development) narrowed
+   local iteration to read-only checks from then on, with CI itself
+   - a genuinely disposable VM - doing the real verification instead.
+   `ee-v0.1.0` has been cut for real and independently re-verified
+   (signature, SBOM and provenance attestations all genuinely present).
+   Applied-mode reconciliation (update/remove), backup/restore, upgrade/
+   rollback, first-admin bootstrap, and the installer UI remain item 9
+   and later.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.

@@ -606,6 +606,80 @@ starts read-only and mutation controls retain a separate security gate.
     Remaining for item 8: durable lock/journal implementations, the
     pinned/signed Execution Environment itself, and `hofctl apply` -
     see the Delivery Order below for the full remaining PR sequence.
+  - **Item 8 closed (2026-08-28), PRs #25-30:** secret-safe Compose
+    rendering landed first
+    ([#25](https://github.com/vrubovoy/hof-ops/pull/25)) - every real
+    platform secret now flows through Compose's native `secrets:`
+    mechanism via the `<VAR>_FILE` convention every consuming app
+    already implements, sourced from a SOPS-encrypted workstation store
+    (`hofctl secrets ensure`) with a mandatory external `age` recovery
+    recipient; local "supplied" TLS reads the operator's own certificate
+    file and hashes it for the plan, never the key. A pinned,
+    digest-locked Ansible Execution Environment followed
+    ([#26](https://github.com/vrubovoy/hof-ops/pull/26)) with its ten
+    roles (one per plan operation phase) as a skeleton enforcing each
+    operation's real variable contract only. `hofctl apply` itself
+    landed next ([#27](https://github.com/vrubovoy/hof-ops/pull/27)):
+    it recomputes the plan itself (never trusts one handed to it on
+    disk), requires an exact `--approve-plan-id` match, verifies the
+    Execution Environment's own Cosign signature, acquires a durable
+    target lock (or reclaims it on `--resume`), re-verifies the target
+    under that lock before running anything, dispatches only the
+    bootstrap action whitelist, journals every operation before and
+    after it runs, and supports safe bounded resume - a step whose
+    outcome can't be determined from the journal blocks resume rather
+    than guessing. Two PRs then gave all ten roles their real
+    implementation: `host`/`secret`/`volume`/`network`/`image`/`config`
+    ([#28](https://github.com/vrubovoy/hof-ops/pull/28)) and
+    `database`/`service`/`readiness`/`state`
+    ([#29](https://github.com/vrubovoy/hof-ops/pull/29)). `host`
+    bootstraps python3 and installs Docker only when genuinely absent;
+    `secret` delivers decrypted values over the real SSH/SFTP
+    connection, never through extra-vars or the journal; `volume`/
+    `network` create Hof-labeled Docker resources matching the
+    renderer's own labels; `image` runs a real keyless `cosign verify`
+    (delegated to the control node, never the target) for signed
+    components and trusts third-party images by digest pin alone;
+    `config` delivers the rendered Compose/Caddy/env files; `database`
+    runs each service's own migration via `docker compose run`, reusing
+    its already-rendered definition; `service` starts one Compose unit
+    scoped with `--no-deps`; `readiness` polls the real container state
+    by its own Compose ownership labels; `state` atomically commits
+    `current.json`/`topology.json` (topology first, matching the
+    corruption check the baseline resolver already enforces). A real
+    installation-id bug surfaced and got fixed while wiring `state`:
+    every real resource was being labeled with the same fixed
+    placeholder `hofctl plan` also uses for its own approval-matching
+    computation, which would have made two separate bootstraps
+    indistinguishable to later drift detection - real dispatch now
+    renders a second time, after the lock is held, with a real, unique
+    id (the operation's own id, reused deterministically - resume needs
+    no new durable state to recover it). The whole pipeline is exercised
+    for real in CI (`pnpm test:apply-ssh`) against a genuinely
+    ephemeral, systemd-enabled target container: real Docker install,
+    real secret delivery, real volume creation, then a real, expected
+    failure at the first illustrative image reference (the example
+    release lock's own images are placeholders, not real published
+    digests) - exercising the real failure path (journal marked failed,
+    lock released) against a genuine failure for the first time. A real
+    incident happened during this work: a `docker run --privileged
+    --cgroupns=host` test container, run locally against what turned
+    out to be a real desktop rather than an isolated sandbox, reached
+    real host tty/cgroup resources and disrupted a real login session
+    (recovered via reboot, no lasting damage) - local iteration moved to
+    read-only checks from then on, with CI itself (a genuinely
+    disposable VM) doing the real verification instead; several more
+    real, CI-discovered gaps got fixed the same way (a missing SSH
+    client in the Execution Environment image, the Execution
+    Environment container never joining the target's own Docker
+    network, the target missing the Docker Python SDK community.docker
+    modules need). Finally
+    ([#30](https://github.com/vrubovoy/hof-ops/pull/30)): `ee-v0.1.0`
+    was cut for real (a real git tag, a real keyless-signed build, real
+    SBOM/provenance attestations) and independently re-verified
+    afterward with a real `cosign verify` - both attestations genuinely
+    present. Interruption/resume was already covered by PR #27's own
+    tests; nothing further was needed there.
 
 ---
 
@@ -1133,24 +1207,15 @@ Schlüssel остаётся authorization authority, но не получает 
    collapsed into the implementation-progress entry above.
 7. [x] Реализовать hofctl validate/preflight/plan. Completed 2026-08-27;
    details collapsed into the implementation-progress entries above.
-8. Реализовать Ansible fresh install. In progress - contracts landed in
-   [#24](https://github.com/vrubovoy/hof-ops/pull/24) (see the
-   implementation-progress entry above). Recommended remaining PR
-   sequence for this item, as agreed 2026-08-27: #25 secret-safe
-   renderer/`_FILE`/recovery recipient/local supplied-TLS handling; #26
-   pinned Ansible Execution Environment + roles skeleton +
-   build/sign/SBOM/provenance; #27 `hofctl apply` itself (approval,
-   target lock, journal, stale-plan recheck); #28 host/Docker/
-   filesystem/secrets/volume/network/image/config roles; #29
-   migrations, Compose startup, readiness, atomic state commit; #30
-   interruption/resume, signed release, docs, and item-8 closure. Item 8
-   is done when: an approved bootstrap plan → exclusive target lock →
-   stale-plan verification → signed EE → host preparation → secrets →
-   volumes/networks → verified images → generated config → explicit
-   migrations → service startup → readiness → atomic generation-1
-   commit all work end to end, and an interruption before commit can be
-   safely continued through the same operation journal without a new
-   approval or a newly computed plan.
+8. [x] Реализовать Ansible fresh install. Completed 2026-08-28 across
+   PRs [#24](https://github.com/vrubovoy/hof-ops/pull/24)-[#30](https://github.com/vrubovoy/hof-ops/pull/30);
+   details collapsed into the implementation-progress entry above. An
+   approved bootstrap plan → exclusive target lock → stale-plan
+   verification → signed EE → host preparation → secrets → volumes →
+   verified images → generated config → explicit migrations → service
+   startup → readiness → atomic generation-1 commit now all work end to
+   end, for real, against a genuinely clean host, with safe resume
+   before commit.
 9. Реализовать idempotent update/remove reconciliation.
 10. Реализовать backup и tested restore.
 11. Реализовать upgrade/rollback.
