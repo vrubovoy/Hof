@@ -305,7 +305,7 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — in progress (item 8 of 18 reopened 2026-08-28: PRs #24-30 landed a real, CI-exercised `hofctl apply` pipeline, but a review found nine concrete blockers in the bootstrap/apply scope itself - most critically, `hofctl plan` and `hofctl apply` compute two structurally different plan documents, so an operator-approved plan ID can never be the ID apply actually needs, and `apply --resume` cannot resume after the first real mutation because it runs the bootstrap-baseline check before ever reading the lock/journal; three stabilization PRs (#31-33) are planned in `PLATFORM-OPS-PLAN.md` before item 8 closes for real and item 9 starts)**: a
+5. **Platform operations — in progress (item 8 of 18 closed for real 2026-08-28: after PRs #24-30's initial close call turned out premature - a review found nine concrete blockers in the bootstrap/apply scope - PRs #31-37 fixed every one of them and proved it with a genuinely full, live, disposable-VM `hofctl apply` run: a real signed `v0.1.2` platform release, a real signed `ee-v0.1.1` Execution Environment, real application images, real migration/service-start/readiness, and a real generation-1 commit, confirmed by a real follow-up `hofctl plan` seeing an "applied" baseline; item 9, applied-mode reconciliation, next - see `PLATFORM-OPS-PLAN.md`'s "Item 8 closed for real" log entry for the full story)**: a
    standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
@@ -557,6 +557,31 @@ declared complete after a live-testing polish round - the same day).
    that closes it for real. Applied-mode reconciliation (update/remove),
    backup/restore, upgrade/rollback, first-admin bootstrap, and the
    installer UI remain item 9 and later, unaffected by this reopening.
+
+   **Item 8 closed for real (2026-08-28), PRs #31-37.** All nine
+   findings fixed and independently re-verified: `hofctl plan` against a
+   bootstrap target now prints the real `plan-v2` document `apply`
+   itself checks byte for byte (recomputed twice, full document diff);
+   resume reads the lock/journal first, always, never re-deriving a live
+   baseline; supplied TLS is genuinely parsed/key-matched/validity- and
+   SAN-checked and actually delivered to the target; the `host` role
+   fixes Compose-without-Engine; `apply` re-verifies the exact supported
+   platform on every live recompute; journal/lock reads are schema-
+   validated; SSH `ProxyCommand`/`ProxyJump` are disabled outright;
+   `build-release-lock.mjs` resolves the Execution Environment's real
+   `ee-vX.Y.Z` tag correctly. A real `ee-v0.1.1` was cut baking in the
+   PR #31/#32 fixes, then a real platform release `v0.1.2` - the first
+   to carry a real Execution Environment - surfaced and fixed two more
+   genuine bugs along the way (a fixture secret-file permission bug
+   breaking Wächter's own non-root agent process; a real Docker-in-
+   Docker overlay2-on-overlay2 kernel limitation in the test fixture
+   itself). The result: a genuinely full, live, disposable-VM `hofctl
+   apply` run - real signed release, real signed Execution Environment,
+   real application images, real `database.migrate`/`service.start`/
+   `readiness.wait`, a real generation-1 `state.commit` - confirmed
+   afterward by a real second `hofctl plan` seeing an `"applied"`
+   baseline, not `"bootstrap"`. See PLATFORM-OPS-PLAN.md's own "Item 8
+   closed for real" log entry for the full account.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.

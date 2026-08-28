@@ -780,6 +780,97 @@ starts read-only and mutation controls retain a separate security gate.
       `ansible/README.md`, which currently asserts both "apply is
       implemented" and "hofctl apply (not yet implemented)" at once.
     Item 8 stays open until all three land; item 9 does not start first.
+  - **Item 8 closed for real (2026-08-28), PRs #31-37:** all nine
+    findings from the reopened review fixed, each independently
+    verified, not just asserted:
+    - **#31 (blockers #1-2, both Critical):** `hofctl plan` against a
+      bootstrap target now prints the real `plan-v2` document `apply`
+      itself requires `--plan`/`--approve-plan-id` to match byte for
+      byte (recomputed once before the lock, once again under it, both
+      times as a full canonical-document diff, not just an ID
+      comparison). `apply --resume` now reads the lock/journal first,
+      always - the journal embeds the full approved plan (schema
+      bumped) and resume never re-derives a live baseline, closing the
+      "can't resume after the first real mutation" bug and, as a direct
+      consequence, the separate "a successful but uncommitted-journal
+      state.commit could wedge a host" finding too (the existing
+      per-step skip logic now gets the chance to finish the journal/lock
+      cleanup on its own). 372/372 tests, new coverage: a pre-lock
+      stale-plan refusal, a genuinely partial-bootstrap resume, a
+      resume refused on a changed input digest.
+    - **#32 (blockers #4/#6/#7, plus schema-validated reads and SSH
+      hardening):** supplied TLS is now genuinely parsed, key-matched
+      (`X509Certificate.checkPrivateKey`), validity- and SAN-checked
+      (exact + RFC 6125 wildcard) against every real public hostname,
+      and delivered to the target through the same `secret.ensure`
+      mechanism every other secret uses - the rendered Compose file
+      previously bind-mounted a workstation path directly into a
+      target-side volume definition, meaningless on the actual target.
+      The `host` role now checks/installs the Compose plugin
+      independently of Engine's own presence. `apply` re-verifies the
+      exact supported platform (Debian 12/Ubuntu 24.04/x86_64) on every
+      live plan recompute, not just once in `preflight`. Journal/lock
+      documents read off the target are now schema-validated before
+      apply ever acts on a field from either. `ProxyCommand`/`ProxyJump`
+      are explicitly disabled on every SSH connection this platform
+      makes (verified against a real transport, `pnpm test:ssh`, 11/11).
+      382/382 tests, including `supplied-tls.test.mjs` rewritten against
+      real `openssl`-generated certificates.
+    - **#33 (blocker #8):** `build-release-lock.mjs` resolves the
+      Execution Environment's own `ee-vX.Y.Z` git tag correctly now
+      (`resolveRevision()`/`resolveBuiltArtifact()` take an explicit
+      `tagPrefix`) - previously it always looked up plain `vX.Y.Z`,
+      which for a version number coinciding with an already-published
+      platform tag in this same repository would have silently resolved
+      the *wrong commit*. `schemas/release-lock-v1.schema.json` gained a
+      dedicated `ansibleEnvironmentArtifact` definition enforcing the
+      `ee-v` prefix. 387/387 tests.
+    - **A real `ee-v0.1.1`** was then cut and independently re-verified
+      (real `cosign verify`, both attestations present), baking PR
+      #31/#32's own Ansible role fixes into a real pinned image for the
+      first time.
+    - **#34-36 (blocker #9, "no full live evidence"):** a real platform
+      release, `v0.1.2` (`releases/0.1.2.yml`), was cut - the first to
+      carry a real `ansibleEnvironment`, reusing `v0.1.1`'s own
+      unchanged app-component selections. Cutting it for real surfaced
+      two more genuine, previously-unknown bugs, both fixed before it
+      would pass: `integration-matrix.mjs`'s own fixture secret files
+      were mode `0600`, invisible to any non-root container process
+      (`wachter-agent` specifically, found via two real, deterministic
+      CI failures - PR #35, fixed at `0644` for these synthetic
+      fixture-only values; the real target-side secret role stays
+      `root:root 0400`, untouched). `test/apply-acceptance.mjs` was then
+      rewritten (PR #36) to download the real, published, signed
+      `v0.1.2` lock and run the entire real `hofctl apply` pipeline
+      against it with nothing bypassed: the real, published `ee-v0.1.1`
+      image (no local build, no override), its real Cosign signature
+      genuinely verified, the release lock's own real blob signature
+      genuinely verified (`.github/workflows/test.yml`'s `contracts` job
+      gained a `cosign-installer` step), real application images
+      (`schlussel`/`schlussel-frontend`/`schloss` - the platform's own
+      mandatory core, every optional service disabled, matching
+      `test/fixtures/topologies/core.yml`; `requiredSecrets()` at this
+      scope is empty, so no secrets store is needed either). A real,
+      previously-unknown Docker-in-Docker limitation surfaced along the
+      way and got fixed too: the target fixture's own nested Docker
+      daemon defaulted to the `overlay2` storage driver, which the
+      kernel genuinely refuses when already running inside another
+      overlayfs-backed container - pinned to `vfs` for this fixture
+      only (never touching a real target's own, always-overlay2,
+      defaults). The result: every real role ran for real for the first
+      time in one single CI run - `host.prepare`, `secret.ensure`
+      (including the real TLS material), every `volume.ensure`, every
+      real `image.verify`/`image.pull`, `config.write`,
+      `database.migrate`, every `service.start`/`readiness.wait`, and a
+      genuine generation-1 `state.commit` - confirmed afterward by a
+      real second `hofctl plan` against the same host correctly seeing
+      an `"applied"` baseline (not `"bootstrap"`), at the real committed
+      generation and installation id.
+    - **#37:** `ansible/README.md` updated to say all ten roles are now
+      verified live, not six of ten.
+    Nothing about items 9-18 changed by any of this - applied-mode
+    reconciliation, backup/restore, upgrade/rollback, and the clean-VM
+    acceptance pass (item 14) remain their own, later, unstarted work.
 
 ---
 
@@ -1307,24 +1398,19 @@ Schlüssel остаётся authorization authority, но не получает 
    collapsed into the implementation-progress entry above.
 7. [x] Реализовать hofctl validate/preflight/plan. Completed 2026-08-27;
    details collapsed into the implementation-progress entries above.
-8. [ ] Реализовать Ansible fresh install. PRs
+8. [x] Реализовать Ansible fresh install. PRs
    [#24](https://github.com/vrubovoy/hof-ops/pull/24)-[#30](https://github.com/vrubovoy/hof-ops/pull/30)
-   landed a real, CI-exercised pipeline, but a 2026-08-28 review (against
-   clean worktrees, pins `Hof` `bd0f83a` / `hof-ops` `419520d`, no
-   tests/containers run - static code reading only) found the "closes
-   item 8" claim premature: nine concrete blockers in the bootstrap/apply
-   scope itself, two of them independently re-verified against the actual
-   code before accepting the review (`hofctl plan` still prints `plan-v1`
-   while `apply` independently builds and requires approval of a
-   different `plan-v2` document with extra fields, so an operator-approved
-   ID from a real `plan` run can never be the ID `apply` asks for;
-   `apply --resume` runs the ordinary bootstrap baseline check before
-   ever reading the lock/journal, so it necessarily refuses to resume
-   after any real mutation - `volume.ensure`, `network.ensure`, a created
-   container - already happened, i.e. exactly the case resume exists for).
-   See the "Item 8 reopened" log entry below for the full list and the
-   three-PR stabilization plan (#31-33) that closes it for real.
-   Completed-2026-08-28 claim retracted.
+   landed a real, CI-exercised pipeline, but a 2026-08-28 review found
+   the "closes item 8" claim premature: nine concrete blockers in the
+   bootstrap/apply scope itself. All nine fixed for real across PRs
+   [#31](https://github.com/vrubovoy/hof-ops/pull/31)-[#37](https://github.com/vrubovoy/hof-ops/pull/37),
+   closing with a genuinely full, live, disposable-VM `hofctl apply` run
+   (real signed release, real signed Execution Environment, real
+   application images, real migration/start/readiness, a real
+   generation-1 commit, confirmed by a real follow-up `hofctl plan`
+   seeing an `"applied"` baseline) - see the "Item 8 closed for real"
+   log entry below. Completed 2026-08-28 (second call, this one backed
+   by real CI evidence, not a partial run).
 9. Реализовать idempotent update/remove reconciliation.
 10. Реализовать backup и tested restore.
 11. Реализовать upgrade/rollback.
