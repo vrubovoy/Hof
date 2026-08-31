@@ -871,6 +871,114 @@ starts read-only and mutation controls retain a separate security gate.
     Nothing about items 9-18 changed by any of this - applied-mode
     reconciliation, backup/restore, upgrade/rollback, and the clean-VM
     acceptance pass (item 14) remain their own, later, unstarted work.
+  - **Item 8, second review (2026-08-28/31), PRs #38-41:** the "closed
+    for real" call above was itself premature a second time - a
+    detailed, line-cited review found eight more invariants the first
+    remediation round hadn't actually closed, two of them genuine crash
+    windows the "resume reads lock/journal first" fix didn't cover. Each
+    was independently re-verified against the actual code before being
+    accepted, matching the same methodology as the reopened review
+    above.
+    - **Post-commit recovery, still incomplete (Critical):** two real
+      crash windows survived PR #31's own fix - (a) `state.commit`'s
+      real effect lands (idempotent `current.json`/`topology.json`) but
+      the durable "succeeded" event append crashes before completing,
+      so resume sees only a "started" event and blocks forever; (b) the
+      journal reaches `status: "succeeded"` but the following
+      `releaseLock` crashes, and `assertJournalResumable` unconditionally
+      threw "already succeeded - nothing to resume" on the next resume
+      attempt, before ever reaching cleanup. Fixed: an already-succeeded
+      journal now completes gracefully (releases the lock, returns) at
+      the top of resume, before that assertion can throw; and a
+      `state.commit`-specific recovery path reads the target's own real
+      `current.json` (schema-validated) and only synthesizes the missing
+      "succeeded" event when it independently confirms
+      `lastSuccessfulOperationId`/`generation` actually match - never
+      guessed, and deliberately not generalized to any other operation
+      (ADR 0004's "never guess" principle stays intact for
+      `database.migrate`/`image.pull`/etc.).
+    - **Resume trusted an unvalidated embedded plan and events (High):**
+      the journal's own `plan` field was never re-validated against
+      `schemas/plan-v2.schema.json`, its own `planId`, the approved
+      plan's whitelist, or the lock/target's own values on resume; events
+      read via `readEvents` had zero schema validation, so any forged
+      `phase: "succeeded"` event would silently skip a step. Fixed: full
+      schema/planId/whitelist/cross-binding validation on the embedded
+      plan, and per-event schema/operationId/known-step-id validation,
+      both on every resume.
+    - **`--plan` approval was only declarative (High):** apply checked
+      `--approve-plan-id` against the plan file's own `planId` *field*,
+      never recomputed it from the file's actual content - a schema-valid
+      file with a stale `planId` left in place after hand-editing would
+      have been silently accepted (execution itself stayed safe, since
+      the live recompute independently re-derives its own planId; the
+      "operator approved these exact bytes" contract was what broke).
+      Fixed: exported `computePlanId()`, used to self-verify both the
+      `--plan` file and the journal's embedded plan against their own
+      recorded `planId` before either is trusted.
+    - **Supplied TLS delivery-time TOCTOU (High):** the under-lock
+      recheck genuinely compares TLS fingerprints, but the files were
+      read *again* right before delivery with no comparison against the
+      approved plan - a swap in that window, or at any point during
+      `--resume` (which never repeats the live recompute at all), would
+      have delivered unapproved material. Fixed: delivery-time fingerprints
+      are re-hashed and compared against `plan.suppliedTls` immediately
+      before the secret write.
+    - **Wächter breaks on a real target (High):** the secret role wrote
+      `root:root 0400`; Compose's own file-based `secrets:` provider is a
+      plain bind-mount (not Swarm-style fixed-permission distribution),
+      so a consuming container sees the *host* file's mode exactly as
+      written - invisible to any non-root process, a real case since
+      Wächter's own agent runs `USER node`. Fixed in
+      `ansible/roles/secret/tasks/main.yml` (PR #39): mode `0444`,
+      world-readable, safe specifically because `/etc/hof/secrets` itself
+      stays `0700` (host role) - a bind-mounted container's own mount
+      namespace never sees that directory path at all, so only a
+      container the secret was explicitly bind-mounted into can read it.
+      Unlike every other fix in this round, a source change to
+      `ansible/` has zero effect on an already-published, immutable
+      Execution Environment image - `ansible/` is baked in at EE
+      build time. A new `ee-v0.1.2` was cut and independently
+      re-verified (real `cosign verify` against a disposable container,
+      matching digest and signed identity), then a new platform release
+      `v0.1.3` (`releases/0.1.3.yml`, PR #40 - `v0.1.2`'s own
+      app-component selections unchanged, only `ansibleEnvironment`
+      moved). `test/apply-acceptance.mjs` (PR #41) then re-ran the full
+      real bootstrap against `v0.1.3`/`ee-v0.1.2` with the TLS
+      secret-file mode assertion flipped to `444`, a matching
+      private-key stat check, and a real `/etc/hof/secrets`
+      directory-mode (`700`) check added - passing for real in CI, the
+      only genuine confirmation that the fix, not just the role source,
+      actually reaches a target.
+    - **Platform check skipped on resume (High):** the exact Debian
+      12/Ubuntu 24.04/x86_64 check lived only in the live-recompute path
+      `computeLivePlanV2()` calls, which fresh apply calls twice but
+      resume, by design, never calls at all. Fixed: `checkOs()`/
+      `checkArchitecture()` now run directly in the resume branch too.
+    - **SSH proxy hardening missing from the Ansible channel (Medium):**
+      the inspector and target-mutate transports disable
+      `ProxyCommand`/`ProxyJump`; the inventory built for real Ansible
+      mutations/secret delivery didn't. Not an immediate exploit against
+      the pinned EE, but the plan's own text wrongly claimed this was
+      disabled on *every* SSH connection. Fixed in `buildInventory()`.
+    - **Acceptance test under-delivered on its own published promise
+      (Medium):** PR #36's own test didn't schema-validate `current.json`,
+      didn't check `topology.json` directly, and checked a second `plan`
+      refusal but never a second `apply` refusal. Fixed in PR #38 (all
+      three added; the CLI-vs-direct-call and target-VM-vs-container
+      gaps the review also named belong to item 14, not a defect here).
+    - Every fix landed with new, targeted regression tests (396/396
+      locally before the EE/release cut; both `ansible` and `contracts`
+      CI jobs genuinely green on PRs #38, #39, #40, and #41
+      independently).
+    Sequencing matched the review's own explicit instruction: because
+    the Ansible role change is inert until baked into a new image, the
+    JS-only fixes (PR #38) landed and were verified first, then the role
+    fix (PR #39), then a new EE (`ee-v0.1.2`), then a new signed platform
+    release (`v0.1.3`), then a repeated full acceptance run proving the
+    permission fix actually reaches a target (PR #41) - no step skipped,
+    no claim made ahead of its own evidence. Nothing about items 9-18
+    changed by any of this either.
 
 ---
 
@@ -1409,8 +1517,17 @@ Schlüssel остаётся authorization authority, но не получает 
    application images, real migration/start/readiness, a real
    generation-1 commit, confirmed by a real follow-up `hofctl plan`
    seeing an `"applied"` baseline) - see the "Item 8 closed for real"
-   log entry below. Completed 2026-08-28 (second call, this one backed
-   by real CI evidence, not a partial run).
+   log entry below. That second call was *also* premature: a further
+   line-cited review found eight more invariants still open, two of
+   them genuine crash windows. All eight fixed for real across PRs
+   [#38](https://github.com/vrubovoy/hof-ops/pull/38)-[#41](https://github.com/vrubovoy/hof-ops/pull/41),
+   including a new signed Execution Environment (`ee-v0.1.2`) and a new
+   signed platform release (`v0.1.3`) the fix itself required, with the
+   full disposable-VM acceptance run repeated and genuinely green against
+   both - see the "Item 8, second review" log entry below. Completed
+   2026-08-31 (third call; given two prior premature closures, treat
+   this as the currently-best-verified state rather than a guarantee
+   nothing further surfaces on close reading).
 9. Реализовать idempotent update/remove reconciliation.
 10. Реализовать backup и tested restore.
 11. Реализовать upgrade/rollback.

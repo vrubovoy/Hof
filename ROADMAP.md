@@ -305,7 +305,7 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — in progress (item 8 of 18 closed for real 2026-08-28: after PRs #24-30's initial close call turned out premature - a review found nine concrete blockers in the bootstrap/apply scope - PRs #31-37 fixed every one of them and proved it with a genuinely full, live, disposable-VM `hofctl apply` run: a real signed `v0.1.2` platform release, a real signed `ee-v0.1.1` Execution Environment, real application images, real migration/service-start/readiness, and a real generation-1 commit, confirmed by a real follow-up `hofctl plan` seeing an "applied" baseline; item 9, applied-mode reconciliation, next - see `PLATFORM-OPS-PLAN.md`'s "Item 8 closed for real" log entry for the full story)**: a
+5. **Platform operations — in progress (item 8 of 18, PRs #24-41 across three closure rounds - two premature calls corrected in turn, each on independently-verified findings: PRs #24-30's initial close missed nine bootstrap/apply blockers, fixed by #31-37 with a genuinely full, live, disposable-VM `hofctl apply` run; that close then missed eight more invariants, including two real crash windows, fixed by #38-41 with a new signed Execution Environment `ee-v0.1.2`, a new signed platform release `v0.1.3`, and the full acceptance run repeated and green against both - item 9, applied-mode reconciliation, next; see `PLATFORM-OPS-PLAN.md`'s "Item 8, second review" log entry for the full story)**: a
    standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
@@ -582,6 +582,34 @@ declared complete after a live-testing polish round - the same day).
    afterward by a real second `hofctl plan` seeing an `"applied"`
    baseline, not `"bootstrap"`. See PLATFORM-OPS-PLAN.md's own "Item 8
    closed for real" log entry for the full account.
+
+   **Item 8, second review (2026-08-28/31), PRs #38-41.** That closure
+   call was also premature: a further line-cited review found eight more
+   invariants still open, two of them genuine crash windows the "resume
+   reads lock/journal first" fix hadn't actually covered (an event-append
+   crash after a successful `state.commit`; a lock-release crash after
+   a succeeded journal, which the resumability check then refused to
+   ever recover from). Also found: resume trusted its own journal's
+   embedded plan and events with no schema/planId/whitelist validation;
+   `--plan` approval only checked a file's own `planId` field, never
+   recomputed it from content; supplied TLS was re-read at delivery time
+   with no comparison against the approved plan (a resume-only TOCTOU);
+   the platform-support check never ran on resume; SSH proxy hardening
+   was missing from the Ansible inventory specifically; and the
+   real-target secret file mode (`root:root 0400`) was invisible to any
+   non-root consuming container, a real case for Wächter's own `USER
+   node` agent. All eight fixed and independently re-verified. The
+   secret-mode fix required a new Execution Environment (`ansible/` is
+   baked in at image-build time) - `ee-v0.1.2` was cut and independently
+   re-verified, then a new signed platform release `v0.1.3` (reusing
+   `v0.1.2`'s own app-component selections unchanged), then the full
+   disposable-VM `hofctl apply` acceptance run repeated end to end
+   against both, genuinely green in CI, with the secret-file mode
+   assertion now checking `444` for real rather than the old `400`. See
+   PLATFORM-OPS-PLAN.md's own "Item 8, second review" log entry for the
+   full account. Given two consecutive premature closures on this item,
+   this is reported as the currently-best-verified state, not as a
+   guarantee nothing further surfaces on another close reading.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.
