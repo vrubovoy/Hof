@@ -305,7 +305,7 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — in progress (item 8 of 18, PRs #24-46 across FIVE closure calls - four premature calls corrected in turn, each on independently-verified findings: PRs #24-30's initial close missed nine bootstrap/apply blockers, fixed by #31-37 with a genuinely full, live, disposable-VM `hofctl apply` run; that close missed eight more invariants including two real crash windows, fixed by #38-41 with a new signed EE `ee-v0.1.2` and platform release `v0.1.3`; that close missed seven more gaps including two more Critical ones, fixed by #42-45 with a new signed EE `ee-v0.1.3` and platform release `v0.1.4`; THAT close missed six more gaps - real lock/journal creation atomicity, a genuine releaseLock() compare-and-delete race, event/plan-order validation, a discarded lock-release check on the normal commit path, the succeeded fast path still skipping live validation, and a deployment-file TOCTOU - fixed by #46 (JS/schema-only, no new EE/release needed, independently re-verified against real running shell scripts and a measured real flock block, not just code reading) - item 9, applied-mode reconciliation, next, with a genuinely skeptical read of this journal/event/lock foundation warranted first, more so than ever; see `PLATFORM-OPS-PLAN.md`'s "Item 8, fourth review" log entry for the full story)**: a
+5. **Platform operations — in progress (item 8 of 18, PRs #24-47 across SIX closure calls - five premature calls corrected in turn, each on independently-verified findings: PRs #24-30's initial close missed nine bootstrap/apply blockers, fixed by #31-37 with a genuinely full, live, disposable-VM `hofctl apply` run; that close missed eight more invariants including two real crash windows, fixed by #38-41 with a new signed EE `ee-v0.1.2` and platform release `v0.1.3`; that close missed seven more gaps including two more Critical ones, fixed by #42-45 with a new signed EE `ee-v0.1.3` and platform release `v0.1.4`; that close missed six more gaps - real lock/journal creation atomicity, a genuine releaseLock() compare-and-delete race, event/plan-order validation, a discarded lock-release check on the normal commit path, the succeeded fast path still skipping live validation, and a deployment-file TOCTOU - fixed by #46; THAT close missed two more real gaps - atomicExclusiveCreateStep()'s own fixed temp filename was itself a corruption path (a crashed prior invocation's orphaned hard link let a later one silently overwrite an already-live lock via a shared inode) and cross-step event-order validation still only checked for gaps, not the raw stream's own actual order - fixed by #47 (again JS-only, no new EE/release, the atomicity fix specifically re-verified against a real executing shell script) - item 9, applied-mode reconciliation, next, with an even more careful, skeptical read of this journal/event/lock foundation warranted than ever; see `PLATFORM-OPS-PLAN.md`'s "Item 8, fifth review" log entry for the full story)**: a
    standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
@@ -674,11 +674,41 @@ declared complete after a live-testing polish round - the same day).
    more likely to trip). See PLATFORM-OPS-PLAN.md's own "Item 8, fourth
    review" log entry for the full account.
 
-   Given **four** closure calls on this one item, three of them
+   **Item 8, fifth review (2026-08-31), PR #47.** That closure call was
+   also premature, though this round confirmed most prior findings
+   genuinely fixed and found only two real gaps left, both entirely
+   JS-side. `atomicExclusiveCreateStep()` reused a FIXED temp filename
+   on every call - a prior invocation whose own `ln` succeeded but whose
+   own `rm` never ran (a crash in exactly that gap) left the fixed tmp
+   name and the real lock/journal as two hard links to the same inode;
+   a LATER invocation's own write to that fixed name would then
+   silently corrupt the already-live lock, even though its own `ln`
+   would correctly refuse afterward - the damage was already done by
+   then. The fourth round's own flock doesn't protect against this: the
+   crashed process already released it. Reproduced for real both before
+   fixing (an orphaned hard link manually left behind, a second attempt
+   confirmed to corrupt the live lock) and after (the same scenario, now
+   surviving untouched). Fixed with a genuinely unique `mktemp` name
+   every call plus opportunistic cleanup of orphaned priors. Also found:
+   cross-step event-order validation still only checked for gaps, not
+   the raw stream's own actual order - a later step's events appearing
+   entirely before an earlier step's, or two steps' events genuinely
+   interleaved, both survived every prior check. Fixed by walking the
+   raw stream once, requiring the previous step to already resolve to a
+   genuine success before the next one may open.
+
+   Both fixed and, for the atomicity fix, re-verified against a real
+   executing shell script and a real scratch filesystem - reproducing
+   the exact crash scenario, not just reading the code. 429/429 tests
+   locally. See PLATFORM-OPS-PLAN.md's own "Item 8, fifth review" log
+   entry for the full account.
+
+   Given **five** closure calls on this one item, four of them
    premature, this is reported as the currently-best-verified state,
-   not a guarantee - a genuinely skeptical read is warranted before
-   trusting it further, and before building item 9's own applied-mode
-   reconciliation on this same journal/event/lock foundation.
+   not a guarantee - an even more careful, skeptical read is warranted
+   before trusting it further, and before building item 9's own
+   applied-mode reconciliation on this same journal/event/lock
+   foundation.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.

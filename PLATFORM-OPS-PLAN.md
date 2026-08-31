@@ -1157,6 +1157,67 @@ starts read-only and mutation controls retain a separate security gate.
     same journal/event/lock foundation directly - a careful, skeptical
     read of PRs #38-46 before extending it is warranted, more so than
     ever given the pattern so far.
+  - **Item 8, fifth review (2026-08-31), PR #47:** the "fourth review"
+    closure above was also premature, though this time only two real
+    gaps survived independent re-verification (a broader set of prior
+    findings was explicitly confirmed genuinely fixed by this review
+    itself):
+    - **`atomicExclusiveCreateStep()` reused a FIXED temp filename
+      (Critical):** `targetPath.tmp`, the same name on every call. A
+      prior invocation whose own `ln` had already succeeded but whose
+      own `rm` never ran (dying in exactly that gap - a crash, an
+      OOM-kill, a dropped connection) left the fixed tmp name and the
+      real target as two hard links to the SAME inode. A LATER
+      invocation's own `printf ... > targetPath.tmp` would then
+      truncate that shared inode, silently corrupting the already-live,
+      currently-held lock or journal - even though the later
+      invocation's own `ln` would (correctly) then refuse with EEXIST,
+      since by then the damage was already done via the truncating
+      write, not the link. The fourth round's own target-side `flock`
+      does not protect against this: the crashed process already
+      released it when it died, so a later invocation's own flock
+      acquisition succeeds cleanly and walks straight into the poisoned
+      shared inode. Reproduced for real before fixing (a first attempt
+      run to completion, an orphaned hard link left behind by hand
+      simulating the crash-before-rm gap, a second attempt confirmed to
+      silently corrupt the live lock) and confirmed fixed after
+      (identical scenario, live lock survives untouched, no stray temp
+      files remain). Fixed: every temp file now gets a genuinely unique
+      `mktemp` name, plus an opportunistic cleanup of any orphaned prior
+      one for the same target (safe under the shared flock). A new,
+      real - not mocked - regression test captures the exact script
+      `acquireLockAndJournal()` builds, path-substitutes the real
+      `/var/lib/hof/state` prefix for a scratch directory, and executes
+      it for real via `sh -c`.
+    - **Cross-step event order still only checked for gaps, not the raw
+      stream's own actual order (High):** two concrete, schema-valid-
+      but-impossible shapes survived every check the fourth round added
+      - a later step's own fully-resolved events appearing in the file
+      entirely before an earlier step's own even begin (not a gap -
+      both steps have events), and two steps' events genuinely
+      interleaved (`A.started, B.started, B.succeeded, A.succeeded` -
+      neither step's own isolated per-step history is malformed).
+      Fixed: the raw stream is now walked once, in order, requiring
+      every event to belong to either the step currently "open" or the
+      very next one in the plan's own dispatch order, and requiring the
+      previous step's own accumulated history to already resolve to a
+      genuine success (reusing `decideStepResumption()` itself) before
+      the next step's own block may begin.
+    Also added, per the review's own explicit ask: a direct test for
+    the normal (non-resume) successful-commit path discarding a real
+    `releaseLock()` failure - it turned out this exact case was already
+    fixed correctly by the fourth round's own code, just never directly
+    tested until now. 429/429 tests locally, run 3x consecutively for
+    stability; both CI jobs genuinely green, including the real
+    disposable-VM acceptance run. No ansible role touched, no new
+    Execution Environment or platform release needed - single-PR close,
+    same as the fourth round.
+
+    Given **five** closure calls on this one item, four of them
+    premature, item 9 (applied-mode reconciliation) reuses this same
+    journal/event/lock foundation directly - an even more careful,
+    skeptical read of PRs #38-47 before extending it is warranted than
+    was already asked for after the fourth round.
 
 ---
 
@@ -1733,7 +1794,25 @@ Schlüssel остаётся authorization authority, но не получает 
    premature, treat this as the currently-best-verified state, not a
    guarantee - a genuinely skeptical read is warranted before trusting
    it further, and before building item 9 on this journal/event/lock
-   foundation).
+   foundation). That fifth call was *also* premature: a further review
+   confirmed most prior findings genuinely fixed, but found two more
+   real gaps - `atomicExclusiveCreateStep()`'s own fixed temp filename
+   was itself a corruption path (a crashed prior invocation's orphaned
+   hard link could let a later one silently overwrite an already-live
+   lock via a shared inode, reproduced for real both before and after
+   the fix), and cross-step event-order validation still only checked
+   for gaps, not the raw stream's own actual order (a later step's
+   events appearing entirely before an earlier one's, or two steps'
+   events genuinely interleaved, both survived). Both fixed for real
+   across PR [#47](https://github.com/vrubovoy/hof-ops/pull/47) -
+   entirely JS-side again, no new EE/release needed - with the
+   atomicity fix specifically re-verified against a real, executing
+   shell script and a real scratch filesystem, not mocked. See the
+   "Item 8, fifth review" log entry below. Completed 2026-08-31 (sixth
+   call; given **five** closure calls, four of them premature, item 9
+   reuses this same journal/event/lock foundation directly - an even
+   more careful, skeptical read of PRs #38-47 is warranted than after
+   the fourth call already).
 9. Реализовать idempotent update/remove reconciliation.
 10. Реализовать backup и tested restore.
 11. Реализовать upgrade/rollback.
