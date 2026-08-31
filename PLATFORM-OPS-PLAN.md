@@ -1079,6 +1079,84 @@ starts read-only and mutation controls retain a separate security gate.
     guarantee - a genuinely skeptical read is warranted before trusting
     a fourth time, and before building item 9's own applied-mode
     reconciliation on top of this journal/event/lock foundation.
+  - **Item 8, fourth review (2026-08-31), PR #46:** the "third review"
+    closure above was also premature - a further, line-cited review
+    found six more gaps, entirely JS/schema-side (no ansible role
+    touched, no new Execution Environment or platform release needed
+    this time, confirmed by the review's own explicit note):
+    - **`acquireLockAndJournal()` wasn't actually atomic:** the lock and
+      journal were each written via `set -C; ... > path` - a plain `>`
+      redirection truncates/creates the destination the instant the
+      shell parses it, before the writing pipeline even runs, so a
+      crash of the remote script mid-transfer could leave a truncated
+      file behind even after the third round's single-round-trip fix.
+      Fixed: both now write to a temp file first, then `ln` (never
+      `mv`) into place - `ln` fails outright on an existing target
+      rather than overwriting, and the real destination is never
+      observably partial. Reordered to create the journal FIRST, then
+      the lock - the reverse of the previous order - so a lock, once
+      observed present, structurally guarantees its journal already
+      exists (closing even the smaller in-script-crash window the
+      third round's fix left open). Verified for real, not just by
+      reading the code: the actual generated shell scripts were run
+      against a scratch directory and killed mid-write in three
+      different ways - the final path never existed in any of them.
+    - **`releaseLock()`'s own grep-then-rm was a genuine compare-and-
+      delete race:** a different releaser removing the same lock, and a
+      brand new apply acquiring the next one, could both land in the
+      window between one releaser's own grep and its rm. Fixed: both
+      `acquireLockAndJournal` and `releaseLock` now run their own
+      critical section inside the same target-side `flock`. Verified
+      for real: measured a genuine ~1.7s block on a concurrent acquire
+      attempt while a delayed release held the flock.
+    - **The event-order check still only counted phases per attempt:**
+      a "succeeded" appearing in the file BEFORE its own attempt's
+      "started" resolved identically to a genuine pair.
+      `decideStepResumption()` now checks true physical/append order,
+      plus a new check nothing had before: a later plan step recording
+      events while an earlier one in the plan's own real dispatch order
+      has none at all is refused.
+    - **The normal (non-resume) successful-commit path discarded
+      `releaseLock()`'s own return value outright** - the exact gap the
+      third review already closed for the resume-side succeeded fast
+      path, missed here. Fixed with the same check.
+    - **The succeeded-journal fast path still ran before platform/host-
+      key/digest/event validation**, and never independently confirmed
+      the claim against the target's own real `current.json`/
+      `topology.json`. Fixed: every check now runs unconditionally, and
+      a succeeded journal is only trusted once every plan operation
+      independently resolves to skip AND the live target state matches
+      byte for byte (barring the timestamp) what this exact operation
+      would have committed.
+    - **A real TOCTOU in `loadAndValidateDeployment()`:** the deployment
+      files were parsed once, then independently re-read a second time
+      afterward just for their digests - a file edited on the
+      workstation between the two reads could mean planning happened
+      against different content than the journal ends up recording a
+      digest of. Fixed: the bytes are now returned from the one read
+      and reused everywhere, never re-read.
+    - **`committedGeneration` allowed any integer >= 1** for a succeeded
+      journal - pinned to `const: 1` (item 8's own scope is
+      bootstrap-only, ADR 0004).
+    All six independently re-verified, plus - for the first time this
+    round - independently re-verified against REAL running shell
+    scripts and a real measured flock block, not just code reading or
+    mocked unit tests. New targeted regression tests for every case.
+    425/425 tests locally; one pre-existing, unrelated test flake (a
+    shared-OS-tmpdir snapshot race in a signature-verification test,
+    made far more likely to trip by this round's own added test volume,
+    not a defect in the code that test targets) fixed alongside it. Both
+    CI jobs (`ansible`, `contracts`) genuinely green, including the real
+    disposable-VM acceptance run - no new EE/release needed, so this
+    round closes in a single PR rather than the multi-PR sequence the
+    second and third rounds each required.
+
+    Given **four** closure calls on this one item, three of them
+    premature, this is recorded as the currently-best-verified state,
+    not a guarantee. Item 9 (applied-mode reconciliation) reuses this
+    same journal/event/lock foundation directly - a careful, skeptical
+    read of PRs #38-46 before extending it is warranted, more so than
+    ever given the pattern so far.
 
 ---
 
@@ -1634,11 +1712,28 @@ Schlüssel остаётся authorization authority, но не получает 
    signed platform release (`v0.1.4`) the Docker-service-enable fix
    itself required, with the full disposable-VM acceptance run repeated
    and genuinely green against both - see the "Item 8, third review" log
-   entry below. Completed 2026-08-31 (fourth call; given **three** prior
-   premature closures, treat this as the currently-best-verified state,
-   not a guarantee - a genuinely skeptical read is warranted before
-   trusting it further, and before building item 9 on this journal/
-   event/lock foundation).
+   entry below. That third call was *also* premature: a further
+   line-cited review found six more gaps, entirely JS/schema-side (no
+   ansible role touched, no new EE/release needed this time) - real
+   lock/journal creation atomicity (a plain `>` redirection could still
+   expose a truncated file mid-crash), a genuine target-side
+   compare-and-delete race in `releaseLock()`, event-order and
+   plan-dispatch-order validation, the normal commit path silently
+   discarding a real lock-release failure, the succeeded fast path
+   still skipping platform/digest/host-key/event checks and never
+   confirming against the target's own real state, and a TOCTOU between
+   parsing the deployment files and independently re-reading them for
+   digests. All six fixed for real across PR
+   [#46](https://github.com/vrubovoy/hof-ops/pull/46), independently
+   re-verified against REAL running shell scripts (a genuine mid-write
+   kill test, a measured ~1.7s flock block under real concurrency) for
+   the first time this round, not just code reading or mocked unit
+   tests - see the "Item 8, fourth review" log entry below. Completed
+   2026-08-31 (fifth call; given **four** closure calls, three of them
+   premature, treat this as the currently-best-verified state, not a
+   guarantee - a genuinely skeptical read is warranted before trusting
+   it further, and before building item 9 on this journal/event/lock
+   foundation).
 9. Реализовать idempotent update/remove reconciliation.
 10. Реализовать backup и tested restore.
 11. Реализовать upgrade/rollback.

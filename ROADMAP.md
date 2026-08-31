@@ -305,7 +305,7 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — in progress (item 8 of 18, PRs #24-45 across FOUR closure rounds - three premature calls corrected in turn, each on independently-verified findings: PRs #24-30's initial close missed nine bootstrap/apply blockers, fixed by #31-37 with a genuinely full, live, disposable-VM `hofctl apply` run; that close missed eight more invariants including two real crash windows, fixed by #38-41 with a new signed EE `ee-v0.1.2` and platform release `v0.1.3`; THAT close missed seven more gaps including two more Critical ones (a lock-before-journal crash window; a succeeded-fast-path silently discarding a real lock-release failure), fixed by #42-45 with a new signed EE `ee-v0.1.3` and platform release `v0.1.4` - item 9, applied-mode reconciliation, next, with a genuinely skeptical read of this journal/event/lock foundation warranted first; see `PLATFORM-OPS-PLAN.md`'s "Item 8, third review" log entry for the full story)**: a
+5. **Platform operations — in progress (item 8 of 18, PRs #24-46 across FIVE closure calls - four premature calls corrected in turn, each on independently-verified findings: PRs #24-30's initial close missed nine bootstrap/apply blockers, fixed by #31-37 with a genuinely full, live, disposable-VM `hofctl apply` run; that close missed eight more invariants including two real crash windows, fixed by #38-41 with a new signed EE `ee-v0.1.2` and platform release `v0.1.3`; that close missed seven more gaps including two more Critical ones, fixed by #42-45 with a new signed EE `ee-v0.1.3` and platform release `v0.1.4`; THAT close missed six more gaps - real lock/journal creation atomicity, a genuine releaseLock() compare-and-delete race, event/plan-order validation, a discarded lock-release check on the normal commit path, the succeeded fast path still skipping live validation, and a deployment-file TOCTOU - fixed by #46 (JS/schema-only, no new EE/release needed, independently re-verified against real running shell scripts and a measured real flock block, not just code reading) - item 9, applied-mode reconciliation, next, with a genuinely skeptical read of this journal/event/lock foundation warranted first, more so than ever; see `PLATFORM-OPS-PLAN.md`'s "Item 8, fourth review" log entry for the full story)**: a
    standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
@@ -639,12 +639,46 @@ declared complete after a live-testing polish round - the same day).
    release (`v0.1.4`, reusing `v0.1.3`'s own app-component selections
    unchanged), with the full disposable-VM acceptance run repeated end to
    end against both, genuinely green in CI. See PLATFORM-OPS-PLAN.md's
-   own "Item 8, third review" log entry for the full account. Given
-   **three** consecutive premature closures on this one item, this is
-   reported as the currently-best-verified state, not a guarantee - a
-   genuinely skeptical read is warranted before trusting it a fourth
-   time, and before building item 9's own applied-mode reconciliation on
-   this same journal/event/lock foundation.
+   own "Item 8, third review" log entry for the full account.
+
+   **Item 8, fourth review (2026-08-31), PR #46.** That closure call was
+   also premature: a further line-cited review found six more gaps,
+   entirely JS/schema-side this time - no ansible role touched, no new
+   Execution Environment or platform release needed. `acquireLockAndJournal()`
+   wasn't actually atomic (a plain `>` redirection still exposed a
+   truncated file during a mid-transfer crash) - fixed with a
+   temp-file-then-`ln` pattern, reordered to create the journal first,
+   then the lock. `releaseLock()`'s own grep-then-rm was a genuine
+   compare-and-delete race - fixed with a shared target-side `flock`
+   guard. The event-order check only counted phases per attempt, never
+   physical append order, and nothing checked the plan's own dispatch
+   order across steps - both fixed. The normal (non-resume) commit path
+   discarded a real lock-release failure the same way the resume-side
+   fast path used to, before the third review closed it there - fixed
+   with the same check. The succeeded fast path still ran before
+   platform/digest/host-key/event validation and never confirmed
+   against the target's own real current.json/topology.json - fixed.
+   And a real TOCTOU between parsing the deployment files and
+   independently re-reading them a second time for digests - fixed by
+   returning and reusing the bytes from the one read.
+
+   All six fixed and, for the first time this round, independently
+   re-verified against REAL running shell scripts, not just code
+   reading or mocked unit tests: the actual generated lock/journal
+   scripts were run against a scratch directory and killed mid-write in
+   three different ways (final path never existed in any of them), and
+   a genuine ~1.7s block was measured on a concurrent acquire attempt
+   while a delayed release held the flock. 425/425 tests locally; one
+   pre-existing, unrelated test flake fixed alongside it (a shared-OS-
+   tmpdir snapshot race this round's own added test volume made far
+   more likely to trip). See PLATFORM-OPS-PLAN.md's own "Item 8, fourth
+   review" log entry for the full account.
+
+   Given **four** closure calls on this one item, three of them
+   premature, this is reported as the currently-best-verified state,
+   not a guarantee - a genuinely skeptical read is warranted before
+   trusting it further, and before building item 9's own applied-mode
+   reconciliation on this same journal/event/lock foundation.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.
