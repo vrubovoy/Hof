@@ -305,7 +305,7 @@ declared complete after a live-testing polish round - the same day).
    and plain-text body locally, never raw HTML bodies (sidesteps
    stored-XSS/sanitization entirely for v1 - HTML-only emails show
    mailparser's stripped-text fallback).
-5. **Platform operations — in progress (item 8 of 18, PRs #24-41 across three closure rounds - two premature calls corrected in turn, each on independently-verified findings: PRs #24-30's initial close missed nine bootstrap/apply blockers, fixed by #31-37 with a genuinely full, live, disposable-VM `hofctl apply` run; that close then missed eight more invariants, including two real crash windows, fixed by #38-41 with a new signed Execution Environment `ee-v0.1.2`, a new signed platform release `v0.1.3`, and the full acceptance run repeated and green against both - item 9, applied-mode reconciliation, next; see `PLATFORM-OPS-PLAN.md`'s "Item 8, second review" log entry for the full story)**: a
+5. **Platform operations — in progress (item 8 of 18, PRs #24-45 across FOUR closure rounds - three premature calls corrected in turn, each on independently-verified findings: PRs #24-30's initial close missed nine bootstrap/apply blockers, fixed by #31-37 with a genuinely full, live, disposable-VM `hofctl apply` run; that close missed eight more invariants including two real crash windows, fixed by #38-41 with a new signed EE `ee-v0.1.2` and platform release `v0.1.3`; THAT close missed seven more gaps including two more Critical ones (a lock-before-journal crash window; a succeeded-fast-path silently discarding a real lock-release failure), fixed by #42-45 with a new signed EE `ee-v0.1.3` and platform release `v0.1.4` - item 9, applied-mode reconciliation, next, with a genuinely skeptical read of this journal/event/lock foundation warranted first; see `PLATFORM-OPS-PLAN.md`'s "Item 8, third review" log entry for the full story)**: a
    standalone bootstrap installer web UI, the shared
    `services.yml`, its idempotent Ansible reconciliation playbook, the later
    Schlussel `/admin` Services front door, and tag-push deployment
@@ -607,9 +607,44 @@ declared complete after a live-testing polish round - the same day).
    against both, genuinely green in CI, with the secret-file mode
    assertion now checking `444` for real rather than the old `400`. See
    PLATFORM-OPS-PLAN.md's own "Item 8, second review" log entry for the
-   full account. Given two consecutive premature closures on this item,
-   this is reported as the currently-best-verified state, not as a
-   guarantee nothing further surfaces on another close reading.
+   full account.
+
+   **Item 8, third review (2026-08-31), PRs #42-45.** That closure call
+   was also premature: a further line-cited review found seven more
+   gaps, two of them Critical. Fresh apply created the lock and the
+   journal as two separate SSH round trips - a crash of the LOCAL apply
+   process itself between them left a durable lock with no journal at
+   all, which resume then had nothing to do but refuse forever; fixed
+   via a single combined remote create (`acquireLockAndJournal()`), plus
+   auto-recovery of that exact state on resume. The already-succeeded
+   fast path silently discarded a real `releaseLock()` failure (a bare
+   `.catch(() => {})`) and never even looked at a clean `{ released:
+   false }` response either - reporting `blocked: false` regardless;
+   fixed with a real release-confirmation check. Also found: resume's
+   cross-binding validation was partial and, worse, entirely skipped by
+   the succeeded fast path; the event-resumability check trusted any
+   history containing a "succeeded" phase in any shape (a standalone one
+   with no preceding "started" resolved identically to a genuine pair);
+   post-commit recovery compared only two fields against the target's
+   own `current.json`, not the full expected document; the journal
+   schema's own documented status/committedGeneration invariant was
+   prose-only; `computePlanId()` wasn't actually canonical despite its
+   own name; the acceptance test's own journal/event assertions were
+   still spot-checks, not real schema validation; and the ansible host
+   role's own Docker-service-enable task silently skipped an
+   already-installed-but-disabled service. All seven fixed and
+   independently re-verified, same methodology as the two rounds before.
+   The Docker-service fix again needed a new Execution Environment
+   (`ee-v0.1.3`, independently re-verified) and a new signed platform
+   release (`v0.1.4`, reusing `v0.1.3`'s own app-component selections
+   unchanged), with the full disposable-VM acceptance run repeated end to
+   end against both, genuinely green in CI. See PLATFORM-OPS-PLAN.md's
+   own "Item 8, third review" log entry for the full account. Given
+   **three** consecutive premature closures on this one item, this is
+   reported as the currently-best-verified state, not a guarantee - a
+   genuinely skeptical read is warranted before trusting it a fourth
+   time, and before building item 9's own applied-mode reconciliation on
+   this same journal/event/lock foundation.
 6. **Localization rollout — pending**: extract and translate app strings
    after the service/UI surface is stable, then expose the shared language
    switcher. The library foundation alone does not make any app bilingual.

@@ -979,6 +979,106 @@ starts read-only and mutation controls retain a separate security gate.
     permission fix actually reaches a target (PR #41) - no step skipped,
     no claim made ahead of its own evidence. Nothing about items 9-18
     changed by any of this either.
+  - **Item 8, third review (2026-08-31), PRs #42-45:** the "second review"
+    closure above was *itself* premature a third time - a further,
+    line-cited review found seven more gaps, two of them Critical, each
+    independently re-verified against the actual code before being
+    accepted (same methodology as the two rounds above):
+    - **Lock-before-journal crash window (Critical):** fresh apply
+      created the lock and the journal as two separate SSH round trips -
+      a crash of the LOCAL `hofctl apply` process itself (not the SSH
+      session) between them left a durable lock with no journal at all,
+      which resume then had nothing to do but refuse forever (`--resume`
+      requires a readable journal before it will trust anything). Fixed:
+      `target-mutate.mjs`'s new `acquireLockAndJournal()` creates both in
+      ONE remote script invocation; resume additionally now recognizes
+      and auto-recovers a lock-with-no-journal (structurally provable to
+      mean no operation ever dispatched) rather than refusing forever.
+    - **Succeeded fast path silently discarded a real release failure
+      (Critical):** the "journal already succeeded, just finish
+      releasing the lock" path (PR #38's own fix) called `releaseLock()`
+      wrapped in a bare `.catch(() => {})` and then unconditionally
+      reported `blocked: false` - a genuine transport failure was
+      discarded outright, and even a clean `{ released: false }`
+      response was never inspected. Fixed: a real release-confirmation
+      check now reports `blocked` when the lock can't be confirmed
+      released, rather than silently claiming success.
+    - **Resume's cross-binding validation was partial, and skipped
+      entirely by the succeeded fast path (High):** `journal.operationId
+      === lock.operationId` and `journal.approvedPlanId ===
+      lock.approvedPlanId` were never checked at all, and the succeeded
+      fast path ran *before* even the embedded-plan/target checks PR #38
+      had added, trusting an unvalidated journal whenever `status` alone
+      said "succeeded". Fixed: both new checks added, and every
+      cross-binding/embedded-plan check now runs unconditionally, before
+      the succeeded fast path can ever return.
+    - **The event resumability check trusted any history containing a
+      "succeeded" phase, in any shape (High):** `decideStepResumption()`
+      only ever checked `events.some(phase === "succeeded")` - a
+      standalone succeeded event with no preceding "started", or a later
+      event contradicting an earlier terminal one, resolved exactly like
+      a genuine `[started, succeeded]` pair, even though PR #38 had
+      already added per-event schema/operationId/step validation.
+      Fixed: `decideStepResumption()` is now a real state machine over
+      the full per-step history (attempt gaps, duplicate/out-of-order
+      phases, standalone terminal events) with a new `"corrupted"`
+      outcome - never silently resolved either way, exactly like every
+      other genuinely ambiguous case in this design.
+    - **Post-commit recovery compared only two fields (High):** the
+      `state.commit` crash-recovery path (PR #38's own fix) confirmed
+      only `current.lastSuccessfulOperationId`/`current.generation`
+      against the target's own real record - a schema-valid but
+      unrelated `current.json` matching those two fields by coincidence
+      would have passed as proof of a genuine commit. Fixed: compares
+      the FULL expected document (every digest, the real installation
+      id, the release - everything but the timestamp) and independently
+      re-reads and compares the real `topology.json` too (a new
+      `target-mutate.mjs` reader, `readTopology()`).
+    - **The journal schema's own documented invariant was prose-only
+      (Medium):** `status: succeeded` implying `committedGeneration` is
+      always set (and null otherwise) was only ever true by convention,
+      never enforced. Fixed with a real `if`/`then` schema constraint.
+    - **`computePlanId()` wasn't actually canonical (Medium):** used
+      plain `JSON.stringify()` - insertion-order-dependent, despite the
+      function's own name and every caller comment calling it
+      "canonical"/"exact bytes". Fixed with genuine canonicalization
+      (recursively sorted object keys, array order preserved) - a
+      reordered-but-identical document now matches; any real content
+      change still doesn't. "Exact bytes" language corrected to "exact
+      content" everywhere it appeared (`apply.mjs`, `hofctl.mjs`,
+      `README.md`).
+    - **`test/apply-acceptance.mjs`'s own journal/event assertions only
+      ever spot-checked a few fields (Medium):** never schema-validated
+      the live journal/events the way `current.json` already was. Fixed
+      with real schema validation for both.
+    - **Docker service enable/start silently skipped once Engine was
+      already installed (Medium, `ansible/roles/host/tasks/main.yml`):**
+      gated on `hof_docker_check.rc != 0` (fresh install only) - an
+      already-installed-but-disabled-or-stopped Docker service (an image
+      with `docker.service` masked, a prior manual `systemctl disable
+      docker`) was silently left untouched. Fixed: unconditional (the
+      module already reports `changed: false` when nothing needed
+      doing).
+    Same two-tier sequencing as the second review round required again:
+    the Docker-service fix is *also* inert until baked into a new EE
+    (`ansible/` is baked in at image-build time), so the JS/schema/test/
+    docs fixes landed first (PR #42, one real CI failure of its own along
+    the way - a new event-schema Ajv validator missing `strictRequired:
+    false`, the same already-documented `then.required`-in-outer-
+    properties pattern this repo's own `apply-contracts.test.mjs` had
+    already needed it for - caught by this PR's own real CI run, fixed
+    same-PR), then the role fix (PR #43), then a new EE (`ee-v0.1.3`,
+    independently `cosign verify`'d), then a new signed platform release
+    (`v0.1.4`, `releases/0.1.3.yml`'s own app-component selections
+    unchanged), then a repeated full acceptance run against it (PR #45,
+    genuinely green). 420/420 tests locally throughout. Nothing about
+    items 9-18 changed by any of this either.
+
+    Given **three** consecutive premature closure calls on this one
+    item, this is recorded as the currently-best-verified state, not a
+    guarantee - a genuinely skeptical read is warranted before trusting
+    a fourth time, and before building item 9's own applied-mode
+    reconciliation on top of this journal/event/lock foundation.
 
 ---
 
@@ -1524,10 +1624,21 @@ Schlüssel остаётся authorization authority, но не получает 
    including a new signed Execution Environment (`ee-v0.1.2`) and a new
    signed platform release (`v0.1.3`) the fix itself required, with the
    full disposable-VM acceptance run repeated and genuinely green against
-   both - see the "Item 8, second review" log entry below. Completed
-   2026-08-31 (third call; given two prior premature closures, treat
-   this as the currently-best-verified state rather than a guarantee
-   nothing further surfaces on close reading).
+   both - see the "Item 8, second review" log entry below. That second
+   call was *also* premature: a further line-cited review found seven
+   more gaps, two of them Critical (a lock-before-journal crash window;
+   the succeeded-fast-path silently discarding a real lock-release
+   failure). All seven fixed for real across PRs
+   [#42](https://github.com/vrubovoy/hof-ops/pull/42)-[#45](https://github.com/vrubovoy/hof-ops/pull/45),
+   including a new signed Execution Environment (`ee-v0.1.3`) and a new
+   signed platform release (`v0.1.4`) the Docker-service-enable fix
+   itself required, with the full disposable-VM acceptance run repeated
+   and genuinely green against both - see the "Item 8, third review" log
+   entry below. Completed 2026-08-31 (fourth call; given **three** prior
+   premature closures, treat this as the currently-best-verified state,
+   not a guarantee - a genuinely skeptical read is warranted before
+   trusting it further, and before building item 9 on this journal/
+   event/lock foundation).
 9. Реализовать idempotent update/remove reconciliation.
 10. Реализовать backup и tested restore.
 11. Реализовать upgrade/rollback.
