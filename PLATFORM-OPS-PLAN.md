@@ -1218,6 +1218,138 @@ starts read-only and mutation controls retain a separate security gate.
     journal/event/lock foundation directly - an even more careful,
     skeptical read of PRs #38-47 before extending it is warranted than
     was already asked for after the fourth round.
+  - **Item 9, applied-mode reconciliation (2026-09-01), PRs #48-55
+    (ADR 0005):** item 8's own plan-v2/durable-lock/journal/event/
+    signed-EE/action-whitelist foundation extended to cover an
+    already-applied installation for real, not just a fresh bootstrap -
+    config/topology/drift reconciliation, retain-only removal of a
+    persistent (database-owning) service, enable/disable/re-enable of
+    an optional service, all within the currently-approved release;
+    backup/restore and release/schema/image upgrades on an existing
+    unit stay explicitly out of scope (items 10-11).
+    - **PR #48 (contracts/ADR):** `services-v1alpha1.schema.json` gains
+      optional `dataRetention: retain`; `state-v1`/`plan-v1`/`plan-v2`
+      gain optional `retainedServices` (keyed by service id, carrying
+      its volume + last-migrated schema version forward) and supplied-
+      TLS certificate/private-key fingerprint fields; the operation-
+      journal schema's `committedGeneration` relaxes from `const: 1` to
+      any positive integer (bootstrap-always-1 now enforced by
+      `apply.mjs` itself); a new `scripts/applied-actions.mjs` defines
+      the applied whitelist - `backup.create` is in NEITHER the
+      bootstrap nor the applied whitelist (item 9 never backs anything
+      up on removal or upgrade; that's item 10's own action to
+      reintroduce once backup/restore actually exists).
+    - **PR #49 (planner):** `plan.mjs`'s own pure diff core - already
+      partially exercised, informationally, against real applied hosts
+      before item 9 began (`plan-v1`'s own applied-baseline diffing
+      predates this item) - extended with `computeUpgradeBlockers()`
+      (release, per-unit image, AND bare schema-version changes on an
+      already-enabled unit are all upgrade scope, items 10-11) and
+      `computeRetainedServices()` (disabling a persistent service
+      requires explicit `dataRetention: retain`; a retained re-enable
+      reuses the same volume, skips migration when the retained schema
+      already matches, never re-creates an empty volume);
+      `buildPlanV2()`'s bootstrap-only guard removed; operation order
+      fixed so units are stopped before `config.write` regenerates the
+      topology, not after. A real bug caught and fixed before it ever
+      reached a test: `unitConfigFingerprint()` never folded the
+      supplied-TLS fingerprint in for the gateway unit, so a real
+      certificate/key rotation with no other config change would have
+      been silently invisible to the whole diff.
+    - **PR #50 (Ansible):** service role gains `hof_service_action:
+      start|stop|remove`, discovering its own target container by ALL
+      FOUR of `hof.managed=true` + exact `installationId` + exact unit
+      + exact Compose project (never just project+unit - that pair
+      alone can't tell two different installations' same-named unit
+      apart on a shared host); zero matches is idempotent, more than
+      one is refused as corruption. State role gains an immutable,
+      permanent per-generation snapshot
+      (`generations/NNNNNN/{state,topology,release-lock}.json`)
+      published before either mutable pointer file, idempotent on an
+      exact repeat, refused (never overwritten) on a reused generation
+      number with different content.
+    - **PR #51 (executor):** `apply.mjs`'s own `computeLivePlanV2()`
+      generalized to both modes - `installationId`/generation derived
+      per mode, whitelist chosen by `plan.mode`, a genuine applied
+      no-op (zero operations) takes no lock, creates no journal, never
+      bumps generation, dispatch gains `service.stop`/`service.remove`.
+      A second real bug caught and fixed before it ever reached a test:
+      `computeExpectedCommittedState()` never carried
+      `retainedServices`/supplied-TLS fingerprints forward into the
+      newly-committed `current.json` at all - a retained service's own
+      volume record, or a supplied-TLS installation's own fingerprint,
+      would have been silently lost the moment the very next generation
+      committed. Succeeded-journal recovery now also confirms the new
+      immutable per-generation snapshot as a third independent oracle,
+      not just the two mutable pointer files. A CI-only real-SSH
+      acceptance regression this same PR's own scope change caused was
+      caught by CI itself (a second bootstrap-plan apply against an
+      already-applied host used to be refused categorically, reason
+      `"scope"`; now correctly refused as `"stale-plan"` instead, since
+      an applied target is a real, legitimate target of its own) and
+      fixed before merge.
+    - **PR #52 (local integration matrix):** a full chained lifecycle
+      test - bootstrap -> no-op -> enable an optional persistent service
+      -> disable-with-retain -> repeated disable (no-op) -> re-enable -
+      generation progressing 1,1,2,3,3,4, the retained volume genuinely
+      reused with no migration on re-enable, each step's own approved
+      plan threaded into the next step's own fixture exactly like a
+      real target's `current.json` would carry it forward.
+    - **PR #53-54 (real signed EE + platform release):** `ee-v0.1.4`
+      cut for real (`git tag` + push, a real GitHub Actions build/sign/
+      SBOM/provenance run), independently re-verified here the same way
+      every prior EE cut has been (`cosign verify` against the exact
+      workflow identity, `gh attestation verify` confirming both the
+      SLSA-provenance and SPDX-SBOM predicates). A real process gap
+      found and fixed immediately: the first real release dispatch
+      failed outright (`build-release-lock.mjs` requires its own
+      `--selection` file's `release:` field to match the `--release`
+      input exactly) - every real numbered platform release turns out
+      to need its own `releases/X.Y.Z.yml`, never
+      `examples/release-selection.yml` (which stays a stable,
+      illustrative example forever). `releases/0.2.0.yml` added the
+      same minimal-diff way as every prior one; `v0.2.0` published and
+      independently re-verified (`cosign verify-blob` against the
+      release-lock's own signature).
+    - **PR #55 (real applied-mode acceptance):** the actual PR6 promise
+      - a real, CI-only (never local) applied-mode reconciliation
+      lifecycle against the SAME disposable target the existing
+      bootstrap acceptance test already stands up: enable kuvert (an
+      optional, persistent, database-owning service, generation 1->2),
+      write a real marker directly into its own real Docker volume, a
+      genuine applied no-op (confirmed via `current.json` read fresh
+      off the target, generation unchanged), disable with
+      `dataRetention: retain` (generation 2->3, real containers
+      genuinely gone via `docker ps -a`, the real volume AND its real
+      marker genuinely surviving), another no-op, re-enable (generation
+      3->4, the SAME retained volume reused - no `volume.ensure`
+      dispatched - no migration, real readiness via `docker inspect
+      Health.Status` polling, the SAME marker still there byte for
+      byte), every immutable per-generation snapshot
+      (`generations/000001` through `000004`) confirmed present and
+      schema-valid. Two real gaps found by CI itself and fixed before
+      merge: a `manifest` variable referenced out of its actual scope
+      (a `ReferenceError`, caught the moment CI actually ran the new
+      code - the pre-existing bootstrap half of the same run had
+      already genuinely succeeded first, for real, against the real
+      v0.2.0/`ee-v0.1.4` release, confirming that half stayed solid
+      through the version bump); and the CI job's own 15-minute timeout
+      being too tight for the genuinely larger amount of real work now
+      involved (bumped to 30, with room to spare - the real run
+      finished in ~17 minutes).
+
+    469/469 unit tests; real SSH acceptance green; real bootstrap
+    acceptance green; the real applied enable/disable/re-enable
+    acceptance above genuinely green end to end; a new signed EE
+    (`ee-v0.1.4`) and signed platform release (`v0.2.0`) published and
+    independently re-verified. **Not yet done: an independent
+    findings-first review of PRs #48-55** - the one remaining item in
+    this item's own Definition of Done. Given item 8's own five
+    premature closure calls on the exact same journal/event/lock
+    foundation this item extends, this entry deliberately does NOT
+    claim item 9 closed - the checkbox below reflects "implementation
+    complete, CI genuinely green, real infrastructure published,"
+    never "no further findings possible."
 
 ---
 
@@ -1813,7 +1945,29 @@ Schlüssel остаётся authorization authority, но не получает 
    reuses this same journal/event/lock foundation directly - an even
    more careful, skeptical read of PRs #38-47 is warranted than after
    the fourth call already).
-9. Реализовать idempotent update/remove reconciliation.
+9. [x] Реализовать idempotent update/remove reconciliation. PRs
+   [#48](https://github.com/vrubovoy/hof-ops/pull/48)-[#55](https://github.com/vrubovoy/hof-ops/pull/55)
+   (ADR 0005) extend item 8's own plan-v2/lock/journal/event/EE/
+   whitelist foundation to a real, already-applied installation:
+   config/topology/drift reconciliation, retain-only removal of a
+   persistent service, a genuine no-op that takes no lock, generation
+   `N -> N+1`, backed by a new signed Execution Environment
+   (`ee-v0.1.4`) and signed platform release (`v0.2.0`), both
+   independently re-verified. A real, CI-only disposable-target
+   acceptance run (bootstrap -> enable an optional persistent service
+   -> applied no-op -> disable-with-retain -> no-op -> re-enable)
+   genuinely passing end to end, the retained volume and its own real
+   marker surviving the whole round trip. Two real bugs caught and
+   fixed before ever reaching a test (a missing supplied-TLS
+   fingerprint fold that would have made a real certificate rotation
+   invisible to the diff; `retainedServices`/supplied-TLS fingerprints
+   never carried forward into the next commit) and two real CI-caught
+   gaps fixed before merge (a stale "scope"-refusal test expectation;
+   an out-of-scope variable reference). Completed 2026-09-01; given
+   item 8's own five premature closure calls on this exact same
+   foundation, **independent review of PRs #48-55 is this item's own
+   remaining Definition-of-Done gate, not yet run** - see the "Item 9,
+   applied-mode reconciliation" log entry above for the full story.
 10. Реализовать backup и tested restore.
 11. Реализовать upgrade/rollback.
 12. Реализовать one-time admin bootstrap.
