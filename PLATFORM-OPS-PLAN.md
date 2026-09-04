@@ -1351,6 +1351,105 @@ starts read-only and mutation controls retain a separate security gate.
     complete, CI genuinely green, real infrastructure published,"
     never "no further findings possible."
 
+  - **Item 9, independent review and Required Gate publication
+    (2026-09-04), PR [#57](https://github.com/vrubovoy/hof-ops/pull/57)-[#58](https://github.com/vrubovoy/hof-ops/pull/58):**
+    the review this item's own Definition of Done had been waiting on.
+    Five static review rounds against PRs #48-55 found and fixed real
+    invariant gaps (mirroring item 8's own pattern of genuine findings
+    surviving repeated closure calls); all landed on PR #57. Rather
+    than stop at "review passed, CI green," PR #57 was carried through
+    the full Required Gate this item's own Definition of Done actually
+    demands: merge, a new signed Execution Environment, a new signed
+    platform release, and the real `test:apply-ssh` acceptance suite
+    re-pointed at that new release and required fully green - not
+    static review alone.
+    - **PR #57 merge:** blocked by `enforce_admins` even for an
+      admin, because the CURRENT renderer (post-review-fixes) no
+      longer matched the OLD, still-pinned `v0.2.0` release's
+      `composeTemplateDigest` - an expected, understood supply-chain
+      mismatch (the whole reason a fresh release was coming next), not
+      a real defect. A one-time, explicitly authorized, fully
+      documented waiver (disable `enforce_admins`, admin-merge,
+      immediately restore, independently re-verify via the API that
+      protection came back byte-for-byte identical, and that `main`
+      genuinely contains the merged commit) - recorded on the PR
+      itself, never a blanket weakening of the required check.
+    - **`ee-v0.1.5` / `v0.2.1`:** built, signed, independently
+      re-verified (`cosign verify-blob`, `gh attestation verify`).
+      Pointing the real acceptance suite at it surfaced a genuine,
+      reproducible new bug real CI itself caught, never a review
+      artifact: enabling Wächter's own network raced Compose's
+      auto-managed `hof` network, which Docker correctly refused to
+      recreate while Kuvert's own containers were still attached to
+      it - `network hof_hof has active endpoints`. Root-caused as a
+      real architectural gap (Compose-managed network lifecycle vs. an
+      already-applied installation's own long-lived resources), not a
+      timing regression - fixed via a 7-point redesign (external
+      `hof`/`wachter-internal` networks with stable, hyphenated
+      physical names; the Ansible `network` role as sole owner;
+      network generation-consistency dropped in favor of
+      service-label-based detection; `integration-matrix.mjs`
+      provisioning the same external networks its own fixtures now
+      require) on PR #58.
+    - **`ee-v0.1.6` / `v0.2.2`:** cut to carry the network fix. The
+      SAME real acceptance run then caught a second, unrelated real
+      bug: enabling Herold and Wächter together (Kuvert already
+      running) raced Herold's own `service.start` against Schlussel's
+      concurrent restart (a cascading CORS/config change), starving
+      Herold's readiness on a dependency the plan hadn't sequenced
+      first. Fixed with a dependency-aware topological sort
+      (`topologicallySortByDependency()`, keyed off the catalog's own
+      real `dependsOn` graph) ordering every `service.start`/
+      `readiness.wait` in the same apply; verified by reverting the
+      fix, confirming the exact regression test fails, then restoring
+      it. A pre-existing latent bug surfaced in the same investigation
+      (this test file's own container-identity checks guessed Compose's
+      bare-service-name container-naming convention, which Compose
+      does not actually use) was fixed the same way the codebase's own
+      readiness role already did it - real label-based discovery.
+    - **`ee-v0.1.7` / `v0.2.3`:** the SAME real acceptance run then
+      failed a third time, on Wächter's own `GET /ready` reporting
+      `503` - the container itself `running`, never crashing, just
+      permanently "not ready." Two rounds of widened diagnostics
+      (`sanitizeError()`'s own tail budget; the readiness role's own
+      `docker logs` capture on a timed-out wait) were needed before the
+      real cause surfaced: `wachter/backend/src/lib/sampler.ts`'s own
+      `isReady()` depends on `wachter-agent` successfully reading
+      `/var/run/docker.sock`, which the rendered Compose fragment's own
+      `${DOCKER_GID:-998}` fallback only ever guesses at - a real,
+      reproducible `EACCES` on any target whose real Docker group gid
+      isn't 998, confirmed by reproducing both the failure and the fix
+      directly against the real, pinned image outside any Ansible
+      machinery. Fixed by having the `service` role discover the
+      target's own real socket gid and pass it as `DOCKER_GID` on
+      every `docker compose up`. A genuine diagnostic bug was also
+      found and fixed in the same investigation:
+      `sanitizeError()` sliced the FIRST N characters of its own tail
+      rather than the last, silently dropping exactly the newest,
+      most relevant diagnostic content it had just been widened to
+      carry.
+    - **Final verification:** `v0.2.3`'s signature independently
+      re-verified (`cosign verify-blob`) before use. Real acceptance
+      against it: 11/11 SSH transport, 4/4 real apply-acceptance
+      scenarios, zero failures, zero waivers - both required CI jobs
+      (`contracts`, `ansible`) genuinely green. PR #58 merged as a
+      normal merge commit (no `enforce_admins` waiver needed this
+      time - the required check was genuinely green on its own).
+      `v0.2.1` and `v0.2.2` deliberately left published and unmodified
+      (their signed assets untouched) with their release notes marked
+      superseded, never deleted - an honest audit trail of what a real
+      end-to-end acceptance run actually caught, one release at a
+      time, rather than evidence of instability to hide.
+
+    Item 9's own Definition of Done is now genuinely satisfied: an
+    independent review of PRs #48-55 happened, and - going further
+    than that review alone required - every finding the REAL Required
+    Gate pipeline itself then surfaced (three additional, genuine bugs
+    no static review had caught) was fixed and re-verified against a
+    real target before this item closed. Given item 8's own five
+    premature closure calls on this same foundation, this is stated as
+    "the currently-best-verified state," not a guarantee.
+
 ---
 
 ## Recommended Plan
@@ -1963,11 +2062,18 @@ Schlüssel остаётся authorization authority, но не получает 
    invisible to the diff; `retainedServices`/supplied-TLS fingerprints
    never carried forward into the next commit) and two real CI-caught
    gaps fixed before merge (a stale "scope"-refusal test expectation;
-   an out-of-scope variable reference). Completed 2026-09-01; given
-   item 8's own five premature closure calls on this exact same
-   foundation, **independent review of PRs #48-55 is this item's own
-   remaining Definition-of-Done gate, not yet run** - see the "Item 9,
-   applied-mode reconciliation" log entry above for the full story.
+   an out-of-scope variable reference). Completed 2026-09-01. Independent
+   review of PRs #48-55 (five rounds), the Required Gate publication it
+   fed into (PR #57), and three further genuine bugs the real
+   `test:apply-ssh` acceptance run itself then caught and forced fixed
+   (Compose network lifecycle, operation ordering, a real
+   Docker-socket-gid EACCES) all completed 2026-09-04, PR #58 merged
+   with `contracts`/`ansible` genuinely green and no waiver, against
+   the real, signed, independently-verified `v0.2.3` release
+   (`ee-v0.1.7`) - see the "Item 9, independent review and Required
+   Gate publication" log entry above for the full story. Given item 8's
+   own five premature closure calls on this same foundation, this is
+   the currently-best-verified state, not a guarantee.
 10. Реализовать backup и tested restore.
 11. Реализовать upgrade/rollback.
 12. Реализовать one-time admin bootstrap.
