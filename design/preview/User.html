@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Hof — anna</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof" style="width: 1440px; height: 900px">
+  <div class="shell">
+    <nav class="banner" aria-label="Hof">
+      <a class="logo" href="Home.html"><img src="../logo/hof-mark-white.svg" width="44" height="44" alt=""><span><b>Hof</b><small>Ваш личный двор</small></span></a>
+      <a class="nav" href="Home.html" data-fx="right" data-keep><img src="../generated/emblem-fountain-small.webp" alt="">Двор</a>
+      <div class="nav-label">Службы двора</div>
+      <a class="nav" href="Saeckel.html" data-fx="right"><img src="../generated/emblem-saeckel-small.webp" alt="">Säckel</a>
+      <div class="nav-label">Хозяйство</div>
+      <a class="nav active" aria-current="page" href="Users.html" data-fx="right" data-keep><img src="../generated/emblem-keys-small.webp" alt="">Приближённые</a>
+      <div class="banner-foot">
+        <a class="nav" href="Account.html" data-fx="left" data-keep><img src="../generated/emblem-candle-small.webp" alt=""><span class="stack" style="line-height: 1.2"><span>Мои покои</span><span class="small" style="opacity: 0.8">admin · хозяин</span></span></a>
+        <button type="button" class="nav" data-go="Main.html" data-sound="door" data-fx="right"><span class="frames" style="width: 28px; height: 28px"><img src="../generated/emblem-door-closed-small.webp" alt=""><img src="../generated/emblem-door-small.webp" alt=""></span>Покинуть двор</button>
+      </div>
+    </nav>
+    <main class="stack" style="gap: 20px; padding: 34px 48px; min-width: 0">
+      <a class="back" href="Users.html" data-fx="flip-back"><span>Приближённые</span></a>
+      <div style="display: grid; grid-template-columns: 200px minmax(0, 1fr) minmax(0, 1fr); gap: 28px; align-items: stretch; max-width: 1060px">
+        <div class="stack" style="align-items: center; gap: 8px; padding-top: 10px">
+          <img src="../generated/key-tag.webp" alt="ключ anna на крючке" style="width: 128px; height: 262px">
+          <h1 class="title t-1">anna</h1>
+          <span class="badge">С ключом</span>
+        </div>
+        <form class="framed stack" style="gap: 14px">
+          <h2 class="title t-3">Сбросить пароль</h2>
+          <div class="field"><label for="p-new">Новый начальный пароль</label><input id="p-new" class="input" type="text" autocomplete="off"><span class="hint">anna выйдет со двора на всех устройствах. Передайте новый пароль лично.</span></div>
+          <button type="button" class="btn btn-blue push" style="align-self: flex-start">Сбросить пароль</button>
+        </form>
+        <form class="framed stack" style="gap: 14px">
+          <h2 class="title t-3">Ключ от двора</h2>
+          <p>У anna есть ключ от двора. Если забрать ключ, вход закроется сразу, а мешки и записи останутся. Вернуть ключ можно в любой момент.</p>
+          <button type="button" class="btn btn-danger push" style="align-self: flex-start">Забрать ключ</button>
+        </form>
+      </div>
+    </main>
+  </div>
+  <img class="blot" src="../generated/ink-blot-medium.webp" alt="" aria-hidden="true" style="left: 1340px; top: 690px; width: 70px; opacity: 0.6; transform: rotate(25deg)">
+  <img class="blot" src="../generated/ink-splatter-a.webp" alt="" aria-hidden="true" style="left: 470px; top: 780px; width: 84px; opacity: 0.5; transform: rotate(-10deg)">
+  <img class="blot" src="../generated/ink-drip.webp" alt="" aria-hidden="true" style="left: 1400px; top: 60px; width: 22px; opacity: 0.7; transform: rotate(0deg)">
+  <img class="blot" src="../generated/ink-blot-small.webp" alt="" aria-hidden="true" style="left: 900px; top: 820px; width: 40px; opacity: 0.7; transform: rotate(0deg)">
+</div>
+<script>/* прототип: экран нарисован под 1440×900 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 1440, innerHeight / 900); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

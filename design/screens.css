@@ -1,0 +1,372 @@
+/* Hof — экраны MVP: общий вид (черновик будущего CSS Core и Säckel).
+   Пути к картинкам — от папки design/; для холста canvas.py подставляет загруженные копии.
+   Принцип: книга с гравюрами — всё, что обведено или подчёркнуто, нарисовано пером (design/pen). */
+:root {
+  --paper: #F7EFE0;
+  --paper-2: rgb(255 253 248 / 0.55);  /* на бумаге ≈ #FBF7EE, текстура просвечивает */
+  --line: #D8CBB2;
+  --ink: #14243D;
+  --ink-2: #4F5868;
+  --pen: #1B2E52;                      /* чернила контуров и надписей на материалах */
+  --blue: #1F4E9E;
+  --ochre: #D7A64E;
+  --ochre-2: #B98935;
+  --ochre-ink: #2A1E0B;
+  --red: #A83224;
+  --cloth: #FBF7EE;                    /* текст на знамени */
+  --font: 'EB Garamond', Georgia, serif;  /* одна семья: прямой — текст и поля, курсив — заголовки */
+}
+
+/* бумага: пятна тона (multiply) поверх бесшовной плитки; размеры не кратны, повтор не виден */
+.hof { box-sizing: border-box; position: relative; overflow: hidden; background: url(generated/paper-clouds.webp) 0 0 / 1500px 1500px, url(generated/paper-tile.webp) 0 0 / 1124px 1124px, var(--paper); background-blend-mode: multiply, normal; color: var(--ink); font-family: var(--font); font-size: 18px; line-height: 1.42; font-variant-numeric: lining-nums tabular-nums; }
+.hof *, .hof *::before, .hof *::after { box-sizing: border-box; }
+.hof h1, .hof h2, .hof h3, .hof p { margin: 0; }
+
+.title { font-style: italic; font-weight: 600; line-height: 1.12; color: var(--ink); }
+.t-hero { font-size: 54px; }
+.t-1 { font-size: 42px; }
+.t-2 { font-size: 33px; }
+.t-3 { font-size: 26px; }
+.muted { color: var(--ink-2); }
+.small { font-size: 15px; }
+.caps { font-size: 12px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-2); }
+.money { font-weight: 700; white-space: nowrap; }
+.neg { color: var(--red); }
+.note-text { font-style: italic; color: var(--ink-2); }
+.stack { display: flex; flex-direction: column; }
+.push { margin-top: auto; }                /* кнопка внизу рамки, когда рамки в ряд одной высоты */
+
+/* знак: «Hof» прямым начертанием, крупно и разрядкой */
+.logo { display: flex; align-items: center; gap: 12px; color: var(--ink); text-decoration: none; }
+.logo img { display: block; }
+.logo b { display: block; font-weight: 600; font-size: 34px; line-height: 1; letter-spacing: 0.06em; }
+.logo small { display: block; margin-top: 4px; font-size: 10px; font-weight: 600; letter-spacing: 0.24em; text-transform: uppercase; color: var(--ink-2); }
+
+/* линии пером: под строками, в шапках, разделители */
+.rule { height: 6px; background: url(pen/pen-rule-light.svg) 0 0 / 100% 6px no-repeat; }
+
+/* поля: рамка пером, внутри светлая бумага — заливка по тому же неровному контуру */
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field label, .field legend { font-size: 15px; font-weight: 600; }
+.input { height: 46px; width: 100%; padding: 0 12px; border: 2px solid transparent; border-image: url(pen/pen-field.svg) 16 fill / 16px stretch; background: none; font: inherit; font-size: 18px; color: var(--ink); }
+.input.big { height: 56px; font-size: 26px; font-weight: 700; }
+.input.slim { height: 40px; }
+.select { position: relative; display: block; }
+.select .input { appearance: none; padding-right: 34px; }
+.select::after { content: ''; position: absolute; right: 14px; top: 50%; width: 14px; height: 14px; margin-top: -7px; background: url(pen/pen-chevron.svg) 0 0 / 14px; pointer-events: none; }
+.btn:focus-visible, .tab:focus-visible, .check input:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+/* поле в фокусе: та же линия пером, только синяя и жирнее (у поля с ошибкой — красная) */
+.input:focus { outline: none; border-image-source: url(pen/pen-field-focus.svg); }
+.field.err .input:focus { border-image-source: url(pen/pen-field-err-focus.svg); }
+.field.err .input { border-image-source: url(pen/pen-field-err.svg); }
+.field.err label { color: var(--red); }
+.err-text { font-size: 15px; font-style: italic; color: var(--red); }
+.hint { font-size: 15px; color: var(--ink-2); }
+.check { display: flex; gap: 10px; align-items: flex-start; cursor: pointer; }
+.check input { appearance: none; flex: none; width: 24px; height: 24px; margin: 1px 0 0; background: url(pen/pen-check.svg) 0 0 / 24px; }
+.check input:checked { background-image: url(pen/pen-check-on.svg); }
+.check b { display: block; font-weight: 600; }
+/* громкость: дорожка — линия пером, ручка — охристая печать */
+.volume { display: grid; grid-template-columns: auto minmax(0, 1fr) 3.2em; align-items: center; gap: 12px; padding-left: 34px; }
+.volume input { appearance: none; width: 100%; height: 26px; margin: 0; background: url(pen/pen-rule.svg) 0 50% / 100% 6px no-repeat; cursor: pointer; }
+.volume input::-webkit-slider-thumb { appearance: none; width: 26px; height: 26px; border: 0; background: url(pen/pen-knob.svg) 0 0 / 26px; }
+.volume input::-moz-range-thumb { width: 26px; height: 26px; border: 0; background: url(pen/pen-knob.svg) 0 0 / 26px; }
+.volume input:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.volume output { font-size: 15px; color: var(--ink-2); text-align: right; }
+
+/* кнопки: контур пером и заливка по нему */
+/* кнопки — нарисованные плашки (generated/btn-*.webp, 560×96): концы с вырезами и гвоздиками
+   неизменны (срез 41 px), середина тянется под длину надписи */
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; height: 46px; padding: 0 12px; border-style: solid; border-width: 0 20px; border-color: transparent; border-image: url(generated/btn-paper.webp) 0 41 fill / 0 20px stretch; background: none; font: inherit; font-size: 18px; font-weight: 600; text-decoration: none; cursor: pointer; white-space: nowrap; color: var(--ink); }
+.btn-blue { border-image-source: url(generated/btn-blue.webp); color: #FFFFFF; text-shadow: 0 1px 1px rgb(8 18 40 / 0.55); }
+.btn-ochre { border-image-source: url(generated/btn-ochre.webp); color: var(--ochre-ink); }
+.btn-danger { border-image-source: url(generated/btn-danger.webp); color: var(--red); }
+.btn:active:not(:disabled) { transform: translateY(1px); filter: brightness(0.95); }
+.btn-wide { width: 100%; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ссылки: подчёркивание пером; «назад» — стрелка пером с завитком */
+.link, .link-plain { color: var(--blue); font-weight: 600; text-decoration: none; }
+.link { padding-bottom: 3px; background: url(pen/pen-underline.svg) left bottom / 100% 5px no-repeat; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+.back { display: inline-flex; align-items: center; gap: 8px; align-self: flex-start; min-height: 36px; color: var(--blue); font-weight: 600; text-decoration: none; }
+.back::before { content: ''; flex: none; width: 40px; height: 27px; background: url(generated/manicule.webp) 0 0 / 40px 27px; transition: transform 0.2s; }
+.back:hover::before { transform: translateX(-4px); }
+.back span { padding-bottom: 3px; background: url(pen/pen-underline.svg) left bottom / 100% 5px no-repeat; }
+
+/* сообщения, плашки, таблицы */
+/* уведомление — записка, запечатанная сургучом: печать синяя (сообщение) или красная (ошибка) */
+.note { position: relative; padding: 12px 16px 12px 48px; margin-left: 14px; border: 2px solid transparent; border-image: url(pen/pen-note-info.svg) 16 fill / 16px stretch; font-size: 17px; font-style: italic; color: var(--ink); }
+.note::before { content: ''; position: absolute; left: -22px; top: 50%; width: 52px; height: 52px; margin-top: -27px; background: url(generated/seal-blue.webp) 0 0 / 52px; transform: rotate(-9deg); }
+.note-error { border-image-source: url(pen/pen-note-error.svg); }
+.note-error::before { background-image: url(generated/seal-red.webp); }
+.stamp .note::before { animation: stamp 0.45s cubic-bezier(0.3, 1.6, 0.5, 1) both; }
+@keyframes stamp { from { transform: scale(1.7) rotate(-20deg); opacity: 0; } to { transform: scale(1) rotate(-9deg); opacity: 1; } }
+.badge { display: inline-block; padding: 1px 10px; border: 2px solid transparent; border-image: url(pen/pen-badge.svg) 14 fill / 12px stretch; font-size: 14px; font-weight: 600; }
+.table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.table th { padding: 8px 10px; background: url(pen/pen-rule.svg) left bottom / 100% 6px no-repeat; text-align: left; font-size: 14px; font-weight: 600; letter-spacing: 0.04em; color: var(--ink-2); }
+.table td { padding: 10px 10px; background: url(pen/pen-rule-light.svg) left bottom / 100% 6px no-repeat; vertical-align: middle; }
+.table .num { text-align: right; white-space: nowrap; }
+.ph { display: grid; place-items: center; padding: 16px; border: 1.5px dashed #8C8170; border-radius: 6px; background: rgb(255 253 248 / 0.4); color: var(--ink-2); font-size: 14px; text-align: center; }
+
+/* оболочка Hof: знамя слева. Стержень и хвост с лилией неизменны, ткань тянется по высоте */
+.shell { display: grid; grid-template-columns: 288px minmax(0, 1fr); height: 100%; }
+.banner { display: flex; flex-direction: column; gap: 2px; min-height: 0; border-style: solid; border-width: 126px 55px 160px; border-image: url(generated/menu-banner.webp) 300 130 378 fill / 126px 55px 160px stretch; color: var(--cloth); view-transition-name: hof-banner; }
+.banner .logo { color: var(--cloth); padding: 0 4px 10px; }
+.banner .logo small { color: rgb(251 247 238 / 0.78); }
+.nav-label { padding: 14px 8px 4px; font-size: 11px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: rgb(251 247 238 / 0.78); }
+.nav { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 6px; border: 0; border-radius: 4px; background: transparent; color: var(--cloth); font: inherit; font-size: 16px; text-align: left; text-decoration: none; cursor: pointer; }
+.nav.active { background: rgb(251 247 238 / 0.16); font-weight: 600; }
+.nav img, .nav .frames { flex: none; display: block; width: 28px; height: 28px; object-fit: contain; }
+.banner-foot { margin-top: auto; display: flex; flex-direction: column; gap: 2px; padding-top: 10px; border-top: 1px solid rgb(251 247 238 / 0.3); }
+
+/* Надпись на ленте и вывеске — как написанная на них: чернила впитываются (multiply)
+   и чуть расплываются, поэтому не выглядят резче материала. */
+.ribbon > span, .sign > span { mix-blend-mode: multiply; color: var(--pen); text-shadow: 0 0 0.8px rgb(27 46 82 / 0.75); }
+
+/* лента для заголовков: концы неизменны, середина тянется под текст */
+.ribbon { display: inline-block; height: 72px; border-style: solid; border-width: 0 127px 0 121px; border-image: url(generated/ribbon-soft.webp) 0 327 0 310 fill / 0 127px 0 121px stretch; padding-top: 17px; font-style: italic; font-weight: 600; font-size: 30px; line-height: 32px; text-align: center; white-space: nowrap; text-decoration: none; }
+.ribbon.md { height: 60px; border-width: 0 106px 0 101px; border-image-width: 0 106px 0 101px; padding-top: 13px; font-size: 25px; line-height: 28px; }
+
+/* вывеска: концы с цепями неизменны, доска и перекладина тянутся; надпись на доске */
+.sign { display: inline-block; height: 74px; border-style: solid; border-width: 0 41px 0 42px; border-image: url(generated/signboard-soft.webp) 0 116 0 119 fill / 0 41px 0 42px stretch; padding: 43px 6px 0; font-style: italic; font-weight: 600; font-size: 21px; line-height: 22px; text-align: center; white-space: nowrap; text-decoration: none; }
+.sign.on-map { position: absolute; transform: translateX(-50%); }
+.sign.sm { height: 66px; border-width: 0 37px 0 38px; border-image-width: 0 37px 0 38px; padding-top: 38px; font-size: 19px; line-height: 20px; }
+.sign:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* рамка пером с веточками: углы неизменны, линии тянутся, внутри бумага */
+.framed { position: relative; border: 22px solid transparent; border-image: url(generated/frame.webp) 107 / 54px stretch; padding: 30px 34px 28px; }
+
+/* картины: до краёв, а там, где встречаются с бумагой страницы, растворяются в ней */
+.scene { display: block; width: 100%; height: 100%; object-fit: cover; }
+.fade-l { -webkit-mask-image: linear-gradient(to right, transparent, #000 56px); mask-image: linear-gradient(to right, transparent, #000 56px); }
+.fade-lr { -webkit-mask-image: linear-gradient(to right, transparent, #000 56px, #000 calc(100% - 150px), transparent); mask-image: linear-gradient(to right, transparent, #000 56px, #000 calc(100% - 150px), transparent); }
+.fade-b { -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - 70px), transparent); mask-image: linear-gradient(to bottom, #000 calc(100% - 70px), transparent); }
+.fade-lb { -webkit-mask-image: linear-gradient(to right, transparent, #000 48px), linear-gradient(to bottom, #000 calc(100% - 70px), transparent); -webkit-mask-composite: source-in; mask-image: linear-gradient(to right, transparent, #000 48px), linear-gradient(to bottom, #000 calc(100% - 70px), transparent); mask-composite: intersect; }
+/* виньетки: бумага картинки белая, multiply «печатает» рисунок прямо на бумагу страницы */
+.vignette { display: block; mix-blend-mode: multiply; }
+/* веточки — очень скупо: разделитель под заголовком и ветка в углу пустых страниц */
+.sprig { display: block; width: 220px; height: auto; }
+.corner { position: absolute; left: 0; bottom: 0; width: 170px; pointer-events: none; mix-blend-mode: multiply; }
+
+/* карта двора: картинка в пропорции 3:2, вывески и анимации стоят в процентах от неё */
+.map { position: relative; overflow: hidden; }
+.map-inner { position: relative; aspect-ratio: 3 / 2; }
+.map-inner > img { display: block; width: 100%; height: 100%; }
+/* место на карте — одна ссылка: вывеска + дверь или окно, нажать можно на то и другое. Наведение —
+   только подсказка: вывеска качается на цепях. Нажатие: дверь открывается (окно сторожки загорается)
+   со звуком, fx.js ведёт взгляд в проём и затемняет сцену, потом обычный переход. Без эффектов — ссылка. */
+.place { position: absolute; inset: 0; pointer-events: none; text-decoration: none; }
+.place > * { pointer-events: auto; cursor: pointer; }
+.place .sign.on-map { transform-origin: 50% 0; }
+.place:hover .sign, .place:focus-visible .sign { animation: swing 1.4s ease-out; }
+.place .lit { cursor: pointer; }
+@keyframes swing { 0% { transform: translateX(-50%) rotate(0); } 18% { transform: translateX(-50%) rotate(-3.5deg); } 42% { transform: translateX(-50%) rotate(2.2deg); } 68% { transform: translateX(-50%) rotate(-1deg); } 100% { transform: translateX(-50%) rotate(0); } }
+.place:focus-visible { outline: none; }
+.place:focus-visible .sign { outline: 2px solid var(--blue); outline-offset: 2px; }
+/* кадр «открыто»: вырезан из той же карты, нарисованной с открытыми дверями */
+.lit { position: absolute; opacity: 0; transition: opacity 0.75s ease-in-out; }
+.place:active .lit, .place.open .lit { opacity: 1; }
+
+/* кот на картинке: прозрачная кнопка поверх; щелчок — звук и на миг другая поза (без надписи) */
+.cat { position: absolute; padding: 0; border: 0; background: none; cursor: pointer; }
+.cat:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 50%; }
+
+/* кляксы: только на пустой бумаге, бледно; на сайте сервер выбирает их по адресу страницы */
+.blot { position: absolute; pointer-events: none; user-select: none; mix-blend-mode: multiply; }
+
+/* ключница: у приближённого ключ с биркой, «ключ взят» — пустой крючок на том же месте */
+.keys { display: flex; flex-wrap: wrap; gap: 18px 30px; align-items: flex-start; }
+.key { display: flex; flex-direction: column; align-items: center; gap: 1px; width: 128px; text-align: center; }
+.key img { display: block; width: 84px; height: 172px; margin-bottom: 6px; }
+.key b { font-size: 19px; }
+
+/* выбор знака мешка: радиокнопки; выбранный знак обведён пером */
+.icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(70px, 1fr)); gap: 4px 6px; }
+.icon-pick { position: relative; display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 9px 2px 4px; font-size: 13px; color: var(--ink-2); cursor: pointer; }
+.icon-pick input { position: absolute; opacity: 0; pointer-events: none; }
+.icon-pick img { width: 44px; height: 44px; object-fit: contain; }
+.icon-pick:has(input:checked) { background: url(pen/pen-ring.svg) center 0 / 66px 62px no-repeat; color: var(--ink); font-weight: 600; }
+.icon-pick:has(input:focus-visible) { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* Säckel: сцена казначейской сверху; под ней лента с названием и закладки «Мешки / Летопись» */
+.sk-head { position: relative; height: 330px; }
+.sk-head .scene { object-position: 50% 0; }
+.sk-head::after, .m-band::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 6px; background: url(pen/pen-rule-ochre.svg) 0 0 / 100% 6px no-repeat; }
+.sk-gate { position: absolute; left: 24px; top: 20px; display: inline-flex; align-items: center; gap: 8px; height: 44px; padding: 0 6px 0 2px; border-style: solid; border-width: 0 18px; border-color: transparent; border-image: url(generated/btn-paper.webp) 0 41 fill / 0 18px stretch; color: var(--blue); font-weight: 600; text-decoration: none; }
+.sk-gate::before { content: ''; width: 36px; height: 24px; background: url(generated/manicule.webp) 0 0 / 36px 24px; }
+.sk-nav { display: flex; align-items: flex-end; gap: 6px; height: 84px; padding: 0 32px 0 20px; background: url(pen/pen-rule-light.svg) left bottom / 100% 6px no-repeat; }
+.sk-nav .ribbon { align-self: center; margin-right: 22px; }
+/* закладки: открыты снизу и стоят на линии; выбранная — охрой */
+.tab { display: inline-flex; align-items: center; height: 44px; margin-bottom: 3px; padding: 0 20px; border-style: solid; border-width: 2px 2px 0; border-color: transparent; border-image: url(pen/pen-tab.svg) 16 16 0 16 fill / 16px 16px 0 16px stretch; font-size: 19px; font-weight: 600; color: var(--ink-2); text-decoration: none; }
+.tab:hover { color: var(--ink); }
+.tab[aria-current="page"] { border-image-source: url(pen/pen-tab-on.svg); color: var(--ochre-ink); }
+.sk-body { display: grid; grid-template-columns: 400px minmax(0, 1fr); height: calc(100% - 414px); }
+.sk-list { display: flex; flex-direction: column; background: url(pen/pen-vrule-light.svg) right top / 6px 100% no-repeat; overflow: hidden; }
+.sk-main { display: flex; flex-direction: column; gap: 12px; padding: 18px 44px; overflow: hidden; }
+.treasury { display: grid; grid-template-columns: 62px minmax(0, 1fr); gap: 0 14px; align-items: center; margin: 6px 12px 4px; padding: 20px 24px 16px; }
+.treasury .chest { grid-row: span 2; }
+.treasury .btns { grid-column: 1 / -1; display: flex; gap: 10px; margin-top: 10px; }
+.pouch { display: grid; grid-template-columns: 40px minmax(0, 1fr) auto; align-items: center; column-gap: 12px; margin: 0 10px; padding: 7px 14px 9px; border: 2px solid transparent; background: url(pen/pen-rule-light.svg) left bottom / 100% 6px no-repeat; color: var(--ink); text-decoration: none; }
+.pouch img { display: block; width: 40px; height: 40px; object-fit: contain; }
+.pouch.active { background: none; border-image: url(pen/pen-pick.svg) 16 fill / 16px stretch; }
+.pouch .name { font-size: 19px; font-weight: 600; }
+.pouch .sub { font-size: 14px; color: var(--ink-2); }
+.pouch .bal { font-size: 19px; font-weight: 700; white-space: nowrap; }
+.balance { display: flex; flex-direction: column; gap: 2px; padding: 10px 22px; border: 2px solid transparent; border-image: url(pen/pen-panel.svg) 16 fill / 16px stretch; }
+.form-row { display: grid; grid-template-columns: 190px 160px minmax(0, 1fr) auto; column-gap: 12px; align-items: end; }
+
+/* телефон */
+.m-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; height: 60px; padding: 0 12px 0 16px; background: url(pen/pen-rule-light.svg) left bottom / 100% 6px no-repeat; }
+.m-band { position: relative; height: 128px; }
+.m-band .scene { object-position: 50% 70%; }
+.m-pic::after { content: ''; position: absolute; left: 0; right: 0; bottom: -3px; height: 6px; background: url(pen/pen-rule-light.svg) 0 0 / 100% 6px no-repeat; }
+.m-pic.fade-b::after { content: none; }
+.fade-t { -webkit-mask-image: linear-gradient(to bottom, transparent, #000 70px); mask-image: linear-gradient(to bottom, transparent, #000 70px); }
+/* списки на телефоне: строка — две строчки, сумма справа; линия пером под строкой */
+.m-list { display: flex; flex-direction: column; }
+.m-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 0 12px; padding: 8px 4px 10px; background: url(pen/pen-rule-light.svg) left bottom / 100% 6px no-repeat; color: var(--ink); text-decoration: none; }
+.m-row > :nth-child(2) { text-align: right; }
+.m-assign { display: grid; grid-template-columns: 34px minmax(0, 1fr) 118px; align-items: center; gap: 10px; padding: 8px 4px 10px; background: url(pen/pen-rule-light.svg) left bottom / 100% 6px no-repeat; }
+.m-assign img { width: 34px; height: 34px; object-fit: contain; }
+.m-keys { justify-content: space-around; gap: 10px; }
+.m-keys .key { width: 104px; }
+.m-keys .key img { width: 56px; height: 115px; }
+.m-settings .volume { padding-left: 0; }
+
+/* Эффекты: только смена кадров, opacity, transform, clip-path. Выключаются настройкой
+   (html.fx-off — ставит fx.js) и системной «уменьшить движение». */
+.fx { position: absolute; pointer-events: none; background-repeat: no-repeat; }
+.fx-fountain { background-image: url(generated/fx-fountain.webp); background-size: 600% 100%; animation: fx-frames 0.9s steps(6, jump-none) infinite; }
+@keyframes fx-frames { from { background-position: 0 0; } to { background-position: 100% 0; } }
+/* порыв ветра: в покое слой скрыт, во время порыва 8 кадров. На сайте fx.js ставит класс
+   .gust в случайный момент и играет звук ветра; на холсте — длинные несовпадающие циклы */
+.fx-leaves { background-size: 800% 100%; opacity: 0; }
+.fx-leaves.demo { animation: fx-gust var(--cycle, 11s) var(--delay, 0s) infinite; }
+.fx-leaves.gust { animation: fx-gust-once 2s 1; }
+@keyframes fx-gust { 0%, 85% { opacity: 0; background-position: 0 0; } 86% { opacity: 1; background-position: 0 0; animation-timing-function: steps(8, jump-none); } 100% { opacity: 1; background-position: 100% 0; } }
+@keyframes fx-gust-once { 0% { opacity: 1; background-position: 0 0; animation-timing-function: steps(8, jump-none); } 100% { opacity: 1; background-position: 100% 0; } }
+/* сундук и дверь: два кадра одного размера, открываются только нажатием (класс .open ставит fx.js).
+   Открытый кадр ложится поверх закрытого, закрытый не гаснет — иначе в середине оба полупрозрачны
+   и предмет «мигает». Дверь 0,75 с — как звук; крышка сундука быстрая, 0,2 с */
+.frames { position: relative; display: inline-block; flex: none; transition: transform 0.3s; }
+.frames img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.frames img + img { position: absolute; inset: 0; opacity: 0; transition: opacity 0.75s ease-in-out; }
+.frames.chest img + img { transition-duration: 0.2s; }
+.frames.open img + img { opacity: 1; }
+:is(a, button, .treasury):active .frames { transform: scale(1.04); }
+/* переход «в дверь»: дверь открывается → наезд к проёму → вся сцена разом уходит в темноту → новая
+   страница проявляется из темноты. Точку наезда (transform-origin) ставит fx.js. */
+.veil { position: fixed; inset: 0; z-index: 50; pointer-events: none; background: #0E1A2E; opacity: 0; }
+.enter .zoom { animation: zoom-in 1.1s cubic-bezier(0.45, 0, 0.75, 0.55) forwards; }
+@keyframes zoom-in { to { transform: scale(2.2); } }
+.enter .veil { animation: veil-in 0.5s ease-in 0.6s forwards; }
+@keyframes veil-in { to { opacity: 1; } }
+.arrive .veil { opacity: 1; animation: veil-out 0.7s ease-out 0.05s forwards; }
+@keyframes veil-out { to { opacity: 0; } }
+/* ворота основания: кадр «открыто» вырезан из сцены входа (та же арка), появляется по «Основать двор» */
+.gate-open { position: absolute; opacity: 0; transition: opacity 0.75s ease-in-out; pointer-events: none; }
+.gate-open.open { opacity: 1; }
+.spot { position: absolute; width: 2px; height: 2px; pointer-events: none; }
+/* знамя разворачивается за 1,2 с (под два шороха ткани): под древком рулон (generated/banner-roll) катится вниз
+   и худеет; у начала выреза «ласточкин хвост» (74 px от низа) рулон кончается и два конца выпадают вниз;
+   потом знамя качнётся вперёд-назад. Рулон и тень над ним — псевдоэлементы того, в чём стоит знамя */
+.shell { position: relative; }
+.fx-enter .banner { transform-origin: 50% 0; animation: fx-unroll 1.2s both, fx-settle 0.9s ease-out 1.2s; }
+@keyframes fx-unroll { from { clip-path: inset(0 0 calc(100% - 40px) 0); animation-timing-function: cubic-bezier(0.45, 0.05, 0.55, 1); }
+  86% { clip-path: inset(0 0 74px 0); animation-timing-function: ease-in; } to { clip-path: inset(0 0 0 0); } }
+@keyframes fx-settle { 30% { transform: perspective(900px) rotateX(7deg); } 62% { transform: perspective(900px) rotateX(-3deg); } 85% { transform: perspective(900px) rotateX(1deg); } }
+.fx-enter .shell::after, .fx-enter .shell::before { content: ''; position: absolute; z-index: 3; left: 40px; top: 40px; width: 208px; pointer-events: none; }
+.fx-enter .shell::after { height: 42px; transform: translateY(-50%); filter: drop-shadow(0 4px 3px rgb(14 26 46 / 0.35));
+  background: url(generated/banner-roll.webp) 0 0 / 100% 100% no-repeat; animation: fx-roll 1.2s both; }
+.fx-enter .shell::before { left: 42px; width: 204px; height: 28px; transform: translateY(-100%); background: linear-gradient(to bottom, transparent, rgb(8 18 40 / 0.4)); animation: fx-roll-shade 1.2s both; }
+@keyframes fx-roll { from { top: 40px; height: 42px; animation-timing-function: cubic-bezier(0.45, 0.05, 0.55, 1); }
+  86% { top: calc(100% - 74px); height: 18px; opacity: 1; animation-timing-function: ease-in; } to { top: calc(100% - 74px); height: 0; opacity: 0; } }
+@keyframes fx-roll-shade { from { top: 40px; animation-timing-function: cubic-bezier(0.45, 0.05, 0.55, 1); }
+  86% { top: calc(100% - 74px); opacity: 1; } to { top: calc(100% - 74px); opacity: 0; } }
+/* сдвиг: сцена уезжает в сторону и темнеет, новая выезжает с другой стороны и светлеет.
+   .go-left/.go-right — уход (вперёд по меню / назад ко двору), .from-right/.from-left — приход.
+   Знамя меню стоит на месте поверх темноты, если оно было и на прошлой странице (.keep-banner). */
+.go-left .veil, .go-right .veil { animation: veil-dim 0.5s ease-in forwards; }
+@keyframes veil-dim { to { opacity: 0.85; } }
+.from-left .veil, .from-right .veil { opacity: 0.85; animation: veil-out 0.6s ease-out forwards; }
+.keep-banner .banner { position: relative; z-index: 51; }
+:is(.go-left, .go-right, .from-left, .from-right) :is(.hof > :not(.shell, .veil), .shell > :not(.banner)) { will-change: transform; }
+.go-left :is(.hof > :not(.shell, .veil), .shell > :not(.banner)) { animation: out-left 0.5s ease-in forwards; }
+.go-right :is(.hof > :not(.shell, .veil), .shell > :not(.banner)) { animation: out-right 0.5s ease-in forwards; }
+.from-right :is(.hof > :not(.shell, .veil), .shell > :not(.banner)) { animation: in-right 0.6s ease-out both; }
+.from-left :is(.hof > :not(.shell, .veil), .shell > :not(.banner)) { animation: in-left 0.6s ease-out both; }
+.from-right:not(.keep-banner) .banner { animation: in-right 0.6s ease-out both; }
+.from-left:not(.keep-banner) .banner { animation: in-left 0.6s ease-out both; }
+@keyframes out-left { to { transform: translateX(-32%); } }
+@keyframes out-right { to { transform: translateX(32%); } }
+@keyframes in-right { from { transform: translateX(32%); } }
+@keyframes in-left { from { transform: translateX(-32%); } }
+
+/* знамёна на карте колышутся: 8 кадров той же ткани, древко неподвижно */
+.fx-banner { background-size: 800% 100%; animation: fx-frames var(--cycle, 2.8s) steps(8, jump-none) infinite; }
+/* птицы: изредка пролетает стайка; на сайте класс .fly ставит fx.js, на холсте — цикл */
+.fx-birds { left: 0; width: 100%; opacity: 0; }
+.fx-birds i { position: absolute; width: var(--w, 3%); aspect-ratio: 48 / 28; background: url(pen/fx-birds.svg) 0 0 / 400% 100% no-repeat;
+  animation: fx-flap var(--flap, 0.7s) steps(4, end) infinite; animation-delay: var(--d, 0s); }
+@keyframes fx-flap { to { background-position: 133.33% 0; } }
+.fx-birds.fly { opacity: 1; animation: fx-fly 15s linear forwards; }
+/* стайка набирает высоту и уходит за верхний край до башни справа (башня — от 81% ширины карты) */
+@keyframes fx-fly { from { transform: translate(-16%, 40%); } 35% { transform: translate(18%, 0); } 70% { transform: translate(42%, -70%); } to { transform: translate(62%, -200%); } }
+/* дым из трубы казначейской: три клуба по очереди поднимаются, растут и тают */
+.fx-smoke i { position: absolute; left: 20%; bottom: 0; width: 60%; aspect-ratio: 28 / 16; background: url(pen/fx-smoke.svg) 0 0 / 100% 100% no-repeat;
+  opacity: 0; transform-origin: 50% 100%; animation: fx-smoke 7.5s linear infinite; }
+.fx-smoke i:nth-child(2) { animation-delay: 2.5s; }
+.fx-smoke i:nth-child(3) { animation-delay: 5s; }
+@keyframes fx-smoke { 0% { opacity: 0; transform: translate(0, 0) scale(0.45); } 15% { opacity: 0.95; }
+  65% { opacity: 0.6; } 100% { opacity: 0; transform: translate(40%, -420%) scale(1.5) rotate(6deg); } }
+/* кот: по щелчку на миг меняет позу (кадр той же картинки) и говорит; data-say меняет слово */
+.cat .pose { position: absolute; max-width: none; opacity: 0; pointer-events: none; }
+.cat.meow .pose { animation: pose var(--pose, 1.5s) ease-out; }
+@keyframes pose { 0%, 100% { opacity: 0; } 1%, 97% { opacity: 1; } }   /* смена кадра мгновенная: при плавной видны два кота сразу */
+.cat[data-say]::after { content: attr(data-say); }
+/* лист книги (вперёд к подробностям, «назад» и закладки служб): нынешняя страница поднимается и
+   переворачивается, под ней уже лежит следующая. Вперёд — поднимается правый край, лист уходит влево;
+   назад — зеркально: поднимается левый край, лист уходит вправо. Обе страницы видны сразу: это View
+   Transitions между страницами (класс на <html> ставит fx-head.js); звук листа — на новой странице */
+html:is(.flip-fwd, .flip-back) .banner { view-transition-name: none; }   /* знамя переворачивается вместе со страницей */
+html:is(.flip-fwd, .flip-back)::view-transition-old(root) { z-index: 1; }
+html.flip-fwd::view-transition-old(root) { transform-origin: 0 50%; }
+html.flip-back::view-transition-old(root) { transform-origin: 100% 50%; }
+html.flip-fwd::view-transition-old(root), html.flip-fwd::view-transition-new(root),
+html.flip-back::view-transition-old(root), html.flip-back::view-transition-new(root) { mix-blend-mode: normal; }
+html.flip-fwd::view-transition-old(root) { animation: page-away 0.75s ease-in both; }
+html.flip-fwd::view-transition-new(root) { animation: page-lit 0.75s ease-out both; }
+html.flip-back::view-transition-old(root) { animation: page-away-back 0.75s ease-in both; }
+html.flip-back::view-transition-new(root) { animation: page-lit 0.75s ease-out both; }
+@keyframes page-away { to { transform: perspective(2600px) rotateY(-96deg); filter: brightness(0.55); } }
+@keyframes page-away-back { to { transform: perspective(2600px) rotateY(96deg); filter: brightness(0.55); } }
+@keyframes page-lit { from { filter: brightness(0.7); } }
+/* новая запись дописывается пером слева направо */
+.fresh > * { animation: fresh 0.9s ease-out both; }
+@keyframes fresh { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+.fresh > :nth-child(2) { animation-delay: 0.12s; } .fresh > :nth-child(3) { animation-delay: 0.24s; }
+.fresh > :nth-child(4) { animation-delay: 0.36s; } .fresh > :nth-child(n+5) { animation-delay: 0.48s; }
+/* виньетка с кадрами (пустые страницы): обёртка «печатается» на бумагу (multiply), кадры внутри
+   сменяют друг друга по классу на обёртке — его ставит fx.js по нажатию */
+.vstack { position: relative; display: block; flex: none; padding: 0; border: 0; background: none; mix-blend-mode: multiply; isolation: isolate; }
+.vstack > img { display: block; width: 100%; height: auto; }
+.vstack > img + img { position: absolute; inset: 0; height: 100%; opacity: 0; pointer-events: none; }
+/* кот нюхает мешки, 3 с: нос в средний мешок — поднял — ещё раз — к лежащему мешку с лапой;
+   звук нюханья (1,2 с) в 0 и 1,85 с */
+.sniffing .f1 { animation: sniff-a 3s linear both; }
+.sniffing .f2 { animation: sniff-b 3s linear both; }
+@keyframes sniff-a { 0%, 29.9% { opacity: 1; } 30%, 37.9% { opacity: 0; } 38%, 61.9% { opacity: 1; } 62%, 100% { opacity: 0; } }
+@keyframes sniff-b { 0%, 61.9% { opacity: 0; } 62%, 97.9% { opacity: 1; } 98%, 100% { opacity: 0; } }
+/* мешок после траты тихо сжимается */
+.squeeze { animation: squeeze 0.6s ease-out; transform-origin: 50% 90%; }
+@keyframes squeeze { 30% { transform: scale(1.08, 0.86); } 60% { transform: scale(0.96, 1.05); } }
+@view-transition { navigation: auto; }
+::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.2s; }
+.fx-off .fx, .fx-off .fx *, .fx-off .banner, .fx-off .place .sign, .fx-off .veil, .fx-off .zoom, .fx-off .pose,
+.fx-off .fresh > *, .fx-off .vstack > img, .fx-off .squeeze, .fx-off .shell::before, .fx-off .shell::after { animation: none; }
+.fx-off .frames img + img, .fx-off .lit, .fx-off .gate-open { transition: none; }
+@media (prefers-reduced-motion: reduce) {
+  .fx, .fx *, .banner, .place .sign, .pose, .fresh > *, .vstack > img, .squeeze, .shell::before, .shell::after { animation: none; }
+  .frames img + img, .lit, .gate-open { transition: none; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}

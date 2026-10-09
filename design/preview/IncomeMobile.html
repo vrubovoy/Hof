@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Säckel — доход, телефон</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof" style="width: 390px; height: 844px">
+  <div class="m-band">
+    <img class="scene" src="../generated/scene-treasury-band.webp" srcset="../generated/scene-treasury-band.webp 1x, ../generated/scene-treasury-band@2x.webp 2x" alt="Казначейская" style="object-position: 55% 72%">
+    <a class="sk-gate" href="SaeckelMobile.html" data-fx="flip-back" style="left: 12px; top: 12px; height: 40px">Мешки</a>
+  </div>
+  <div class="stack" style="gap: 12px; padding: 14px 16px 16px">
+    <form class="framed stack" style="gap: 10px; padding: 20px 20px 18px">
+      <h1 class="title t-2">Доход</h1>
+      <div class="field err"><label for="im-sum">Сумма, ₽</label><input id="im-sum" class="input big" type="text" inputmode="decimal" value="0" aria-invalid="true" aria-describedby="im-sum-err"><span id="im-sum-err" class="err-text">Сумма должна быть больше нуля.</span></div>
+      <div class="field"><label for="im-date">Дата</label><input id="im-date" class="input" type="text" value="30.09.2026"></div>
+      <div class="field"><label for="im-note">Заметка</label><input id="im-note" class="input" type="text" value="зарплата"></div>
+      <p class="hint">Деньги лягут в казну. После записи откроется раскладка по мешкам — её можно отложить.</p>
+      <button type="button" class="btn btn-ochre btn-wide" data-go="AssignMobile.html" data-sound="coins">Записать доход</button>
+    </form>
+    <p class="small muted" style="padding: 0 6px">Так же устроены «Переложить», «Новый мешок» и правка записи: одна колонка, поля друг под другом.</p>
+  </div>
+</div>
+<script>/* прототип: экран нарисован под 390×844 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 390, innerHeight / 844); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

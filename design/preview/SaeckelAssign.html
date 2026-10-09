@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Säckel — разложить</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof" style="width: 1440px; height: 900px">
+  <header class="sk-head">
+    <img class="scene" src="../generated/scene-treasury-band.webp" srcset="../generated/scene-treasury-band.webp 1x, ../generated/scene-treasury-band@2x.webp 2x" alt="Казначейская: стол с весами, монетами, книгой, мешками и сундуком">
+    <a class="sk-gate" href="Home.html" data-fx="flip-back"><img src="../logo/hof-mark.svg" width="22" height="22" alt="">Двор</a>
+  </header>
+  <nav class="sk-nav" aria-label="Säckel"><h1 class="ribbon md"><span>Säckel</span></h1><a class="tab" href="Saeckel.html" aria-current="page">Мешки</a><a class="tab" href="SaeckelHistory.html" data-fx="flip-fwd">Летопись</a><span class="caps" style="margin: 0 0 18px auto">Бюджет по мешкам</span></nav>
+  <div class="sk-body">
+    <aside class="sk-list">
+      <div class="framed treasury" data-sound="chest">
+        <span class="frames chest" style="width: 62px; height: 52px"><img src="../generated/emblem-chest-closed.webp" alt=""><img src="../generated/emblem-chest.webp" alt=""></span>
+        <h2 class="title t-3">Казна</h2>
+        <span class="money" style="font-size: 30px; line-height: 1.1">18 320 ₽</span>
+        
+      </div>
+      <a class="pouch" href="Saeckel.html"><img src="../generated/icon-basket.webp" alt=""><span class="stack"><span class="name">Продукты</span><span class="sub">последняя трата −1 240 ₽</span></span><span class="bal">12 450,30 ₽</span></a>
+      <a class="pouch" href="Saeckel.html"><img src="../generated/icon-hearth.webp" alt=""><span class="stack"><span class="name">Квартира</span><span class="sub">последняя трата −18 000 ₽</span></span><span class="bal">25 000,00 ₽</span></a>
+      <a class="pouch" href="Saeckel.html"><img src="../generated/icon-cart.webp" alt=""><span class="stack"><span class="name">Транспорт</span><span class="sub neg">в долгу</span></span><span class="bal neg">−760,00 ₽</span></a>
+      <a class="pouch" href="Saeckel.html"><img src="../generated/icon-bag.webp" alt=""><span class="stack"><span class="name">Отпуск</span><span class="sub">трат пока не было</span></span><span class="bal">4 000,00 ₽</span></a>
+      <div style="display: flex; justify-content: space-between; padding: 12px 24px"><a class="link-plain" href="SaeckelForms.html">+ Новый мешок</a><a class="link-plain small" href="#" style="color: var(--ink-2)">Кладовая (2)</a></div>
+    </aside>
+    <main class="sk-main" style="gap: 12px">
+      <p class="note">Доход 80 000 ₽ лёг в казну. Разложите его по мешкам или оставьте в казне на потом.</p>
+      <div style="display: flex; align-items: baseline; gap: 20px"><h2 class="title t-2">Разложить по мешкам</h2><p class="muted">В казне: <span class="money" style="color: var(--ink)">18 320 ₽</span>. Пустые поля пропускаются.</p></div>
+      <table class="table" style="max-width: 760px">
+        <thead><tr><th>Мешок</th><th class="num">Сейчас в мешке</th><th style="width: 220px">Положить, ₽</th></tr></thead>
+        <tbody>
+          <tr><td><span style="display: inline-flex; align-items: center; gap: 10px"><img src="../generated/icon-basket.webp" alt="" width="30" height="30" style="object-fit: contain">Продукты</span></td><td class="num money">12 450,30 ₽</td><td><input class="input slim" type="text" inputmode="decimal" value="8 000" aria-label="Положить в мешок Продукты"></td></tr>
+          <tr><td><span style="display: inline-flex; align-items: center; gap: 10px"><img src="../generated/icon-hearth.webp" alt="" width="30" height="30" style="object-fit: contain">Квартира</span></td><td class="num money">25 000,00 ₽</td><td><input class="input slim" type="text" inputmode="decimal" aria-label="Положить в мешок Квартира"></td></tr>
+          <tr><td><span style="display: inline-flex; align-items: center; gap: 10px"><img src="../generated/icon-cart.webp" alt="" width="30" height="30" style="object-fit: contain">Транспорт</span></td><td class="num money neg">−760,00 ₽</td><td><input class="input slim" type="text" inputmode="decimal" value="2 000" aria-label="Положить в мешок Транспорт"></td></tr>
+          <tr><td><span style="display: inline-flex; align-items: center; gap: 10px"><img src="../generated/icon-bag.webp" alt="" width="30" height="30" style="object-fit: contain">Отпуск</span></td><td class="num money">4 000,00 ₽</td><td><input class="input slim" type="text" inputmode="decimal" aria-label="Положить в мешок Отпуск"></td></tr>
+        </tbody>
+      </table>
+      <div style="display: flex; align-items: center; gap: 20px"><button type="button" class="btn btn-ochre" data-sound="coins">Разложить</button><a class="link" href="Saeckel.html">Позже — вернуться к мешкам</a></div>
+    </main>
+  </div>
+  <img class="blot" src="../generated/ink-blot-small.webp" alt="" aria-hidden="true" style="left: 1360px; top: 470px; width: 44px; opacity: 0.7; transform: rotate(0deg)">
+  <img class="blot" src="../generated/ink-ring.webp" alt="" aria-hidden="true" style="left: 1330px; top: 810px; width: 100px; opacity: 0.42; transform: rotate(15deg)">
+</div>
+<script>/* прототип: экран нарисован под 1440×900 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 1440, innerHeight / 900); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

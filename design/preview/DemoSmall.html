@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Витрина — мелочи</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css"><link rel="stylesheet" href="../demo.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof demo" style="width: 1440px; height: 900px; padding: 40px; display: grid; grid-template-columns: 300px repeat(3, minmax(0, 1fr)); gap: 30px 40px; align-content: start">
+  <div class="unroll-demo" style="grid-row: span 3; position: relative; height: 810px; overflow: hidden">
+    <nav class="banner loop" aria-label="Пример" style="height: 810px">
+      <span class="logo"><img src="../logo/hof-mark-white.svg" width="44" height="44" alt=""><span><b>Hof</b><small>Ваш личный двор</small></span></span>
+      <span class="nav"><img src="../generated/emblem-fountain-small.webp" alt="">Двор</span><span class="nav"><img src="../generated/emblem-saeckel-small.webp" alt="">Säckel</span>
+    </nav>
+  </div>
+  <div class="framed stack" style="align-items: center; gap: 8px"><span class="caps">Казна: сундук</span><span class="frames chest" style="width: 110px; height: 92px"><img src="../generated/emblem-chest-closed.webp" alt=""><img src="../generated/emblem-chest.webp" alt=""></span><span class="small muted">нажатие: открывается со скрипом</span></div>
+  <div class="framed stack" style="align-items: center; gap: 8px"><span class="caps">Покинуть двор</span><span class="frames" style="width: 92px; height: 92px"><img src="../generated/emblem-door-closed-small.webp" alt=""><img src="../generated/emblem-door-small.webp" alt=""></span><span class="small muted">нажатие: дверь открывается со звуком</span></div>
+  <div class="framed stack" style="align-items: center; gap: 8px"><span class="caps">Забрать ключ</span><span class="key-loop" style="position: relative; flex: none; width: 60px; height: 123px"><img src="../generated/key-tag.webp" alt="" style="position: absolute; inset: 0; width: 60px; height: 123px"><img src="../generated/hook-empty.webp" alt="" style="position: absolute; inset: 0; width: 60px; height: 123px; opacity: 0"></span><span class="small muted">ключ снимается с крючка</span></div>
+  <div class="stack" style="gap: 10px; justify-content: center"><span class="caps">Сообщение: печать ставится</span><p class="note">Доход 80 000 ₽ лёг в казну.</p><p class="note note-error">Пароли не совпадают.</p></div>
+  <div class="stack" style="align-items: center; gap: 8px; justify-content: center"><span class="caps">Кот: нажатие — звук и другая поза</span><span style="position: relative; display: block; width: 300px; height: 220px; overflow: hidden"><img src="../generated/scene-courtyard-map.webp" alt="" style="position: absolute; left: -680px; top: -560px; width: 1536px; max-width: none"><button type="button" class="cat" aria-label="Кот" style="left: 146px; top: 120px; width: 54px; height: 72px"><img class="pose" src="../generated/map-cat.webp" alt="" style="left: -62.96%; top: -79.17%; width: 287.04%; height: 211.11%"></button></span></div>
+  <div class="stack" style="gap: 18px; justify-content: center; align-items: flex-start"><span class="caps">Вывеска и «назад»</span><span class="sign loop" style="min-width: 220px"><span>Säckel</span></span><a class="back loop" href="Users.html" data-fx="flip-back"><span>Приближённые</span></a></div>
+  <div class="stack" style="gap: 10px; justify-content: center"><span class="caps">Новая запись дописывается пером</span>
+    <table class="table" style="white-space: nowrap"><tbody><tr class="fresh"><td class="muted">05.10</td><td class="note-text">овощи на рынке</td><td class="num money">−1 240,00 ₽</td></tr>
+    <tr><td class="muted">01.10</td><td>из казны</td><td class="num money">+8 000,00 ₽</td></tr></tbody></table></div>
+  <div class="stack" style="align-items: center; gap: 8px; justify-content: center"><span class="caps">Мешок после траты</span><img class="squeeze" src="../generated/icon-basket.webp" alt="" width="90" height="90" style="object-fit: contain"><span class="small muted">сжимается, звенят монеты</span></div>
+  <div class="stack" style="gap: 10px; justify-content: center"><span class="caps">Лист книги: вперёд — влево, назад — вправо</span>
+    <div class="framed turn-loop stack" style="gap: 4px"><h3 class="title t-3">Летопись</h3><span class="small muted">05.10 · Продукты · −1 240,00 ₽</span><span class="small muted">04.10 · Транспорт · −1 300,00 ₽</span></div></div>
+</div>
+<script>/* прототип: экран нарисован под 1440×900 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 1440, innerHeight / 900); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

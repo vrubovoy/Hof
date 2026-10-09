@@ -1,0 +1,482 @@
+{
+ "demo.css": {
+  "id": "e86fd698c503b288fe38910126187518",
+  "sha": "a20100ae39700af0"
+ },
+ "generated/banner-roll.webp": {
+  "id": "e79e4c1999f0087401763b58121c1735",
+  "sha": "ba532b67cf32840b"
+ },
+ "generated/btn-blue.webp": {
+  "id": "507b7b65a351aeef309df9732328818e",
+  "sha": "1ebed1a95a9ba399"
+ },
+ "generated/btn-danger.webp": {
+  "id": "87855ff0ef3997e5c40416e268dd0978",
+  "sha": "526c2a2940c8bb04"
+ },
+ "generated/btn-ochre.webp": {
+  "id": "7ccedb29467563f89fc0019e976a8305",
+  "sha": "d007721d482cdbc4"
+ },
+ "generated/btn-paper.webp": {
+  "id": "9dc82b14eba990d026f8126e7aaab1ce",
+  "sha": "804d3effd5dfd71d"
+ },
+ "generated/chambers-cat.webp": {
+  "id": "24db736c1f349c6a4299c4c6034306cb",
+  "sha": "d878a39734355c4b"
+ },
+ "generated/emblem-candle-small.webp": {
+  "id": "2f2d1764cc64d55b2ba20e4180acf973",
+  "sha": "41fc775c61b185a4"
+ },
+ "generated/emblem-chest-closed.webp": {
+  "id": "f3581f12904e8194ad2d3164d37c6f3c",
+  "sha": "7d62a4fdcc49c906"
+ },
+ "generated/emblem-chest.webp": {
+  "id": "cc2ec6c3b9f014a70ec2c5c4f5b7a2ed",
+  "sha": "3c91bf60848047cb"
+ },
+ "generated/emblem-door-closed-small.webp": {
+  "id": "8d347e8ce110703a5738efa2b11291ad",
+  "sha": "6f090204d4524082"
+ },
+ "generated/emblem-door-small.webp": {
+  "id": "408b905d7266ad2e3012e94002b79636",
+  "sha": "5236c90ac53bd336"
+ },
+ "generated/emblem-fountain-small.webp": {
+  "id": "0a34b1366b5ee7eefd4dd2c5509c16f6",
+  "sha": "8bf5eb328a8005e1"
+ },
+ "generated/emblem-keys-small.webp": {
+  "id": "506b06e903742da5e6e3adcfa812de8c",
+  "sha": "a32e43dd5a3fb682"
+ },
+ "generated/emblem-saeckel-small.webp": {
+  "id": "211a89e6563cf4c5c6a19b89e1689d47",
+  "sha": "08f0515d51cdf6d6"
+ },
+ "generated/empty-history-closed.webp": {
+  "id": "50ee6449d5a3884a122dd800ed9a2816",
+  "sha": "5dbc4017c2d1e457"
+ },
+ "generated/empty-residents.webp": {
+  "id": "91ac892a2242d11916ec9c11f9efa6fc",
+  "sha": "b52e29943c0b24d3"
+ },
+ "generated/empty-saeckel-sniff-1.webp": {
+  "id": "c81e7537b34065518829309072e4276d",
+  "sha": "4c6e4b1cb0314dd6"
+ },
+ "generated/empty-saeckel-sniff-2.webp": {
+  "id": "60b7785d72ddb40b606d58614f72f7a5",
+  "sha": "6804445b3b3065ad"
+ },
+ "generated/empty-saeckel.webp": {
+  "id": "f9fe0823faf7d6ee90eb7b634b292989",
+  "sha": "69cef6d1576b88c9"
+ },
+ "generated/error-403.webp": {
+  "id": "6cfc0871c0faca86e354e14bf05631a7",
+  "sha": "8077a500ad4132ff"
+ },
+ "generated/error-403@2x.webp": {
+  "id": "56e15ffee70e4c960073a1cdcdafe87a",
+  "sha": "a56fd641bdbc0788"
+ },
+ "generated/error-404.webp": {
+  "id": "9b3a7cc581b584f0f6f5677f438e3e63",
+  "sha": "8f2b280f4af68130"
+ },
+ "generated/error-404@2x.webp": {
+  "id": "0af0b91be845334a929cbbceb3955836",
+  "sha": "32ee43337c2765ac"
+ },
+ "generated/error-500.webp": {
+  "id": "ebf8d2f018f444b8b6bc956859763913",
+  "sha": "1d27c6790f106afa"
+ },
+ "generated/error-500@2x.webp": {
+  "id": "2730a9751679b1e9fb0e7a1a328144ab",
+  "sha": "746e608b1e8edd19"
+ },
+ "generated/frame.webp": {
+  "id": "6a668cef09726a028220dde1392ad968",
+  "sha": "4708745a71ba5e9c"
+ },
+ "generated/fx-banner-gate-l.webp": {
+  "id": "f59b75af1932720470cd0f5c4021629e",
+  "sha": "b658d031000c92ad"
+ },
+ "generated/fx-banner-gate-r.webp": {
+  "id": "73fcf05b1c25bd981a68dee90fe15fca",
+  "sha": "3607a0ab67ac32d7"
+ },
+ "generated/fx-banner-tower.webp": {
+  "id": "5cebe7278a1899f274de3f2208bb8bce",
+  "sha": "819cf0b7b2fd1f02"
+ },
+ "generated/fx-fountain.webp": {
+  "id": "1b36eb2a80f9315201c6be494721bc6d",
+  "sha": "b3d1c9c349687b49"
+ },
+ "generated/fx-leaves-bush-l.webp": {
+  "id": "bf3126b4e5f75701b92b54044a90d32c",
+  "sha": "2734471cb526407f"
+ },
+ "generated/fx-leaves-bush-r.webp": {
+  "id": "2f433226318fbc265ed37326332b9227",
+  "sha": "478c6849f488b757"
+ },
+ "generated/fx-leaves-olive.webp": {
+  "id": "3a875d9976be8f44440737271aa378f3",
+  "sha": "f22f5dce23415a83"
+ },
+ "generated/fx-leaves-tree.webp": {
+  "id": "9ba7212da10931230c77266d73e91a57",
+  "sha": "e4028dcf8f930534"
+ },
+ "generated/hook-empty.webp": {
+  "id": "270cd50ab0b6f676ebf123fe683ef0e9",
+  "sha": "e5dd794248811336"
+ },
+ "generated/icon-bag.webp": {
+  "id": "bfd8e8f427b0dfba759578b568c455cf",
+  "sha": "a305b9834bfb0724"
+ },
+ "generated/icon-basket.webp": {
+  "id": "13872452337579924429ffb9c644b499",
+  "sha": "508e77014fbef77e"
+ },
+ "generated/icon-books.webp": {
+  "id": "8bd9072a7233f1241081b99bdc52838e",
+  "sha": "5793317991a10e90"
+ },
+ "generated/icon-bowl.webp": {
+  "id": "13758483654f437a2bda3f11056d9719",
+  "sha": "5145824725640e84"
+ },
+ "generated/icon-bundle.webp": {
+  "id": "ffc378df6c5908072c7dca4a05566de9",
+  "sha": "d9b2a32cb95b015b"
+ },
+ "generated/icon-cart.webp": {
+  "id": "fc05de67827c503d124869ae1b4b410f",
+  "sha": "a586f77b490339f0"
+ },
+ "generated/icon-comb.webp": {
+  "id": "e693bc254b7e615a76a053e35cdcba2f",
+  "sha": "2c34a23a4a32f49b"
+ },
+ "generated/icon-hammer.webp": {
+  "id": "ecb8458e58c9cc605f67cc579011cbb1",
+  "sha": "1f79244fdcaac3e2"
+ },
+ "generated/icon-hearth.webp": {
+  "id": "eb3f8a9b3e2215bef0a00485fd16bc96",
+  "sha": "210e8e7ad00d84ad"
+ },
+ "generated/icon-jug.webp": {
+  "id": "458d3e8665ba8893fbd84f1ed2b9d608",
+  "sha": "89dbf4e4f266c2e2"
+ },
+ "generated/icon-lute.webp": {
+  "id": "513e9c63c627829b515c7c79b8096346",
+  "sha": "394b57bdeec50b8a"
+ },
+ "generated/icon-mortar.webp": {
+  "id": "fa19c005d963bba668df6549c6667ef3",
+  "sha": "c52af36ecbe45fe7"
+ },
+ "generated/icon-needle.webp": {
+  "id": "915de497d7370a12ce3731a7d7280e7a",
+  "sha": "748d58532c0573ab"
+ },
+ "generated/icon-pot.webp": {
+  "id": "fb9f56f4e99016549279aef6d30b350d",
+  "sha": "ebbc6189c87fafbd"
+ },
+ "generated/icon-scroll.webp": {
+  "id": "a87e56c866b0b83bcf47850f2d0512d7",
+  "sha": "81ef9b3c7e3a6b8d"
+ },
+ "generated/icon-toyhorse.webp": {
+  "id": "06e0d69b9054e6d275e3c1fe475c4b6f",
+  "sha": "e503ea2cf35b1ecd"
+ },
+ "generated/ink-blot-medium.webp": {
+  "id": "95afcdabf5f98c7b87fc4cf23c197244",
+  "sha": "b427763af624c43c"
+ },
+ "generated/ink-blot-small.webp": {
+  "id": "715508309215bef0c851e3d7e0efe74b",
+  "sha": "401b2ef1e3d2c825"
+ },
+ "generated/ink-drip.webp": {
+  "id": "d4f2d9aef13641a1e774ff722114cae1",
+  "sha": "1549d14679d7761c"
+ },
+ "generated/ink-ring.webp": {
+  "id": "e3c2a22230b3fcc134a521e0a09b8e5a",
+  "sha": "1e98a36746bf7126"
+ },
+ "generated/ink-splatter-a.webp": {
+  "id": "2ca021cab3332cce7d07bf2971e36f16",
+  "sha": "7a214435edcd1253"
+ },
+ "generated/ink-splatter-b.webp": {
+  "id": "dc264f003c20183c269023388237d513",
+  "sha": "2a0cb85ec27510c9"
+ },
+ "generated/key-tag.webp": {
+  "id": "388ce8e8c928acb3eb0a644e0576bda7",
+  "sha": "047752aef3eb4e31"
+ },
+ "generated/login-desktop-v2.webp": {
+  "id": "0506c425178136273434d53152f5f858",
+  "sha": "aaa908aebda6767d"
+ },
+ "generated/login-desktop-v2@2x.webp": {
+  "id": "1483e80d9b4abe78c2a3a0f4f539239e",
+  "sha": "578c38be99cf4220"
+ },
+ "generated/login-mobile-v2@2x.webp": {
+  "id": "64e502c66607e688cf87b84e60801571",
+  "sha": "a08dae9a59f1dfda"
+ },
+ "generated/manicule.webp": {
+  "id": "6a8912c299c0cc5f25ca5dbd0c705d1d",
+  "sha": "8d93dcbe1aaca59c"
+ },
+ "generated/map-cat.webp": {
+  "id": "3e5214c67ae237abbac7eb4b3e798bb8",
+  "sha": "0e7d6c80f16a7c94"
+ },
+ "generated/map-gatehouse-window.webp": {
+  "id": "e13502bd1b993f39bd767a818d738b3d",
+  "sha": "0ff9bc64f454f3df"
+ },
+ "generated/map-tower-door.webp": {
+  "id": "899aa6aba828b63ca227207737d04aa3",
+  "sha": "386c2ad18a63fc67"
+ },
+ "generated/map-treasury-door.webp": {
+  "id": "4b8216904b15ef6e979b5c924f5348be",
+  "sha": "d89dc53391fde746"
+ },
+ "generated/menu-banner.webp": {
+  "id": "fbbd934e79d3f98ebd314ee8c562aab1",
+  "sha": "00cf4ebc914fab40"
+ },
+ "generated/paper-clouds.webp": {
+  "id": "97164a581915a94f0592b30709abc140",
+  "sha": "3085e82a1ed83196"
+ },
+ "generated/paper-tile.webp": {
+  "id": "2bd4f2672b805c2bd4132f9892f39e6d",
+  "sha": "59745ff591ce6d85"
+ },
+ "generated/pose-500.webp": {
+  "id": "471602e6defb4e74d64eda4c4044c0e9",
+  "sha": "6e5dd1c8c83f1ae6"
+ },
+ "generated/pose-500@2x.webp": {
+  "id": "28f19c5dd503b3cc09a5e78b35c9e9db",
+  "sha": "4762d6e22252f3db"
+ },
+ "generated/pose-login-m.webp": {
+  "id": "5d75a6201a5a4ea3d934ccea346b1474",
+  "sha": "a08a2c52c8f98c77"
+ },
+ "generated/pose-login.webp": {
+  "id": "33a09ceef1eed0296d4b5c023773f9ec",
+  "sha": "ca573f38d009ce70"
+ },
+ "generated/pose-login@2x.webp": {
+  "id": "b6fc59b1e4bedaf3c042e8b107f6ea78",
+  "sha": "d064bdb6b98c3761"
+ },
+ "generated/pose-setup.webp": {
+  "id": "b04e8e18a153963ce4fd374f9f7738af",
+  "sha": "b2c3cb5e6bbbafd9"
+ },
+ "generated/pose-setup@2x.webp": {
+  "id": "50a1d55c2daac429fb6035dd5fe2f6c9",
+  "sha": "671b8c98dafa51cd"
+ },
+ "generated/ribbon-soft.webp": {
+  "id": "f78f9b48c033511ccf7bb74c0fe352d8",
+  "sha": "d5ddd1fb82896998"
+ },
+ "generated/scene-chambers-panel.webp": {
+  "id": "2a58c27afca350990a6c6794bc5b0a49",
+  "sha": "6f59c10789558c3b"
+ },
+ "generated/scene-chambers-panel@2x.webp": {
+  "id": "5ccee81506c9869a93c97d875aeb3183",
+  "sha": "c41508398c14c076"
+ },
+ "generated/scene-courtyard-map.webp": {
+  "id": "6c08c75c96f8d852810aff2453df7168",
+  "sha": "a11070e6ff69c3ee"
+ },
+ "generated/scene-courtyard-map@2x.webp": {
+  "id": "ecca7e2fbde9e62ce79936844cbd2fdc",
+  "sha": "24988b56bed467d4"
+ },
+ "generated/scene-residents-panel.webp": {
+  "id": "9d71ac316b4df4d830f0deb3ca24715d",
+  "sha": "42e1f51215c84639"
+ },
+ "generated/scene-residents-panel@2x.webp": {
+  "id": "f5fc20e1f799bf7beaba48a97583191e",
+  "sha": "428228349392c6aa"
+ },
+ "generated/scene-setup.webp": {
+  "id": "b55e04905bbc4738d76b52a6cbcf785a",
+  "sha": "6eb0a6721092b4cf"
+ },
+ "generated/scene-setup@2x.webp": {
+  "id": "dbd48a233482f8a8726c1712fba95495",
+  "sha": "79926824ee97958f"
+ },
+ "generated/scene-treasury-band.webp": {
+  "id": "59d170b287b20e4d5ea03860addd0e2f",
+  "sha": "1c4b81ff0b8bde22"
+ },
+ "generated/scene-treasury-band@2x.webp": {
+  "id": "b0bc0bf495ea8fba7132ac5534fc7502",
+  "sha": "a05bc9358b0e395b"
+ },
+ "generated/seal-blue.webp": {
+  "id": "83dad6b38e1d378cbd3eb51ac0cafad9",
+  "sha": "e9a9eef4d0ca51cd"
+ },
+ "generated/seal-red.webp": {
+  "id": "dbd1fddbbe2bb8fca78d8417b2989329",
+  "sha": "53b95bd3f9984e50"
+ },
+ "generated/setup-gate-open.webp": {
+  "id": "a3055fb2cb98f9c4ae03ad52745ac02a",
+  "sha": "73f75a238facdc87"
+ },
+ "generated/signboard-soft.webp": {
+  "id": "5a77ecbb2767375664bfae8622ca1fb1",
+  "sha": "d85fb1859dec6909"
+ },
+ "generated/sprig-corner.webp": {
+  "id": "04981001dafb7176cacbe5c9cda5f37d",
+  "sha": "7cbfbbb5e9b37898"
+ },
+ "generated/sprig-divider.webp": {
+  "id": "ba53deae133cb1604557dc1523b9590a",
+  "sha": "d813584eb85b83ef"
+ },
+ "logo/hof-mark-white.svg": {
+  "id": "b3269582d656226f45e04be44bdfc8bf",
+  "sha": "f33e3d5fac1da6d3"
+ },
+ "logo/hof-mark.svg": {
+  "id": "4a45a3f7c9f25cf6284620e506ffdb78",
+  "sha": "7c4d56e9aed54140"
+ },
+ "pen/fx-birds.svg": {
+  "id": "73fd50551991721bfc3a6646e54af27d",
+  "sha": "6e854ede55067eaa"
+ },
+ "pen/fx-smoke.svg": {
+  "id": "449646c37240f97c6db561de7e5b84b5",
+  "sha": "bfaa6ec3d0ff8f22"
+ },
+ "pen/pen-badge.svg": {
+  "id": "af97997b18d57e848bb654c59e3d228a",
+  "sha": "0454265e779d3c80"
+ },
+ "pen/pen-check-on.svg": {
+  "id": "753b187ed3aa7008ed8b9f9c19155160",
+  "sha": "a2dc9ac4935cb040"
+ },
+ "pen/pen-check.svg": {
+  "id": "5c81a2e234021ded739b98fa5becb857",
+  "sha": "1a4bfbdc0cab4881"
+ },
+ "pen/pen-chevron.svg": {
+  "id": "456146563bf58a25b110809ff2af9447",
+  "sha": "821ad32e7c290251"
+ },
+ "pen/pen-field-err-focus.svg": {
+  "id": "b2d3091cd2be379289a9e4e613bc9bc9",
+  "sha": "1e8c9f69dacf8419"
+ },
+ "pen/pen-field-err.svg": {
+  "id": "21e359dc41d2d633e676484c711db5a2",
+  "sha": "6633d7b7acc1d558"
+ },
+ "pen/pen-field-focus.svg": {
+  "id": "c13762ab218c7ebb9f4d741259dd01eb",
+  "sha": "472460e64564573a"
+ },
+ "pen/pen-field.svg": {
+  "id": "f225e64cdc15aa1b1f20d6af2843dae6",
+  "sha": "45fb118ff74851d4"
+ },
+ "pen/pen-knob.svg": {
+  "id": "2821c6599d8e08f2fad140aea17a1efc",
+  "sha": "1205e2fcb5952adf"
+ },
+ "pen/pen-note-error.svg": {
+  "id": "9fc1ab4f2ae89b370a116eb4607764b4",
+  "sha": "35009daaa557f1a9"
+ },
+ "pen/pen-note-info.svg": {
+  "id": "824b129da5d918fee27e9f563dfa396b",
+  "sha": "ab123364030ba951"
+ },
+ "pen/pen-panel.svg": {
+  "id": "6444eef3ef878f0d8adb459a425c3d47",
+  "sha": "0baa909ab42a0f1a"
+ },
+ "pen/pen-pick.svg": {
+  "id": "da2cd26b56937debb134ddcd58ec1508",
+  "sha": "062a5fb2395f5602"
+ },
+ "pen/pen-ring.svg": {
+  "id": "a5f3b396f9e58b27945fbe7746844ee3",
+  "sha": "9935221e8fff3d99"
+ },
+ "pen/pen-rule-light.svg": {
+  "id": "f726cfbf42d873b5689272cabf1e09ba",
+  "sha": "63169bef011be807"
+ },
+ "pen/pen-rule-ochre.svg": {
+  "id": "eb1c394a07bbd460abd034d96396995d",
+  "sha": "361115189b663b66"
+ },
+ "pen/pen-rule.svg": {
+  "id": "11a89fe0ff02c12339dd0c846a211454",
+  "sha": "44d261345bb27d52"
+ },
+ "pen/pen-tab-on.svg": {
+  "id": "656ba14a6116fff99cbbb4274020c1b8",
+  "sha": "6c5b4f6e85faf9a6"
+ },
+ "pen/pen-tab.svg": {
+  "id": "8214c4d696551874439c7f38550136d9",
+  "sha": "b3aec11602833022"
+ },
+ "pen/pen-underline.svg": {
+  "id": "4adf3b2b33e3898243ceb482280dc828",
+  "sha": "e902e1826a872361"
+ },
+ "pen/pen-vrule-light.svg": {
+  "id": "e5bd3b6f659215fec17a5ec93a0c3db3",
+  "sha": "252fd7b74ec04288"
+ },
+ "screens.css": {
+  "id": "891899469a6d0ff48b9fd2192255326b",
+  "sha": "ccfea836447897cc"
+ }
+}

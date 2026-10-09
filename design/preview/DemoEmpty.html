@@ -1,0 +1,14 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Витрина — пустая страница мешков</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css"><link rel="stylesheet" href="../demo.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof demo" style="width: 1440px; height: 560px; padding: 44px 60px; display: grid; justify-items: center; align-content: start">
+  <div class="stack" style="gap: 12px; align-items: center"><span class="caps">Мешков пока нет — нажатие на кота: нюхает мешки (3 с, звук нюханья)</span><span class="vstack loop-sniff" style="width: 520px"><img src="../generated/empty-saeckel.webp" alt="Кот обнюхивает пустые мешочки"><img class="f1" src="../generated/empty-saeckel-sniff-1.webp" alt=""><img class="f2" src="../generated/empty-saeckel-sniff-2.webp" alt=""></span></div>
+</div>
+<script>/* прототип: экран нарисован под 1440×560 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 1440, innerHeight / 560); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

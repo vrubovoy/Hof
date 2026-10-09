@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Витрина — основание</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css"><link rel="stylesheet" href="../demo.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof demo" style="width: 1440px; height: 900px">
+  <div class="zoom" style="position: absolute; inset: 0; transform-origin: 521px 532px; --cycle: 7s; --delay: 1.4s">
+    <img class="scene" src="../generated/scene-setup.webp" srcset="../generated/scene-setup.webp 1x, ../generated/scene-setup@2x.webp 2x" alt="Ворота замка закрыты, в замке ключ, кот ждёт у ворот" style="position: absolute; inset: 0; object-position: left center">
+    <img class="gate-open" id="gate-open" src="../generated/setup-gate-open.webp" alt="" style="left: 398px; top: 382px; width: 248px; height: 328px">
+    <i class="spot" id="gate" style="left: 521px; top: 532px"></i>
+    <button type="button" class="cat" aria-label="Кот" style="left: 538px; top: 664px; width: 94px; height: 116px"><img class="pose" src="../generated/pose-setup.webp" srcset="../generated/pose-setup.webp 1x, ../generated/pose-setup@2x.webp 2x" alt="" style="left: -60.00%; top: -48.39%; width: 225.00%; height: 173.39%"></button>
+  </div>
+  <div style="position: absolute; top: 0; right: 0; bottom: 0; width: 580px; display: flex; align-items: center; padding: 0 56px 0 24px">
+    <form class="framed stack" style="gap: 14px; width: 100%">
+      <div class="logo"><img src="../logo/hof-mark.svg" width="48" height="48" alt=""><span><b style="font-size: 38px">Hof</b><small>Ваш личный двор</small></span></div>
+      <div class="stack" style="gap: 4px"><h1 class="title t-2">Основание двора</h1><p class="muted small">Станьте хозяином двора: вы принимаете приближённых и присматриваете за Hof.</p></div>
+      <div class="field"><label for="s-code">Ключ от ворот</label><input id="s-code" class="input" type="text" autocomplete="off" style="letter-spacing: 0.08em"><span class="hint">Одноразовый код из лога сервера: <code>docker compose logs hof</code></span></div>
+      <div class="field"><label for="s-login">Логин</label><input id="s-login" class="input" type="text" autocomplete="username"><span class="hint">Латиница, цифры, точка, дефис и подчёркивание, до 32 символов.</span></div>
+      <div class="field"><label for="s-pass">Пароль</label><input id="s-pass" class="input" type="password" autocomplete="new-password"><span class="hint">Не короче [N] символов.</span></div>
+      <div class="field"><label for="s-pass2">Пароль ещё раз</label><input id="s-pass2" class="input" type="password" autocomplete="new-password"></div>
+      <button type="button" class="btn btn-blue btn-wide press" data-go="Home.html" data-spot="#gate" data-opens="#gate-open" data-unroll>Основать двор</button>
+    </form>
+  </div>
+  <div class="veil" style="--cycle: 7s; --delay: 1.4s"></div>
+  <img class="blot" src="../generated/ink-blot-medium.webp" alt="" aria-hidden="true" style="left: 1370px; top: 30px; width: 52px; opacity: 0.65; transform: rotate(20deg)">
+  <img class="blot" src="../generated/ink-ring.webp" alt="" aria-hidden="true" style="left: 1330px; top: 820px; width: 110px; opacity: 0.45; transform: rotate(-15deg)">
+</div>
+<script>/* прототип: экран нарисован под 1440×900 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 1440, innerHeight / 900); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

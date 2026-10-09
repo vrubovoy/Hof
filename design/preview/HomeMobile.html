@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Hof — двор, телефон</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof" style="width: 390px; height: 844px">
+  <header class="m-top">
+    <a class="logo" href="HomeMobile.html"><img src="../logo/hof-mark.svg" width="32" height="32" alt=""><b style="font-size: 30px">Hof</b></a>
+    <a href="AccountMobile.html" data-fx="left" aria-label="Мои покои" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px"><img src="../generated/emblem-candle-small.webp" alt="" width="34" height="34"></a>
+  </header>
+  <div class="map fade-b"><div class="map-inner zoom"><img class="" src="../generated/scene-courtyard-map.webp" srcset="../generated/scene-courtyard-map.webp 1x, ../generated/scene-courtyard-map@2x.webp 2x" alt="Двор замка: ворота со сторожкой, казначейская, башня с покоями, фонтан посередине"><div class="fx fx-fountain" aria-hidden="true" style="left: 39.71%; top: 55.66%; width: 22.14%; height: 19.53%"></div><div class="fx fx-leaves" aria-hidden="true" style="left: 0.00%; top: 60.55%; width: 37.11%; height: 26.37%; background-image: url(../generated/fx-leaves-olive.webp); --cycle: 11s; --delay: 2s"></div><div class="fx fx-leaves" aria-hidden="true" style="left: 35.16%; top: 57.81%; width: 10.42%; height: 13.67%; background-image: url(../generated/fx-leaves-bush-l.webp); --cycle: 13s; --delay: 5.5s"></div><div class="fx fx-leaves" aria-hidden="true" style="left: 57.29%; top: 58.40%; width: 11.85%; height: 14.06%; background-image: url(../generated/fx-leaves-bush-r.webp); --cycle: 13s; --delay: 9s"></div><div class="fx fx-leaves" aria-hidden="true" style="left: 26.04%; top: 22.07%; width: 10.81%; height: 19.92%; background-image: url(../generated/fx-leaves-tree.webp); --cycle: 17s; --delay: 0.6s"></div><div class="fx fx-banner" aria-hidden="true" style="left: 3.26%; top: 37.50%; width: 4.69%; height: 13.09%; background-image: url(../generated/fx-banner-gate-l.webp); --cycle: 2.6s"></div><div class="fx fx-banner" aria-hidden="true" style="left: 20.05%; top: 37.50%; width: 4.43%; height: 12.79%; background-image: url(../generated/fx-banner-gate-r.webp); --cycle: 3.1s"></div><div class="fx fx-banner" aria-hidden="true" style="left: 93.88%; top: 30.08%; width: 5.73%; height: 19.73%; background-image: url(../generated/fx-banner-tower.webp); --cycle: 3.5s"></div><div class="fx fx-smoke" aria-hidden="true" style="left: 46.35%; top: 9.77%; width: 2.08%; height: 7.81%"><i></i><i></i><i></i></div><div class="fx fx-birds" aria-hidden="true" style="top: 7%; height: 12%"><i style="left: 4%; top: 30%; --w: 2.6%; --flap: 0.66s"></i><i style="left: 8.5%; top: 6%; --w: 2.2%; --flap: 0.72s; --d: -0.3s"></i><i style="left: 0.5%; top: 62%; --w: 2%; --flap: 0.7s; --d: -0.5s"></i></div>
+    <a class="place " id="mp-users" href="UsersMobile.html" aria-label="Приближённые"><img class="lit" src="../generated/map-gatehouse-window.webp" alt="" style="left: 29.23%; top: 46.48%; width: 3.12%; height: 6.15%"></a>
+    <a class="place " id="mp-saeckel" href="SaeckelMobile.html" aria-label="Säckel"><img class="lit" src="../generated/map-treasury-door.webp" alt="" style="left: 37.70%; top: 41.89%; width: 4.69%; height: 14.16%"></a>
+    <a class="place " id="mp-account" href="AccountMobile.html" aria-label="Мои покои"><img class="lit" src="../generated/map-tower-door.webp" alt="" style="left: 86.85%; top: 44.82%; width: 5.47%; height: 22.17%"></a><button type="button" class="cat" aria-label="Кот" style="left: 53.78%; top: 66.41%; width: 3.52%; height: 7.03%"><img class="pose" src="../generated/map-cat.webp" alt="" style="left: -62.96%; top: -79.17%; width: 287.04%; height: 211.11%"></button></div></div>
+  <div class="stack" style="align-items: center; gap: 6px; padding: 0 12px">
+    <h1 class="ribbon md" style="position: relative; margin-top: -30px"><span>Добрый день!</span></h1>
+    <nav class="stack" style="align-items: center; gap: 0" aria-label="Места двора">
+      <a class="sign sm" href="SaeckelMobile.html" data-go="SaeckelMobile.html" data-spot="#mp-saeckel .lit" data-opens="#mp-saeckel" style="min-width: 240px"><span>Säckel</span></a>
+      <a class="sign sm" href="UsersMobile.html" data-go="UsersMobile.html" data-spot="#mp-users .lit" data-opens="#mp-users" style="min-width: 240px"><span>Приближённые</span></a>
+      <a class="sign sm" href="AccountMobile.html" data-go="AccountMobile.html" data-spot="#mp-account .lit" data-opens="#mp-account" style="min-width: 240px"><span>Мои покои</span></a>
+    </nav>
+    <aside class="framed stack" style="gap: 8px; width: 100%; margin-top: 8px; padding: 24px 24px 20px">
+      <h2 class="title t-3">Пока во дворе только вы</h2>
+      <p class="small muted">Примите приближённых: у каждого будет свой ключ и свои мешки.</p>
+      <a class="btn btn-wide" href="UsersMobile.html" data-fx="left">Принять ко двору</a>
+    </aside>
+  </div>
+  <img class="blot" src="../generated/ink-splatter-a.webp" alt="" aria-hidden="true" style="left: 300px; top: 790px; width: 62px; opacity: 0.55; transform: rotate(-12deg)">
+  <img class="blot" src="../generated/ink-blot-small.webp" alt="" aria-hidden="true" style="left: 16px; top: 560px; width: 30px; opacity: 0.7; transform: rotate(0deg)">
+</div>
+<script>/* прототип: экран нарисован под 390×844 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 390, innerHeight / 844); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

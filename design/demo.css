@@ -1,0 +1,92 @@
+/* Витрина для холста. Холст не выполняет скрипты, поэтому то, что в приложении запускают
+   наведение, клик или fx.js, здесь крутится само, по кругу. В приложение этот файл не идёт. */
+
+/* двор: по очереди — сторожка (окно), казначейская (дверь и вход в неё), башня */
+.demo .place .lit { animation: d-open 12s infinite; }
+.demo .place .sign.on-map { animation: d-swing 12s infinite; }
+.demo .p2 .lit, .demo .p2 .sign.on-map { animation-delay: 4s; }
+.demo .p3 .lit, .demo .p3 .sign.on-map { animation-delay: 8s; }
+@keyframes d-open { 0%, 3% { opacity: 0; } 9%, 26% { opacity: 1; } 32%, 100% { opacity: 0; } }
+@keyframes d-swing {
+  0%, 4% { transform: translateX(-50%) rotate(0); } 7% { transform: translateX(-50%) rotate(-3.5deg); }
+  11% { transform: translateX(-50%) rotate(2.2deg); } 15% { transform: translateX(-50%) rotate(-1deg); } 19%, 100% { transform: translateX(-50%) rotate(0); } }
+
+/* вход в дверь: наезд к проёму, потом вся сцена разом темнеет; новая страница проявляется из темноты */
+.demo .veil { position: absolute; animation: d-veil var(--cycle, 12s) var(--delay, 0s) infinite; }
+.demo .zoom { animation: d-zoom var(--cycle, 12s) var(--delay, 0s) infinite; }
+@keyframes d-veil { 0%, 12% { opacity: 0; } 17%, 21% { opacity: 1; } 28%, 100% { opacity: 0; } }
+@keyframes d-zoom { 0%, 8% { transform: scale(1); } 17.5%, 21% { transform: scale(2.2); } 21.01%, 100% { transform: scale(1); } }
+
+/* основание двора: «Основать двор» → ворота распахиваются → наезд → сцена темнеет */
+.demo .gate-open { animation: d-gate 7s infinite; }
+@keyframes d-gate { 0%, 18% { opacity: 0; } 26%, 62% { opacity: 1; } 63%, 100% { opacity: 0; } }
+.demo .press { animation: d-press 7s infinite; }
+@keyframes d-press { 0%, 10% { transform: none; } 12% { transform: translateY(2px) scale(0.98); } 15%, 100% { transform: none; } }
+
+/* мелочи */
+/* сундук, дверь, ключ: открываются плавно, около 0,7 с — как звучит звук */
+.demo .frames img + img { animation: d-two 4s ease-in-out infinite; }
+.demo .frames.chest img + img { animation-name: d-two-fast; }
+@keyframes d-two-fast { 0%, 25% { opacity: 0; } 30%, 75% { opacity: 1; } 80%, 100% { opacity: 0; } }
+@keyframes d-two { 0%, 25% { opacity: 0; } 43%, 75% { opacity: 1; } 90%, 100% { opacity: 0; } }
+@keyframes d-one { 0%, 25% { opacity: 1; } 43%, 75% { opacity: 0; } 90%, 100% { opacity: 1; } }
+.demo .cat .pose { animation: d-pose 3s infinite; }
+@keyframes d-pose { 0%, 100% { opacity: 0; } 0.5%, 40% { opacity: 1; } 40.5% { opacity: 0; } }
+.demo .note::before { animation: d-stamp 3s infinite; }
+@keyframes d-stamp { 0% { transform: scale(1.7) rotate(-20deg); opacity: 0; } 15%, 100% { transform: scale(1) rotate(-9deg); opacity: 1; } }
+/* знамя: рулон под древком катится вниз до выреза «ласточкин хвост», концы выпадают, знамя качнётся */
+.demo .banner.loop { transform-origin: 50% 0; animation: d-unroll 5s infinite, d-settle 5s ease-out infinite; }
+@keyframes d-unroll { 0%, 6% { clip-path: inset(0 0 calc(100% - 40px) 0); animation-timing-function: cubic-bezier(0.45, 0.05, 0.55, 1); }
+  26.6% { clip-path: inset(0 0 74px 0); animation-timing-function: ease-in; } 30%, 100% { clip-path: inset(0 0 0 0); } }
+@keyframes d-settle { 0%, 30% { transform: none; } 36% { transform: perspective(900px) rotateX(7deg); } 42% { transform: perspective(900px) rotateX(-3deg); }
+  46% { transform: perspective(900px) rotateX(1deg); } 50%, 100% { transform: none; } }
+.demo .unroll-demo::after, .demo .unroll-demo::before { content: ''; position: absolute; z-index: 3; left: 40px; right: 40px; top: 40px; pointer-events: none; }
+.demo .unroll-demo::after { height: 42px; transform: translateY(-50%); filter: drop-shadow(0 4px 3px rgb(14 26 46 / 0.35));
+  background: url(generated/banner-roll.webp) 0 0 / 100% 100% no-repeat; animation: d-roll 5s infinite; }
+.demo .unroll-demo::before { left: 42px; right: 42px; height: 28px; transform: translateY(-100%); background: linear-gradient(to bottom, transparent, rgb(8 18 40 / 0.4)); animation: d-roll-shade 5s infinite; }
+@keyframes d-roll { 0%, 6% { top: 40px; height: 42px; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0.05, 0.55, 1); }
+  26.6% { top: calc(100% - 74px); height: 18px; opacity: 1; animation-timing-function: ease-in; } 30%, 100% { top: calc(100% - 74px); height: 0; opacity: 0; } }
+@keyframes d-roll-shade { 0%, 6% { top: 40px; opacity: 1; animation-timing-function: cubic-bezier(0.45, 0.05, 0.55, 1); }
+  26.6% { top: calc(100% - 74px); opacity: 1; } 30%, 100% { top: calc(100% - 74px); opacity: 0; } }
+.demo .sign.loop { animation: d-swing2 3s infinite; transform-origin: 50% 0; }
+@keyframes d-swing2 { 0% { transform: rotate(0); } 10% { transform: rotate(-3.5deg); } 22% { transform: rotate(2.2deg); } 34% { transform: rotate(-1deg); } 45%, 100% { transform: rotate(0); } }
+.demo .key-loop img + img { animation: d-two 4s infinite; }
+.demo .key-loop img:first-child { animation: d-one 4s infinite; }
+.demo .back.loop::before { animation: d-point 2s infinite; }
+@keyframes d-point { 0%, 100% { transform: none; } 50% { transform: translateX(-5px); } }
+
+/* птицы над двором, новая запись в летописи, мешок после траты, перелистывание */
+.demo .fx-birds { opacity: 1; animation: d-fly 22s linear infinite; }
+@keyframes d-fly { from { transform: translate(-16%, 40%); } 23.8% { transform: translate(18%, 0); } 47.6% { transform: translate(42%, -70%); } 68%, to { transform: translate(62%, -200%); } }
+.demo .fresh > * { animation-name: d-fresh; animation-duration: 5s; animation-iteration-count: infinite; }
+@keyframes d-fresh { 0% { clip-path: inset(0 100% 0 0); } 18%, 100% { clip-path: inset(0 0 0 0); } }
+.demo .squeeze { animation: d-squeeze 3s infinite; }
+@keyframes d-squeeze { 0%, 10% { transform: none; } 20% { transform: scale(1.08, 0.86); } 30% { transform: scale(0.96, 1.05); } 40%, 100% { transform: none; } }
+.demo .turn-loop { animation: d-turn 4s ease-in-out infinite; }
+@keyframes d-turn { 0%, 15% { transform: none; filter: none; transform-origin: 0 50%; }
+  35% { transform: perspective(1200px) rotateY(-96deg); filter: brightness(0.55); transform-origin: 0 50%; }
+  35.1%, 50% { transform: none; filter: none; transform-origin: 100% 50%; }
+  70% { transform: perspective(1200px) rotateY(96deg); filter: brightness(0.55); transform-origin: 100% 50%; }
+  70.1%, 100% { transform: none; filter: none; transform-origin: 0 50%; } }
+
+/* сдвиг по меню: двор уезжает влево и темнеет, Приближённые выезжают справа; потом назад — наоборот.
+   Знамя меню стоит поверх темноты; пункт меню меняется, когда меняется сцена */
+.slide-demo .slide-a, .slide-demo .slide-b { position: absolute; inset: 0; }
+.slide-demo .veil { position: absolute; animation: d-veil-slide 10s infinite; }
+.slide-demo .banner { position: relative; z-index: 51; }
+.slide-demo .slide-a { animation: d-vis-a 10s infinite; }
+.slide-demo .slide-b { animation: d-vis-b 10s infinite; }
+.slide-demo .slide-a :is(.hof > :not(.shell), .shell > :not(.banner)) { animation: d-move-a 10s infinite; }
+.slide-demo .slide-b :is(.hof > :not(.shell), .shell > :not(.banner)) { animation: d-move-b 10s infinite; }
+@keyframes d-vis-a { 0%, 35.9% { visibility: visible; } 36%, 75.9% { visibility: hidden; } 76%, 100% { visibility: visible; } }
+@keyframes d-vis-b { 0%, 35.9% { visibility: hidden; } 36%, 75.9% { visibility: visible; } 76%, 100% { visibility: hidden; } }
+@keyframes d-veil-slide { 0%, 30% { opacity: 0; animation-timing-function: ease-in; } 36% { opacity: 0.85; animation-timing-function: ease-out; } 42%, 70% { opacity: 0; animation-timing-function: ease-in; }
+  76% { opacity: 0.85; animation-timing-function: ease-out; } 82%, 100% { opacity: 0; } }
+@keyframes d-move-a { 0%, 30% { transform: none; animation-timing-function: ease-in; } 36%, 76% { transform: translateX(-32%); animation-timing-function: ease-out; } 82%, 100% { transform: none; } }
+@keyframes d-move-b { 0%, 36% { transform: translateX(32%); animation-timing-function: ease-out; } 42%, 70% { transform: none; animation-timing-function: ease-in; } 76%, 100% { transform: translateX(32%); } }
+
+/* пустая страница мешков: сценка по кругу (на сайте — по нажатию, один раз); кадры сменяются мгновенно */
+.demo .loop-sniff .f1 { animation: d-sniff-a 5s linear infinite; }
+.demo .loop-sniff .f2 { animation: d-sniff-b 5s linear infinite; }
+@keyframes d-sniff-a { 0%, 17.9% { opacity: 1; } 18%, 22.7% { opacity: 0; } 22.8%, 37.1% { opacity: 1; } 37.2%, 100% { opacity: 0; } }
+@keyframes d-sniff-b { 0%, 37.1% { opacity: 0; } 37.2%, 58.7% { opacity: 1; } 58.8%, 100% { opacity: 0; } }

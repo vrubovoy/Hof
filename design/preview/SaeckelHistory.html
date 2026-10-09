@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Säckel — летопись</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof" style="width: 1440px; height: 900px">
+  <header class="sk-head">
+    <img class="scene" src="../generated/scene-treasury-band.webp" srcset="../generated/scene-treasury-band.webp 1x, ../generated/scene-treasury-band@2x.webp 2x" alt="Казначейская: стол с весами, монетами, книгой, мешками и сундуком">
+    <a class="sk-gate" href="Home.html" data-fx="flip-back"><img src="../logo/hof-mark.svg" width="22" height="22" alt="">Двор</a>
+  </header>
+  <nav class="sk-nav" aria-label="Säckel"><h1 class="ribbon md"><span>Säckel</span></h1><a class="tab" href="Saeckel.html" data-fx="flip-back">Мешки</a><a class="tab" href="SaeckelHistory.html" aria-current="page">Летопись</a><span class="caps" style="margin: 0 0 18px auto">Бюджет по мешкам</span></nav>
+  <main class="stack" style="gap: 10px; padding: 18px 48px; height: calc(100% - 414px)">
+    <div style="display: flex; align-items: flex-end; justify-content: space-between; max-width: 1100px">
+      <h2 class="title t-2">Летопись</h2>
+      <div class="field" style="width: 260px"><label for="h-filter">Мешок</label><span class="select"><select id="h-filter" class="input slim"><option>Все мешки</option><option>Продукты</option><option>Квартира</option><option>Транспорт</option><option>Отпуск</option></select></span></div>
+    </div>
+    <table class="table" style="max-width: 1100px">
+      <thead><tr><th style="width: 110px">Дата</th><th style="width: 240px">Мешок</th><th style="width: 180px">Запись</th><th>Заметка</th><th class="num">Сумма</th><th style="width: 40px"></th></tr></thead>
+      <tbody>
+        <tr><td class="muted">05.10.2026</td><td>Продукты</td><td>Трата</td><td class="note-text">овощи на рынке</td><td class="num money">−1 240,00 ₽</td><td class="num"><a class="link-plain" href="SaeckelForms.html" aria-label="Открыть запись">›</a></td></tr>
+        <tr><td class="muted">04.10.2026</td><td>Отпуск → Транспорт</td><td>Из мешка в мешок</td><td class="note-text"></td><td class="num money">760,00 ₽</td><td class="num"><a class="link-plain" href="SaeckelForms.html" aria-label="Открыть запись">›</a></td></tr>
+        <tr><td class="muted">04.10.2026</td><td>Транспорт</td><td>Трата</td><td class="note-text">бензин</td><td class="num money">−1 300,00 ₽</td><td class="num"><a class="link-plain" href="SaeckelForms.html" aria-label="Открыть запись">›</a></td></tr>
+        <tr><td class="muted">01.10.2026</td><td>Продукты</td><td>Из казны</td><td class="note-text"></td><td class="num money">+8 000,00 ₽</td><td class="num"><a class="link-plain" href="SaeckelForms.html" aria-label="Открыть запись">›</a></td></tr>
+        <tr><td class="muted">30.09.2026</td><td>Казна</td><td>Доход</td><td class="note-text">зарплата</td><td class="num money">+80 000,00 ₽</td><td class="num"><a class="link-plain" href="SaeckelForms.html" aria-label="Открыть запись">›</a></td></tr>
+      </tbody>
+    </table>
+    <a class="btn" href="#" data-sound="page" style="align-self: flex-start">Показать ещё</a>
+  </main>
+  <img class="blot" src="../generated/ink-blot-medium.webp" alt="" aria-hidden="true" style="left: 1300px; top: 470px; width: 64px; opacity: 0.55; transform: rotate(25deg)">
+  <img class="blot" src="../generated/ink-splatter-b.webp" alt="" aria-hidden="true" style="left: 1250px; top: 790px; width: 90px; opacity: 0.5; transform: rotate(10deg)">
+</div>
+<script>/* прототип: экран нарисован под 1440×900 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 1440, innerHeight / 900); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

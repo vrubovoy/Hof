@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Hof — мои покои, телефон</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof" style="width: 390px; height: 1180px">
+  <header class="m-top">
+    <a class="logo" href="HomeMobile.html" data-fx="right"><img src="../logo/hof-mark.svg" width="32" height="32" alt=""><b style="font-size: 30px">Hof</b></a>
+    <a href="AccountMobile.html" aria-current="page" aria-label="Мои покои" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px"><img src="../generated/emblem-candle-small.webp" alt="" width="34" height="34"></a>
+  </header>
+  <div class="m-pic " style="position: relative; height: 170px; overflow: hidden"><img src="../generated/scene-chambers-panel.webp" srcset="../generated/scene-chambers-panel.webp 1x, ../generated/scene-chambers-panel@2x.webp 2x" alt="Покои: стол с пером и чернильницей, кот спит на стуле" style="position: absolute; left: 0px; top: -300px; width: 390px; max-width: none"><button type="button" class="cat" aria-label="Кот" style="left: 180px; top: 44px; width: 196px; height: 119px" data-sound="purr"><img class="pose" src="../generated/chambers-cat.webp" alt="" style="left: 0; top: 0; width: 100%; height: 100%"></button></div>
+  <div class="stack" style="align-items: center; gap: 2px; margin-top: -28px; position: relative"><h1 class="ribbon md"><span>Мои покои</span></h1><span class="small muted">admin · хозяин двора</span></div>
+  <div class="stack" style="gap: 14px; padding: 10px 16px 16px">
+    <form class="framed stack" style="gap: 10px; padding: 20px 20px 18px">
+      <h2 class="title t-3">Сменить пароль</h2>
+      <div class="field"><label for="am-cur">Текущий пароль</label><input id="am-cur" class="input" type="password" autocomplete="current-password"></div>
+      <div class="field"><label for="am-new">Новый пароль</label><input id="am-new" class="input" type="password" autocomplete="new-password"></div>
+      <div class="field"><label for="am-new2">Ещё раз</label><input id="am-new2" class="input" type="password" autocomplete="new-password"><span class="hint">Не короче [N] символов. На других устройствах вы выйдете со двора.</span></div>
+      <button type="button" class="btn btn-blue btn-wide">Сменить пароль</button>
+    </form>
+    <form class="framed stack m-settings" style="gap: 6px; padding: 20px 20px 18px">
+      <h2 class="title t-3">Звуки и движение</h2>
+      <label class="check"><input type="checkbox" data-setting="anim"><span><b>Анимации</b><span class="small muted">знамя, фонтан, ветер, двери, переходы</span></span></label>
+      <label class="check"><input type="checkbox" data-setting="sound"><span><b>Звуки</b><span class="small muted">двери, сундук, монеты, кот, вода и ветер</span></span></label><div class="volume"><span class="small muted">громкость</span><input type="range" min="0" max="100" step="5" value="80" data-setting="soundVol" aria-label="Громкость звуков"><output>80 %</output></div>
+      <label class="check"><input type="checkbox" data-setting="music"><span><b>Музыка</b><span class="small muted">лютня и старинные напевы</span></span></label><div class="volume"><span class="small muted">громкость</span><input type="range" min="0" max="100" step="5" value="50" data-setting="musicVol" aria-label="Громкость музыки"><output>50 %</output></div>
+      <span class="hint">Сначала всё выключено. Настройка этого устройства.</span>
+    </form>
+    <button type="button" class="btn btn-wide" data-go="LoginMobile.html" data-sound="door" data-fx="right"><span class="frames" style="width: 26px; height: 26px"><img src="../generated/emblem-door-closed-small.webp" alt=""><img src="../generated/emblem-door-small.webp" alt=""></span>Покинуть двор</button>
+  </div>
+</div>
+<script>/* прототип: экран нарисован под 390×1180 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 390, innerHeight / 1180); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

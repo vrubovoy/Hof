@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Hof — только хозяину</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof" style="width: 1440px; height: 900px">
+  <img class="scene" src="../generated/error-403.webp" srcset="../generated/error-403.webp 1x, ../generated/error-403@2x.webp 2x" alt="Тяжёлая дверь с висячим замком" style="position: absolute; inset: 0; object-position: left center">
+  
+  <main class="stack" style="position: absolute; top: 0; right: 0; bottom: 0; width: 500px; justify-content: center; gap: 14px; padding: 0 70px 0 10px">
+    <a class="logo" href="Home.html"><img src="../logo/hof-mark.svg" width="40" height="40" alt=""><span><b style="font-size: 30px">Hof</b><small>Ваш личный двор</small></span></a>
+    <h1 class="title t-1" style="margin-top: 18px">Сюда только хозяину</h1>
+    <img class="sprig" src="../generated/sprig-divider.webp" alt="">
+    <p class="muted">Это место двора открыто только хозяину. Если нужно, попросите его.</p>
+    <div style="display: flex; align-items: center; gap: 18px; margin-top: 8px"><a class="btn btn-blue" href="Home.html" data-fx="right">Во двор</a></div>
+  </main>
+  <img class="blot" src="../generated/ink-drip.webp" alt="" aria-hidden="true" style="left: 1400px; top: 60px; width: 22px; opacity: 0.7; transform: rotate(0deg)">
+  <img class="blot" src="../generated/ink-ring.webp" alt="" aria-hidden="true" style="left: 1290px; top: 800px; width: 100px; opacity: 0.42; transform: rotate(-12deg)">
+</div>
+<script>/* прототип: экран нарисован под 1440×900 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 1440, innerHeight / 900); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

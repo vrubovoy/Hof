@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Säckel — летопись пуста</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof" style="width: 1440px; height: 900px">
+  <header class="sk-head">
+    <img class="scene" src="../generated/scene-treasury-band.webp" srcset="../generated/scene-treasury-band.webp 1x, ../generated/scene-treasury-band@2x.webp 2x" alt="Казначейская: стол с весами, монетами, книгой, мешками и сундуком">
+    <a class="sk-gate" href="Home.html" data-fx="flip-back"><img src="../logo/hof-mark.svg" width="22" height="22" alt="">Двор</a>
+  </header>
+  <nav class="sk-nav" aria-label="Säckel"><h1 class="ribbon md"><span>Säckel</span></h1><a class="tab" href="Saeckel.html" data-fx="flip-back">Мешки</a><a class="tab" href="SaeckelHistory.html" aria-current="page">Летопись</a><span class="caps" style="margin: 0 0 18px auto">Бюджет по мешкам</span></nav>
+  <main style="display: grid; grid-template-columns: 420px minmax(0, 520px); gap: 48px; align-items: center; justify-content: center; height: calc(100% - 414px); padding: 10px 48px">
+    <span class="vstack" style="width: 420px"><img src="../generated/empty-history-closed.webp" alt="Закрытая книга, перо и чернильница"></span>
+    <div class="stack" style="gap: 12px">
+      <h2 class="title t-1">Летопись пока пуста</h2>
+      <img class="sprig" src="../generated/sprig-divider.webp" alt="">
+      <p class="muted">Сюда ляжет каждый доход, трата и перекладывание — по порядку, с датой и заметкой.</p>
+      <div style="display: flex; align-items: center; gap: 18px; margin-top: 6px"><a class="btn btn-ochre" href="SaeckelForms.html">Записать доход</a><a class="link" href="Saeckel.html">К мешкам</a></div>
+    </div>
+  </main>
+  <img class="corner" src="../generated/sprig-corner.webp" alt="" aria-hidden="true">
+  <img class="blot" src="../generated/ink-blot-small.webp" alt="" aria-hidden="true" style="left: 1360px; top: 830px; width: 42px; opacity: 0.7; transform: rotate(0deg)">
+</div>
+<script>/* прототип: экран нарисован под 1440×900 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 1440, innerHeight / 900); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

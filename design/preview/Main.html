@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Hof — вход</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof" style="width: 1440px; height: 900px">
+  <div class="zoom" style="position: absolute; inset: 0">
+    <img class="scene" src="../generated/login-desktop-v2.webp" srcset="../generated/login-desktop-v2.webp 1x, ../generated/login-desktop-v2@2x.webp 2x" alt="Открытые ворота замка, кот смотрит во двор" style="position: absolute; inset: 0; object-position: left center">
+    <i class="spot" id="gate" style="left: 521px; top: 532px"></i>
+    <button type="button" class="cat" aria-label="Кот" style="left: 615px; top: 692px; width: 116px; height: 118px"><img class="pose" src="../generated/pose-login.webp" srcset="../generated/pose-login.webp 1x, ../generated/pose-login@2x.webp 2x" alt="" style="left: -64.52%; top: -58.73%; width: 208.06%; height: 194.44%"></button>
+  </div>
+  <div style="position: absolute; top: 0; right: 0; bottom: 0; width: 560px; display: flex; align-items: center; padding: 0 56px 0 24px">
+    <form class="framed stack" style="gap: 22px; width: 100%">
+      <div class="logo"><img src="../logo/hof-mark.svg" width="78" height="78" alt=""><span><b style="font-size: 54px">Hof</b><small style="font-size: 11px">Ваш личный двор</small></span></div>
+      <h1 class="title t-2">С возвращением во двор!</h1>
+      <div class="field"><label for="l-login">Логин</label><input id="l-login" class="input" type="text" autocomplete="username"></div>
+      <div class="field"><label for="l-pass">Пароль</label><input id="l-pass" class="input" type="password" autocomplete="current-password"></div>
+      <button type="button" class="btn btn-blue btn-wide" data-go="Home.html" data-spot="#gate" data-unroll>Войти во двор</button>
+      <p class="small muted">Нет ключа или забыли пароль? Обратитесь к хозяину двора.</p>
+    </form>
+  </div>
+  
+  <img class="blot" src="../generated/ink-blot-small.webp" alt="" aria-hidden="true" style="left: 1360px; top: 64px; width: 46px; opacity: 0.7; transform: rotate(0deg)">
+  <img class="blot" src="../generated/ink-splatter-b.webp" alt="" aria-hidden="true" style="left: 1290px; top: 800px; width: 92px; opacity: 0.55; transform: rotate(14deg)">
+  <img class="blot" src="../generated/ink-drip.webp" alt="" aria-hidden="true" style="left: 1405px; top: 470px; width: 22px; opacity: 0.75; transform: rotate(0deg)">
+</div>
+<script>/* прототип: экран нарисован под 1440×900 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 1440, innerHeight / 900); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

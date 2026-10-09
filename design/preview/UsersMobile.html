@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Hof — приближённые, телефон</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof" style="width: 390px; height: 844px">
+  <header class="m-top">
+    <a class="logo" href="HomeMobile.html" data-fx="right"><img src="../logo/hof-mark.svg" width="32" height="32" alt=""><b style="font-size: 30px">Hof</b></a>
+    <a href="AccountMobile.html" data-fx="left" aria-label="Мои покои" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px"><img src="../generated/emblem-candle-small.webp" alt="" width="34" height="34"></a>
+  </header>
+  <div class="m-pic " style="position: relative; height: 170px; overflow: hidden"><img src="../generated/scene-residents-panel.webp" srcset="../generated/scene-residents-panel.webp 1x, ../generated/scene-residents-panel@2x.webp 2x" alt="Сторожка у ворот: ключница с ключами на крюках" style="position: absolute; left: 0px; top: -150px; width: 390px; max-width: none"></div>
+  <div class="stack" style="align-items: center; margin-top: -28px; position: relative"><h1 class="ribbon md"><span>Приближённые</span></h1></div>
+  <div class="stack" style="gap: 14px; padding: 4px 16px 16px">
+    <section class="keys m-keys" aria-label="Ключница">
+      <div class="key"><img src="../generated/key-tag.webp" alt="ключ на крючке"><b>admin</b><span class="small muted">хозяин, это вы</span></div>
+      <div class="key"><img src="../generated/key-tag.webp" alt="ключ на крючке"><b>anna</b><span class="small muted">С ключом</span><a class="link-plain small" href="UserMobile.html" data-fx="flip-fwd">Открыть ›</a></div>
+      <div class="key"><img src="../generated/hook-empty.webp" alt="пустой крючок"><b>pavel</b><span class="small muted">Ключ взят</span><a class="link-plain small" href="UserMobile.html" data-fx="flip-fwd">Открыть ›</a></div>
+    </section>
+    <form class="framed stack" style="gap: 10px; padding: 20px 20px 18px">
+      <h2 class="title t-3">Принять ко двору</h2>
+      <div class="field"><label for="um-login">Логин</label><input id="um-login" class="input" type="text" autocomplete="off" autocapitalize="none"></div>
+      <div class="field"><label for="um-pass">Начальный пароль</label><input id="um-pass" class="input" type="text" autocomplete="off"><span class="hint">Пароль виден, чтобы его можно было передать.</span></div>
+      <button type="button" class="btn btn-blue btn-wide">Принять</button>
+    </form>
+  </div>
+</div>
+<script>/* прототип: экран нарисован под 390×844 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 390, innerHeight / 844); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Hof — мои покои</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof" style="width: 1440px; height: 900px">
+  <div class="shell" style="grid-template-columns: 288px minmax(0, 1fr) 600px">
+    <nav class="banner" aria-label="Hof">
+      <a class="logo" href="Home.html"><img src="../logo/hof-mark-white.svg" width="44" height="44" alt=""><span><b>Hof</b><small>Ваш личный двор</small></span></a>
+      <a class="nav" href="Home.html" data-fx="right" data-keep><img src="../generated/emblem-fountain-small.webp" alt="">Двор</a>
+      <div class="nav-label">Службы двора</div>
+      <a class="nav" href="Saeckel.html" data-fx="right"><img src="../generated/emblem-saeckel-small.webp" alt="">Säckel</a>
+      <div class="nav-label">Хозяйство</div>
+      <a class="nav" href="Users.html" data-fx="right" data-keep><img src="../generated/emblem-keys-small.webp" alt="">Приближённые</a>
+      <div class="banner-foot">
+        <a class="nav active" aria-current="page" href="Account.html" data-fx="right" data-keep><img src="../generated/emblem-candle-small.webp" alt=""><span class="stack" style="line-height: 1.2"><span>Мои покои</span><span class="small" style="opacity: 0.8">admin · хозяин</span></span></a>
+        <button type="button" class="nav" data-go="Main.html" data-sound="door" data-fx="right"><span class="frames" style="width: 28px; height: 28px"><img src="../generated/emblem-door-closed-small.webp" alt=""><img src="../generated/emblem-door-small.webp" alt=""></span>Покинуть двор</button>
+      </div>
+    </nav>
+    <main class="stack" style="gap: 12px; padding: 24px 8px 20px 40px; min-width: 0">
+      <div style="display: flex; align-items: center; gap: 10px"><h1 class="ribbon md" style="margin-left: -10px"><span>Мои покои</span></h1><span class="muted">admin · хозяин двора</span></div>
+      <form class="framed stack" style="gap: 8px; padding: 22px 30px 20px">
+        <h2 class="title t-3">Сменить пароль</h2>
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px">
+          <div class="field"><label for="a-cur">Текущий пароль</label><input id="a-cur" class="input" type="password" autocomplete="current-password"></div>
+          <div class="field"><label for="a-new">Новый пароль</label><input id="a-new" class="input" type="password" autocomplete="new-password"></div>
+          <div class="field"><label for="a-new2">Ещё раз</label><input id="a-new2" class="input" type="password" autocomplete="new-password"></div>
+        </div>
+        <span class="hint">Не короче [N] символов. На других устройствах вы выйдете со двора.</span>
+        <button type="button" class="btn btn-blue" style="align-self: flex-start">Сменить пароль</button>
+      </form>
+      <form class="framed stack" style="gap: 6px; padding: 20px 30px 18px">
+        <h2 class="title t-3">Звуки и движение</h2>
+        <label class="check"><input type="checkbox" data-setting="anim"><span><b>Анимации</b><span class="small muted">знамя, фонтан, ветер в листве, двери, переходы</span></span></label>
+        <label class="check"><input type="checkbox" data-setting="sound"><span><b>Звуки</b><span class="small muted">двери, сундук, монеты, кот, вода и ветер во дворе</span></span></label><div class="volume"><span class="small muted">громкость</span><input type="range" min="0" max="100" step="5" value="80" data-setting="soundVol" aria-label="Громкость звуков"><output>80 %</output></div>
+        <label class="check"><input type="checkbox" data-setting="music"><span><b>Музыка</b><span class="small muted">лютня и старинные напевы, одна на всех экранах — играет дальше при переходах</span></span></label><div class="volume"><span class="small muted">громкость</span><input type="range" min="0" max="100" step="5" value="50" data-setting="musicVol" aria-label="Громкость музыки"><output>50 %</output></div>
+        <span class="hint">Сначала всё выключено. Настройка этого устройства.</span>
+      </form>
+      <div style="display: flex; align-items: center; gap: 16px; padding-left: 8px">
+        <button type="button" class="btn" data-go="Main.html" data-sound="door" data-fx="right"><span class="frames" style="width: 26px; height: 26px"><img src="../generated/emblem-door-closed-small.webp" alt=""><img src="../generated/emblem-door-small.webp" alt=""></span>Покинуть двор</button>
+        <span class="small muted">на этом устройстве; всё во дворе останется на месте</span>
+      </div>
+    </main>
+    <div class="fade-l" style="position: relative"><img class="scene" src="../generated/scene-chambers-panel.webp" srcset="../generated/scene-chambers-panel.webp 1x, ../generated/scene-chambers-panel@2x.webp 2x" alt="Покои: окно во двор, стол с пером и чернильницей, кот спит на стуле" style="object-position: 50% 50%"><button type="button" class="cat" aria-label="Кот" style="left: 305px; top: 559px; width: 290px; height: 131px" data-sound="purr"><img class="pose" src="../generated/chambers-cat.webp" alt="" style="left: -28px; top: -29px; width: 302px; height: 183px"></button></div>
+  </div>
+  <img class="blot" src="../generated/ink-blot-small.webp" alt="" aria-hidden="true" style="left: 760px; top: 860px; width: 40px; opacity: 0.7; transform: rotate(0deg)">
+  <img class="blot" src="../generated/ink-splatter-a.webp" alt="" aria-hidden="true" style="left: 330px; top: 852px; width: 70px; opacity: 0.5; transform: rotate(15deg)">
+  <img class="blot" src="../generated/ink-drip.webp" alt="" aria-hidden="true" style="left: 806px; top: 120px; width: 20px; opacity: 0.7; transform: rotate(0deg)">
+</div>
+<script>/* прототип: экран нарисован под 1440×900 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 1440, innerHeight / 900); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

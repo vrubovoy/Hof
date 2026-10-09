@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Hof — anna, телефон</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof" style="width: 390px; height: 844px">
+  <header class="m-top">
+    <a class="logo" href="HomeMobile.html" data-fx="right"><img src="../logo/hof-mark.svg" width="32" height="32" alt=""><b style="font-size: 30px">Hof</b></a>
+    <a href="AccountMobile.html" data-fx="left" aria-label="Мои покои" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px"><img src="../generated/emblem-candle-small.webp" alt="" width="34" height="34"></a>
+  </header>
+  <div class="stack" style="gap: 14px; padding: 14px 16px 16px">
+    <a class="back" href="UsersMobile.html" data-fx="flip-back"><span>Приближённые</span></a>
+    <div style="display: flex; align-items: center; gap: 18px; padding-left: 10px">
+      <img src="../generated/key-tag.webp" alt="ключ anna на крючке" style="width: 64px; height: 131px">
+      <div class="stack" style="gap: 6px; align-items: flex-start"><h1 class="title t-1">anna</h1><span class="badge">С ключом</span></div>
+    </div>
+    <form class="framed stack" style="gap: 10px; padding: 20px 20px 18px">
+      <h2 class="title t-3">Сбросить пароль</h2>
+      <div class="field"><label for="pm-new">Новый начальный пароль</label><input id="pm-new" class="input" type="text" autocomplete="off"><span class="hint">anna выйдет со двора на всех устройствах.</span></div>
+      <button type="button" class="btn btn-blue btn-wide">Сбросить пароль</button>
+    </form>
+    <form class="framed stack" style="gap: 10px; padding: 20px 20px 18px">
+      <h2 class="title t-3">Ключ от двора</h2>
+      <p class="small">Если забрать ключ, вход закроется сразу, а мешки и записи останутся. Вернуть можно в любой момент.</p>
+      <button type="button" class="btn btn-danger btn-wide">Забрать ключ</button>
+    </form>
+  </div>
+</div>
+<script>/* прототип: экран нарисован под 390×844 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 390, innerHeight / 844); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

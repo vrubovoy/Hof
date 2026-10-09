@@ -1,0 +1,6 @@
+# Approved documents and design reference are formatted by hand.
+PRODUCT.md
+ARCHITECTURE.md
+design/
+.claude/
+package-lock.json

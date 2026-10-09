@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width">
+<title>Säckel — формы</title>
+<script src="../fx-head.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,500;1,600&amp;display=swap" rel="stylesheet"><link rel="stylesheet" href="../screens.css">
+<style>html, body { height: 100%; margin: 0; overflow: hidden; background: #2E2A24; } body { display: grid; place-items: center; }</style></head>
+<body>
+<div class="hof" style="width: 1440px; height: 1120px; padding: 34px 40px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: auto auto; gap: 30px 40px; align-items: stretch; align-content: start">
+  <form class="framed stack" style="gap: 14px">
+    <h2 class="title t-2">Доход</h2>
+    <div style="display: grid; grid-template-columns: 190px 160px minmax(0, 1fr); gap: 12px; align-items: end">
+      <div class="field err"><label for="i-sum">Сумма, ₽</label><input id="i-sum" class="input big" type="text" inputmode="decimal" value="0" aria-invalid="true" aria-describedby="i-sum-err"></div>
+      <div class="field"><label for="i-date">Дата</label><input id="i-date" class="input" type="text" value="30.09.2026"></div>
+      <div class="field"><label for="i-note">Заметка</label><input id="i-note" class="input" type="text" value="зарплата"></div>
+    </div>
+    <p id="i-sum-err" class="err-text">Сумма должна быть больше нуля.</p>
+    <p class="hint">Деньги лягут в казну. После записи откроется раскладка по мешкам — её можно отложить.</p>
+    <button type="button" class="btn btn-ochre push" data-go="SaeckelAssign.html" data-sound="coins" style="align-self: flex-start">Записать доход</button>
+  </form>
+  <form class="framed stack" style="gap: 14px">
+    <h2 class="title t-2">Переложить из мешка в мешок</h2>
+    <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px">
+      <div class="field"><label for="t-from">Из мешка</label><span class="select"><select id="t-from" class="input"><option>Отпуск — 4 000,00 ₽</option></select></span></div>
+      <div class="field"><label for="t-to">В мешок</label><span class="select"><select id="t-to" class="input"><option>Транспорт — −760,00 ₽</option></select></span></div>
+    </div>
+    <div style="display: grid; grid-template-columns: 190px 160px minmax(0, 1fr); gap: 12px; align-items: end">
+      <div class="field"><label for="t-sum">Сумма, ₽</label><input id="t-sum" class="input big" type="text" inputmode="decimal" value="760"></div>
+      <div class="field"><label for="t-date">Дата</label><input id="t-date" class="input" type="text" value="04.10.2026"></div>
+      <div class="field"><label for="t-note">Заметка</label><input id="t-note" class="input" type="text"></div>
+    </div>
+    <button type="button" class="btn btn-ochre push" data-sound="coins" style="align-self: flex-start">Переложить</button>
+  </form>
+  <form class="framed stack" style="gap: 14px">
+    <h2 class="title t-2">Мешок «Транспорт»</h2>
+    <div class="field"><label for="e-name">Название</label><input id="e-name" class="input" type="text" value="Транспорт"></div>
+    <fieldset class="field" style="border: 0; padding: 0; margin: 0"><legend style="padding: 0 0 6px">Знак мешка</legend><div class="icons"><label class="icon-pick"><input type="radio" name="e-icon" value="pouch"><img src="../generated/emblem-saeckel-small.webp" alt="">мешок</label><label class="icon-pick"><input type="radio" name="e-icon" value="cart" checked><img src="../generated/icon-cart.webp" alt="">повозка</label><label class="icon-pick"><input type="radio" name="e-icon" value="basket"><img src="../generated/icon-basket.webp" alt="">корзина</label><label class="icon-pick"><input type="radio" name="e-icon" value="hearth"><img src="../generated/icon-hearth.webp" alt="">очаг</label><label class="icon-pick"><input type="radio" name="e-icon" value="jug"><img src="../generated/icon-jug.webp" alt="">кувшин</label><label class="icon-pick"><input type="radio" name="e-icon" value="mortar"><img src="../generated/icon-mortar.webp" alt="">ступка</label><label class="icon-pick"><input type="radio" name="e-icon" value="needle"><img src="../generated/icon-needle.webp" alt="">игла</label><label class="icon-pick"><input type="radio" name="e-icon" value="lute"><img src="../generated/icon-lute.webp" alt="">лютня</label><label class="icon-pick"><input type="radio" name="e-icon" value="bundle"><img src="../generated/icon-bundle.webp" alt="">свёрток</label><label class="icon-pick"><input type="radio" name="e-icon" value="scroll"><img src="../generated/icon-scroll.webp" alt="">свиток</label><label class="icon-pick"><input type="radio" name="e-icon" value="pot"><img src="../generated/icon-pot.webp" alt="">кубышка</label><label class="icon-pick"><input type="radio" name="e-icon" value="toyhorse"><img src="../generated/icon-toyhorse.webp" alt="">лошадка</label><label class="icon-pick"><input type="radio" name="e-icon" value="bowl"><img src="../generated/icon-bowl.webp" alt="">миска</label><label class="icon-pick"><input type="radio" name="e-icon" value="hammer"><img src="../generated/icon-hammer.webp" alt="">молоток</label><label class="icon-pick"><input type="radio" name="e-icon" value="books"><img src="../generated/icon-books.webp" alt="">книги</label><label class="icon-pick"><input type="radio" name="e-icon" value="bag"><img src="../generated/icon-bag.webp" alt="">котомка</label><label class="icon-pick"><input type="radio" name="e-icon" value="comb"><img src="../generated/icon-comb.webp" alt="">гребень</label></div></fieldset>
+    <button type="button" class="btn btn-ochre" style="align-self: flex-start">Сохранить</button>
+    <div class="rule"></div>
+    <h3 class="title t-3">В кладовую</h3>
+    <p class="muted">Убрать в кладовую можно только пустой мешок. Сейчас в нём <span class="money neg">−760,00 ₽</span>.</p>
+    <div style="display: flex; align-items: center; gap: 18px"><button type="button" class="btn" disabled>В кладовую</button><a class="link" href="#">Покрыть из другого мешка</a></div>
+  </form>
+  <form class="framed stack" style="gap: 14px">
+    <h2 class="title t-2">Трата · 05.10.2026</h2>
+    <div style="display: grid; grid-template-columns: minmax(0, 1fr) 190px; gap: 12px; align-items: end">
+      <div class="field"><label for="o-pouch">Из мешка</label><span class="select"><select id="o-pouch" class="input"><option>Продукты</option></select></span></div>
+      <div class="field"><label for="o-sum">Сумма, ₽</label><input id="o-sum" class="input big" type="text" inputmode="decimal" value="1 240"></div>
+    </div>
+    <div style="display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: 12px">
+      <div class="field"><label for="o-date">Дата</label><input id="o-date" class="input" type="text" value="05.10.2026"></div>
+      <div class="field"><label for="o-note">Заметка</label><input id="o-note" class="input" type="text" value="овощи на рынке"></div>
+    </div>
+    <p class="hint">Вид записи не меняется. Удаление попросит подтверждения.</p>
+    <div class="push" style="display: flex; align-items: center; gap: 12px"><button type="button" class="btn btn-ochre">Сохранить</button><button type="button" class="btn btn-danger">Удалить</button></div>
+  </form>
+  <img class="blot" src="../generated/ink-blot-small.webp" alt="" aria-hidden="true" style="left: 700px; top: 1076px; width: 40px; opacity: 0.7; transform: rotate(0deg)">
+  <img class="blot" src="../generated/ink-ring.webp" alt="" aria-hidden="true" style="left: 1320px; top: 1020px; width: 96px; opacity: 0.42; transform: rotate(20deg)">
+  <img class="blot" src="../generated/ink-splatter-a.webp" alt="" aria-hidden="true" style="left: 30px; top: 1050px; width: 64px; opacity: 0.5; transform: rotate(-15deg)">
+</div>
+<script>/* прототип: экран нарисован под 1440×1120 — вписать его в окно целиком */
+(() => { const s = document.querySelector('.hof'); const fit = () => { s.style.zoom = Math.min(innerWidth / 1440, innerHeight / 1120); }; fit(); addEventListener('resize', fit); })();</script>
+<script src="../fx.js" data-base="../"></script>
+</body></html>

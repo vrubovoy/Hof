@@ -1,0 +1,459 @@
+HOF — ИЛЛЮСТРАЦИИ: КАРТА МИРА, ПРОМПТЫ, ОБРАБОТКА
+==================================================
+
+Исходник для генерации ассетов, не документация.
+Эталон стиля: двор и ворота — generated/login-desktop-v2.png (синяя гравюра, тепло точечно),
+комнаты — generated/scene-treasury-v1.png (дерево и латунь теплее), эмблемы и материалы —
+generated/emblem-saeckel.png.
+Функции на референсах в design/references/ не являются требованиями.
+
+
+-------------------------------------------------------------------------------
+КАРТА МИРА — у каждого места своя композиция, а не одна полоса на всех
+-------------------------------------------------------------------------------
+
+Снаружи
+  Вход ................ ворота открыты, кот смотрит во двор.          login-desktop-v2, login-mobile-v2 (готово)
+                        Сцена на весь экран, форма справа на бумаге.
+  Основание двора ..... те же ворота закрыты, ключ в замке.           scene-setup
+Двор
+  Главная ............. карта двора на всю ширину. На местах висят     scene-courtyard-map, signboard, ribbon
+                        вывески-ссылки: казначейская — Säckel, сторожка —
+                        Приближённые, башня — Мои покои. Приветствие на ленте.
+                        Телефон: кадр карты, под ним вывески списком.
+Сторожка у ворот
+  Приближённые ........ картина ключницы слева во всю высоту. Люди —   scene-residents (готово), key-tag, hook-empty,
+                        ключи с биркой на крючках, «Ключ забран» —      emblem-keys
+                        пустой крючок.
+  Только хозяин ....... ключница, на ней один ключ.                    empty-residents
+Покои
+  Мои покои ........... форма-письмо слева, вертикальная картина       scene-chambers, emblem-candle
+                        комнаты справа.
+  Покинуть двор ....... приоткрытая дверца.                            emblem-door
+Службы двора (каждый сервис — своё место, предмет или ремесло)
+  Säckel .............. казначейская сверху до краёв, название на      scene-treasury (готово), ribbon, frame,
+                        ленте поверх картины. Казна — сундук, мешки —   emblem-chest, emblem-saeckel (готово)
+                        мешочки, панели в рамке пером.
+  Мешков ещё нет ...... пустые мешочки, кот принюхивается.             empty-saeckel
+  Летопись пуста ...... закрытая книга, перо.                          empty-history
+Ошибки
+  404 ................. тропинка упирается в глухую стену с плющом.    error-404 (готово)
+  403 ................. запертая дверь с большим замком.               error-403
+  500 ................. опрокинутая бочка, раскатились яблоки.         error-500
+Всюду — материалы интерфейса
+  Бумага .............. фон всех страниц.                              paper-tile, paper-clouds (готово)
+  Боковое меню ........ синее знамя на древке, текст белый.            menu-banner, emblem-fountain (пункт «Двор»)
+  Заголовки ........... на ленте-свитке поверх картин и бумаги.        ribbon
+  Панели и карточки ... рамка пером с уголками.                        frame
+  Разделители ......... веточки, очень скупо.                          sprig-divider, sprig-corner
+
+Кот — один и тот же полосатый кот, сквозной житель мира: ворота, двор, покои, пустые мешки,
+беспорядок во дворе. Не маскот и не логотип: в эмблемах и материалах кота нет.
+
+Правила композиции:
+  - сцены шапок и карта рисуются до краёв, без пустой бумаги: заголовок кладётся на ленту;
+  - у каждой картинки своя «главная зона», и для компьютера и телефона — свои кадры;
+  - текст никогда не лежит прямо на штриховке: только на ленте, вывеске или бумаге;
+  - элементы управления остаются привычными (поле — поле, кнопка — кнопка), меняется их линия.
+
+
+-------------------------------------------------------------------------------
+ПОРЯДОК РАБОТЫ
+-------------------------------------------------------------------------------
+
+1. ChatGPT → Project «Hof assets». В инструкции проекта вставить блок STYLE ниже.
+   В файлы проекта положить ТОЛЬКО: generated/login-desktop-v2.png (двор, ворота),
+   generated/scene-treasury-v1.png (комнаты), generated/emblem-saeckel.png (эмблемы
+   и материалы), references/07-services.png (эмблемы).
+   Листы с интерфейсом и текстом тянут модель рисовать буквы и UI.
+2. Одна картинка — одно сообщение. Прикладывать эталон: для двора, ворот и виньеток —
+   login-desktop-v2.png, для комнат — scene-treasury-v1.png, для эмблем и материалов —
+   emblem-saeckel.png.
+3. Просить 2–3 варианта, выбрать лучший, дальше только правки (раздел «Правки»).
+4. Исходный PNG положить в design/generated/<asset>.png, дальше обработка в Claude Code.
+   Сцены НЕ увеличивать нейросетью: Upscayl стирает штриховку.
+5. Знак Hof и мелкие служебные иконки не генерировать — это SVG.
+
+
+-------------------------------------------------------------------------------
+STYLE — постоянный блок (в инструкции проекта и в начало каждого запроса)
+-------------------------------------------------------------------------------
+
+STYLE — Hof
+Pen-and-ink illustration in the style of the attached reference image
+(login-desktop-v2.png for outdoor scenes, scene-treasury-v1.png for rooms,
+emblem-saeckel.png for emblems and materials):
+a blue-and-white storybook etching on warm off-white paper. Cobalt / ultramarine ink,
+crisp dark navy outlines, fine blue hatching and cross-hatching for shading,
+a very light blue wash.
+
+Outdoors (courtyard, gate): warm color only as pale, desaturated washes under the
+blue hatching on wood, terracotta, linen, bread, brass and the tabby cat. Stone, paving,
+walls, sky and foliage stay blue ink on bare paper (foliage may have a very pale sage
+tint).
+Indoors (rooms): wooden furniture, brass, linen and leather may carry fuller warm
+washes, as in scene-treasury-v1.png; stone walls and floors stay blue.
+Never saturated colors, no colored sky, no realistic watercolor painting,
+no photographic light.
+
+World: a sunny, peaceful medieval-Mediterranean castle courtyard and its rooms —
+pale stone walls, round arches, crenellations, a round stone fountain, cypresses,
+olive and laurel trees, terracotta pots with plants, ivy, blue banners with a white
+fleur-de-lis, iron lanterns, stone paving, wooden furniture. Calm, cozy, lived-in.
+Not dark, not gothic, not fantasy, not cartoonish.
+
+Recurring character: one small tabby cat may appear in scenes and vignettes (never in
+emblems or materials) — always the same cat.
+
+Background: plain, even warm paper (close to #F7EFE0). No stains, no vignette,
+no drop shadow, no frame or border around the picture (unless the subject itself
+is a frame).
+
+Strictly: no text, no letters, no numbers, no signatures, no watermarks, no logos,
+no buttons or screen interface, no people.
+
+Consistency: match the attached reference exactly — the same blue, line weight,
+hatching density, amount of warm color and level of detail.
+
+EMBLEM VARIANT (only for emblems of services like Säckel; Hof's own emblems are a plain
+object without ledge and sprigs): match emblem-saeckel.png — one object standing
+on a small ledge of three flagstones with two small laurel sprigs behind it; the object
+itself may have one warm wash (cloth, wood, brass); ledge and sprigs stay blue.
+
+MATERIAL VARIANT (only for menu-banner, ribbon, frame, signboard, key-tag, hook-empty,
+sprig-*): one isolated decorative object, drawn in the same ink style as
+emblem-saeckel.png. Straight front view: no perspective, no tilt, perfectly level and
+symmetric. Plain even paper background with a wide empty margin, no shadow, nothing else
+in the picture. Parts marked "stretchable" are perfectly straight and uniform, with a
+simple even texture, so they can be cut and repeated. No text, no letters, no symbols unless asked.
+
+
+-------------------------------------------------------------------------------
+ГОТОВО
+-------------------------------------------------------------------------------
+
+login-desktop-v2   вход, компьютер        из 03-login-desktop.png + правки (ворота, кот, бочки)
+login-mobile-v2    вход, телефон          по 04-login-mobile.png в стиле v2
+home-hero          шапка Двора            из login-desktop (v1): отражено и обрезано
+emblem-saeckel     эмблема Säckel         мешок с монетами, из 07-services.png
+login-desktop      v1, широкий двор       исходник для home-hero
+paper-tile         бумага, плитка         бывшая v32, бесшовная, 1124 px (paper-tile.webp)
+paper-clouds       пятна тона             программно, 750 px, показывать 1500 px (paper-clouds.webp)
+scene-treasury     шапка Säckel           в новой схеме — v1 (до краёв, любимая), кадр по главной зоне
+                                          «стол, книга, мешки, сундук»; v2, v3 — исходники рядом
+scene-residents    Приближённые           v1, вертикальный кадр вокруг ключницы, фонаря и скамьи
+scene-courtyard-  карта на главной         1-я попытка. Вывески (центр x, верх y в px исходника 1536×1024):
+map                                       Приближённые 215,300 (арка ворот), Säckel 612,348 (казначейская),
+                                          Мои покои 1330,320 (под балконом башни); двери в середине — для будущих служб
+menu-banner        знамя меню             вырезано, 547×1378; неизменно: сверху 300, снизу 378, по бокам 130
+ribbon             лента                  вырезана, 960×185; неизменны концы 310 и 327; полоса по высоте 19–149.
+                                          На экране — ribbon-soft (soften.py 1.2): иначе слишком чёткая рядом со сценами
+frame              рамка пером            только линии, 560×560; неизменны углы 107
+signboard          вывеска                вырезана, 480×211; неизменны концы 119 и 116; доска по высоте 101–209;
+                                          на экране — signboard-soft (soften.py 1.0)
+key-tag, hook-     ключница               вырезаны (дыры: 400,460 523,655 539,988); оба 195×400, крючок на том же месте
+empty
+emblem-fountain,   меню и Казна           вырезаны, 256 и 96 (-small); дыры: keys 628,300, candle 955,812.
+keys, chest,                              Эмблемы Hof — просто предмет; эмблемы СЛУЖБ — на уступе с веточками (как Säckel)
+candle, door
+ink-blots          кляксы                 7 шт.: blot-large/medium/small, splatter-a/b, drip, ring; только чернила, 400 px
+fx-fountain        вода в фонтане         программно (fountain.py): 6 кадров из карты, область 610,570 340×200, @2x
+scene-treasury-   шапка Säckel           из v1, y 440–832 (весы, книга, мешки, сундук целиком), 1x и @2x
+band
+scene-residents-  Приближённые           из v1, x 175–695 (ключница, фонарь, скамья), 1x и @2x
+panel
+emblem-chest,      Казна, два кадра        вырезаны в общем прямоугольнике 867×720+195+280 (NOTRIM=1), чтобы не прыгали
+-closed
+emblem-door,       «Покинуть двор», два    вырезаны в общем прямоугольнике 620×976+318+144 (арка совпадает,
+-closed            кадра                   открытая створка ниже — поэтому прямоугольник по открытой)
+scene-chambers-   Мои покои               из 1536×1024, вертикальный кадр x 357–1040 (оба окна, перо, кот на стуле), 1x и @2x
+panel
+empty-saeckel,     виньетки                бумага переведена в белый (деление на цвет бумаги), на странице multiply —
+empty-history                             рисунок «печатается» на бумагу страницы; 840 px
+icon-*             знаки мешков, 16 шт.   из pouch-icons-1/2: cart basket hearth jug mortar needle lute bundle scroll pot
+                                          toyhorse bowl hammer books bag comb; AUTOHOLES=250, 128 px
+fx-leaves-*        порыв ветра            программно (leaves.py): olive, bush-l, bush-r, tree — по 8 кадров, бикубически,
+                                          затем @2x как карта (иначе на ретине кадры мылятся)
+scene-setup        основание двора         как вход: на весь экран, картина слева, форма справа на бумаге; 1x и @2x
+error-404,         ошибки                  на весь экран, как вход. У 404 стёрта нарисованная рамка справа (подставлена
+error-403,                                 бумага из той же картинки), у 500 приглушены красные яблоки; 1x и @2x
+error-500
+empty-residents    «пока только хозяин»   виньетка: бумага → белый, multiply; 840 px
+sprig-divider      веточка-разделитель     только чернила (как кляксы), 480 px; под заголовками пустых страниц и ошибок
+scene-courtyard-   карта с открытыми        ChatGPT отредактировал карту пиксель в пиксель; вырезаны 3 кадра с мягким краем:
+map-open           дверями                 map-treasury-door, map-tower-door, map-gatehouse-window (2×)
+setup-gate-open    ворота основания        не генерировали: арка из сцены входа совпадает с аркой основания (проверено
+                   открываются             корреляцией), вырезана по арке, кот основания остаётся своим
+manicule           «назад»                 вырезан: чернила прозрачные по силуэту, бумага внутри руки сохранена, 128 px
+frame (одна        рамка панелей           внутренняя линия стёрта на прямых участках, обрывки у листьев убраны
+линия)
+sprig-corner       ветка в углу            бумага → белый, multiply, 340 px; в левом нижнем углу пустых страниц
+pen/*.svg          всё пером              программно (pen/pen.py): поля и кнопки с заливкой по контуру, плашки, закладки,
+                                          линейки, подчёркивание, флажок, кольцо. Линия: две пологие волны и мелкая
+                                          дрожь (у полей — «середина»). Кнопки и печати пером заменены нарисованными (_reserve)
+error-404 (v2)     тропа в глухую стену    правка ChatGPT: калитка убрана, стена с плющом; 1x и @2x
+map-cat            кот на карте            правка карты пиксель в пиксель: хвост поднят, голова к зрителю; вырезан
+                                          кадр 792,623 155×152 с мягким краем — показывается по щелчку на кота
+chambers-cat       кот в покоях            правка покоев: кот проснулся; кадр 672,603 344×208 — по щелчку, с мурчанием
+fx-banner-*        знамёна на карте        программно (banners.py): 8 кадров той же ткани, волна бежит вниз, у древка
+                                          неподвижно, края клочка не двигаются; @2x. Ворота слева/справа, башня
+pen/fx-birds.svg   птицы                   пером, 4 кадра взмаха; изредка пролетает стайка из трёх
+banner-roll        рулон знамени           ChatGPT по промпту; вырезан, banner-roll.webp 640 px; в разворот знамени: катится
+                                          вниз и худеет (сплющивается по высоте 42 → 18 px), у выреза исчезает
+wax-seals          сургучные печати        ChatGPT по промпту: синяя и красная с лилией; вырезаны, синяя приглушена
+                                          чуть, красная до кирпичной (modulate 95,80); seal-blue/red.webp, 128 px
+button-plates      кнопки-плашки           4 плашки (синяя доска с золотом, латунь, пергамент с синей и с красной кромкой);
+                                          вырезаны, btn-*.webp 560×96, в CSS срез 0 41 fill / 0 20px — концы с вырезами
+                                          и гвоздиками неизменны. Прежние кнопки пером — на доске сравнения Buttons
+empty-saeckel-     кот нюхает мешки        правки ChatGPT пиксель в пиксель (сдвиг 0, 0); из кадров взят только кот (разница
+sniff-1/-2                                с исходником × область кота, мягкий край), мешки и стол — из исходника; бумага → белый
+empty-history-     пустая летопись         три правки ChatGPT в одной рамке (новая композиция, прежняя закрытая книга в _discard):
+closed, -open,                            основа — закрытая книга; «раскрыта» и «лист в полёте» наложены поверх только в области
+-page                                     книги (разница × область, мягкий край)
+pose-login, -login- кот по нажатию        правки ChatGPT пиксель в пиксель (login-desktop-cat, login-mobile-cat, scene-setup-cat,
+m, -setup, -500                           error-500-cat): вырезан только кот (разница × область, мягкий край), кадр поверх сцены
+pen/fx-smoke.svg   дым из трубы            клуб пером, как облака на карте (светлая заливка, синий контур):
+                                          на тёмном кипарисе за трубой тонкая линия терялась
+
+
+-------------------------------------------------------------------------------
+НУЖНО СГЕНЕРИРОВАТЬ
+-------------------------------------------------------------------------------
+
+Сейчас ничего. Последнее (2026-10-09): кот у пустых мешков нюхает — empty-saeckel-sniff-1/2.png
+(правки ChatGPT по empty-saeckel.png; в .webp вклеена только изменившаяся часть кота с мягким краем).
+Книга пустой летописи без анимации: ChatGPT не удержал её форму между кадрами, прежние кадры —
+в _discard/design/generated/.
+
+
+-------------------------------------------------------------------------------
+ГОТОВЫЕ ПРОМПТЫ НА БУДУЩЕЕ — для новой службы двора
+-------------------------------------------------------------------------------
+
+Как пользоваться: скопировать блок целиком, заменить слова в [КВАДРАТНЫХ СКОБКАХ], приложить
+указанную картинку и отправить в проект «Hof assets» (там в инструкции уже лежит STYLE).
+Одна картинка — одно сообщение; просить 2–3 варианта. Результат — в design/generated/<ASSET>.png.
+Пример для будущей службы «Погреб» (запасы): [SERVICE] = Погреб, [PLACE] = a vaulted stone
+cellar, [OBJECTS] = barrels, shelves with jars, hanging herbs, a lantern.
+
+
+А. Шапка службы — сцена до краёв (как казначейская у Säckel)
+   Приложить: generated/scene-treasury-v1.png
+
+ASSET: scene-[service]
+Follow STYLE — Hof. Indoor room, match the attached reference exactly.
+Subject: [PLACE] inside the castle, seen from the front at eye level, calm and tidy.
+Main zone (keep it in the middle band of the picture, from 40% to 80% of the height):
+[OBJECTS] on a long wooden table or shelf, clearly readable as one group.
+Composition: painted all the way to the edges of the image — no blank paper, no fading edges,
+no frame. Full detail and depth, dense hatching, like a finished book illustration.
+No people, no text or letters on anything.
+Format: landscape 3:2, highest resolution.
+
+
+Б. Вертикальная картина рядом с формой (как ключница у Приближённых, комната в Моих покоях)
+   Приложить: generated/scene-treasury-v1.png (комната) или generated/login-desktop-v2.png (на улице)
+
+ASSET: scene-[service]-panel
+Follow STYLE — Hof. Match the attached reference exactly.
+Subject: [PLACE], tall view. The key objects — [OBJECTS] — stand in the middle 60% of the width,
+from top to bottom; the sides may be cropped on narrow screens.
+The tabby cat from the reference may sit somewhere in the scene, small, not in the center.
+Composition: portrait, painted all the way to the edges, no blank paper, no frame.
+Full detail, dense hatching. No people, no text or letters.
+Format: portrait 2:3, highest resolution.
+
+
+В. Виньетка пустого состояния (как «Мешков пока нет»)
+   Приложить: generated/login-desktop-v2.png
+
+ASSET: empty-[service]
+Follow STYLE — Hof. Match the attached reference exactly.
+Subject: a small still life — [EMPTY OBJECTS, e.g. empty jars on a bare shelf] — and the tabby
+cat from the reference, curious, sniffing at them.
+Composition: a vignette in the center, about half of the frame, lots of air around it.
+All edges dissolve softly into blank paper: hatching gets sparser toward the edges.
+Plain even paper background, no frame, no text.
+Format: landscape 3:2, highest resolution.
+
+
+Г. Эмблема службы (в меню и на карточках, как мешок Säckel)
+   Приложить: generated/emblem-saeckel.png
+
+ASSET: emblem-[service]
+Follow STYLE — Hof, EMBLEM VARIANT. Match the attached emblem exactly: the same ledge of three
+flagstones, the same two small laurel sprigs behind, the same line weight and blue.
+Object: [ONE OBJECT, e.g. a small oak barrel], standing on the ledge, front view, slightly
+from above. The object may have one warm wash (wood, cloth or brass); ledge and sprigs stay blue.
+Plain even paper background, wide empty margin, nothing else in the picture, no text.
+Format: square 1:1, highest resolution.
+
+
+Д. Дверь службы на карте открывается (кадр для наведения, как у казначейской)
+   Приложить: generated/scene-courtyard-map.png
+
+ASSET: scene-courtyard-map-[service]
+Edit the attached image. Keep EVERYTHING exactly as it is — same size, same position of every
+line — and change only one thing: the [WHICH DOOR, e.g. second wooden door from the left in the
+middle wall] is now half open inwards, a warm dim interior visible behind it.
+Nothing else moves or changes. No new objects, no text.
+   После: Claude Code вырежет из правки только дверь с мягким краем (как map-treasury-door).
+
+
+Е. Кот меняет позу на картинке (кадр по щелчку)
+   Приложить: ту картинку, где сидит кот (PNG из design/generated)
+
+ASSET: [scene]-cat
+Edit the attached image. Keep EVERYTHING exactly as it is — same size, same position of every
+line — and change only the tabby cat: [NEW POSE, e.g. it stretches and yawns].
+Nothing else moves or changes.
+   После: Claude Code вырежет только кота с мягким краем и проверит, что остальное совпало.
+
+
+-------------------------------------------------------------------------------
+ЗВУКИ И МУЗЫКА (не ChatGPT: готовые записи под CC0)
+-------------------------------------------------------------------------------
+
+Сведение — design/sounds/mix.py (громкость к одному плану, полосы, петля фонтана, порывы):
+  python3 mix.py ~/Downloads [ещё папки]     (ищет исходники во всех; нужен macOS afconvert)
+План громкости: интерфейс −26 LUFS кратко, кот −28, мурчание −32, ветер −34, фонтан −40
+интегрально, музыка −30 интегрально с вырезом −3 дБ на 2–5 кГц. Во время звука интерфейса
+музыка тише на 4 дБ (fx.js).
+Наборы (случайный выбор, без повтора подряд), design/sounds/*.m4a:
+  door-1…6     Kenney RPG Audio: doorOpen_1, doorOpen_2, doorClose_1…4 (не длиннее 0,95 с — дверь открывается 0,75 с)
+  chest-1…3    Kenney: creak1…3 (не длиннее 0,7 с; щелчок защёлки убран — короче крышки)
+  coins-1…2    Kenney: handleCoins, handleCoins2
+  banner-1…4   Kenney: cloth1…4
+  page-1…2     Kenney: bookFlip1, bookFlip2 (Мешки ↔ Летопись; bookOpen 0,15 с был короче листа)
+  wind-1…6     freesound: 146932 crashoverride6; 457318 Stek59 (2 порыва); 347557 Kinoton;
+               443065 AmberdeMeillon; 178615 Montacue — по 2,4 с
+  fountain-1…3 freesound 415027 roman_cgr, 169250 skyko, 193784 jhumbucker — петли 12 с;
+               первый заход на двор — 1, дальше по кругу
+  meow-1…9     freesound 436541, 362652, 163286, 333916, 412017, 110011; 120160 «Cat Wants Food»
+               (два мяуканья, mix.py meows), 196251 «Kitten Meowing»
+  purr-1       freesound 260881 Trautwein — кот в покоях
+  sniff-1…3    freesound 848385 RavenWolfProds, 801809 Sadiquecat, 418161 14FPanskaZummer_Jakub — кот нюхает
+               мешки; самый громкий кусок 1,2 с (два-три «фырка»), −30 LUFS кратко
+Музыка (CC0), design/sounds/music/music-1…20.m4a, 80 кбит/с, ~23 МБ: один список на все экраны, по очереди
+(порядок — MUSIC в mix.py: лютня и арфа вперемешку с бодрыми). Пьесы: The Bard's Tale, King's Feast, Lover and
+His Lass (fs 769807), Market Day, Harvest Season, Minstrel Dance, арфа ChaliceWell (fs 574485), Fouler l'horizon
+(Komiku), Exploration, Rejoicing, Guardsman's Break (fs 608915), «If my Complaints Could Passions Move»
+Дж. Дауленда 1597, The Old Tower Inn, Harpsichord Flurry, Blinking Forest (fs 676787), Medieval March
+(fs 646460), Serenade, Peasant Theme, Lament for a Warrior's Soul, Kevzog (fs 362288; первые 47 с тихого вступления срезаны — TRIM в mix.py).
+Проверить на слух: music-18 (Peasant Theme) и music-14 (клавесин) яркие.
+Послушать всё: design/sounds/listen.html.
+
+
+-------------------------------------------------------------------------------
+ПРАВКИ (в том же чате, после неудачной генерации)
+-------------------------------------------------------------------------------
+
+Неровный фон:
+  Repaint only the background as flat, even paper color. Keep the illustration unchanged.
+
+Буквы на флагах, книгах или вывесках:
+  Remove all letters and symbols. Keep everything else unchanged.
+
+Край обрывается резко:
+  Make the <left> edge dissolve gradually into blank paper; hatching gets sparser toward the edge.
+
+Слишком много цвета:
+  Keep the blue ink drawing; reduce warm colors to pale, desaturated washes only on wood,
+  terracotta, linen, brass and the cat, exactly as subtle as in login-desktop-v2.png.
+
+Материал нарисован в перспективе или с наклоном:
+  Redraw it in a straight front view: perfectly level and symmetric, no perspective, no tilt.
+
+Растягиваемая часть неровная:
+  Make the <middle band> perfectly straight and uniform along its whole length; keep the ends unchanged.
+
+Стиль уплыл (приложить удачный ассет):
+  Match this image's style exactly: same line weight, hatching density, blue hue and warm accents.
+
+
+-------------------------------------------------------------------------------
+РАЗМЕРЫ
+-------------------------------------------------------------------------------
+
+Ассет            Где показывается                  Итоговые файлы (WebP)
+login-desktop-*  весь экран входа                  1536 и 3072 по ширине
+scene-setup      весь экран первого запуска        1536 и 3072
+login-mobile-*   полоса внизу, 390                 780 и 1170 (только уменьшение)
+scene-courtyard- карта на главной ~1180×700;       1536 и 3072; телефон — свой кадр 780
+map              телефон — кадр 390×260
+scene-treasury,  шапки и панели — свои кадры        1536 и 3072 (кадр по главной зоне)
+scene-residents,  для компьютера и телефона
+scene-chambers
+menu-banner      боковое меню ~230×900              по высоте 1800, прозрачное, середина тянется
+ribbon           заголовки, высота 48–72            по высоте 144, прозрачная, середина тянется
+frame            рамки панелей                      1024, прозрачная (только линии), 9 частей
+signboard        вывески на карте ~200×60           по ширине 400, прозрачная, середина тянется
+key-tag,         строки Приближённых 48–96          по высоте 192, прозрачные
+hook-empty
+empty-*,         виньетка ~360×240                 720 (из 1536, только уменьшение)
+error-*
+emblem-*         меню 30–48 px, карточки до 120    крупный план 48/96, целиком 120/240, прозрачные
+paper-tile       фон, повторяется                  1124, бесшовная (готово)
+paper-clouds     пятна тона поверх paper-tile      750 → 1500 px, multiply (готово)
+sprig-*          разделитель и уголок              по месту, прозрачные
+
+Генерация в ChatGPT: 1536×1024 / 1024×1536 / 1024×1024.
+Вес: фон входа @2x ~650 КБ (грузится один раз). Полосы до ~300 КБ, остальное до ~100 КБ.
+
+
+-------------------------------------------------------------------------------
+ОБРАБОТКА (ImageMagick, проверено)
+-------------------------------------------------------------------------------
+
+Исходник: design/generated/<asset>.png. Результат лежит рядом.
+Нужны ImageMagick 7 (brew install imagemagick), а для скриптов на Python (banners.py, fountain.py,
+leaves.py, soften.py, sounds/mix.py) — Pillow и NumPy в своём окружении:
+  python3 -m venv ~/.venvs/hof && ~/.venvs/hof/bin/pip install pillow numpy
+
+1x — родной размер, без пересчёта:
+  magick <asset>.png -alpha off -strip -define webp:method=6 -quality 82 <asset>.webp
+
+2x — увеличение EWA Lanczos в линейном свете с лёгкой резкостью:
+  magick <asset>.png -alpha off -colorspace RGB -filter LanczosRadius -distort Resize 200% \
+    -colorspace sRGB -unsharp 0x0.9+0.7+0.02 -strip -define webp:method=6 -quality 75 '<asset>@2x.webp'
+
+Только уменьшение (телефон, виньетки):
+  magick <asset>.png -alpha off -colorspace RGB -filter Lanczos -resize <W>x \
+    -colorspace sRGB -strip -define webp:method=6 -quality 80 '<asset>@<n>x.webp'
+
+Эмблемы — прозрачный фон по силуэту (<paper> — цвет бумаги ассета):
+  magick <asset>.png -alpha off \( +clone -fill '<paper>' -colorize 100 \) -compose difference -composite \
+    -grayscale Rec709Luma -threshold 7% -morphology Close Disk:10 mask.png
+  magick mask.png -fill gray50 -draw 'color 2,2 floodfill' -fill white +opaque gray50 -fill black -opaque gray50 \
+    -morphology Erode Disk:2 -blur 0x1.2 alpha.png
+  magick <asset>.png -alpha off alpha.png -compose CopyOpacity -composite cut.png
+Затем: целиком (обрезать по содержимому, квадрат) → 120 и 240 px;
+крупный план предмета → 48 и 96 px.
+
+Бумага: paper-tile — бесшовная плитка из сгенерированной текстуры (края сведены
+перекрёстным наложением 130 px), paper-clouds — программно: периодический шум 1/f без
+мелких деталей, тёмные места чуть теплее, глубина до 12 уровней из 255. Основа подогнана
+так, что среднее страницы с пятнами = #F7EFE0. ChatGPT крупные пятна не рисует.
+
+Материалы (menu-banner, ribbon, signboard, key-tag, hook-empty) — design/cutout.sh:
+  sh design/cutout.sh <asset>.png <asset>-cut.png '<paper>'
+Предмет непрозрачный; бумага снаружи и крупные замкнутые участки бумаги внутри (между
+цепями вывески) — прозрачные; соринки-волокна вокруг отброшены (связные области ImageMagick).
+Затем уменьшить до двойного размера показа и в WebP с альфой:
+  magick <asset>-cut.png -filter Lanczos -resize <W>x -strip -define webp:method=6 \
+    -define webp:alpha-quality=90 -quality 86 <asset>.webp
+
+Рамка frame — прозрачна и внутри: остаются только линии. Альфа = насколько пиксель темнее
+бумаги (14 → 0, 110 → 1), цвет штриха восстановлен из смеси с бумагой, чтобы на любом фоне
+линия была того же синего. В CSS — border-image с 9 частями: углы целиком, стороны тянутся.
+
+Лента и вывеска слишком чистые рядом со сценами — подгонка design/soften.py
+(размытие, чернила в синеву, зерно печати):
+  python3 soften.py ribbon.webp ribbon-soft.png 1.2
+
+Вода в фонтане — design/fountain.py: 6 кадров из самой карты, струи бегут вниз, вода в чаше
+расходится кругами, камень и кот не двигаются. Затем каждый кадр @2x и в одну полосу:
+  python3 fountain.py scene-courtyard-map.png <папка>   →  f0…f5.png → magick … +append fx-fountain.webp
+
+Цвет бумаги интерфейса — #F7EFE0. Если у нового ассета фон заметно другой,
+его нужно подогнать до экспорта.
