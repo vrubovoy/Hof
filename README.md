@@ -29,7 +29,7 @@ docker compose -f compose.dev.yaml down -v && docker compose -f compose.dev.yaml
 ```sh
 npm ci          # зависимости строго по package-lock.json
 npm run dev     # сервер на http://localhost:3000, перезапуск при изменении файлов
-npm run check   # prettier --check, eslint, tsc --noEmit, node --test
+npm run check   # prettier --check, eslint, tsc --noEmit, node --test, docker compose build
 npm run format  # отформатировать всё через prettier
 ```
 
@@ -37,6 +37,20 @@ npm run format  # отформатировать всё через prettier
 
 При старте сервер применяет новые миграции (`src/<модуль>/migrations/NNN_*.sql`) к базе `hof` и
 только потом открывает порт. Тесты работают с `hof_test` и выполняются последовательно.
+
+### Production compose локально
+
+`compose.yaml` — то, что будет работать на сервере: `postgres` и `hof` из образа по `Dockerfile`.
+Пароли берутся из того же `.env`; каждый контейнер получает только свои.
+
+```sh
+docker compose up -d --build  # собрать образ hof и запустить оба контейнера
+docker compose logs hof       # строка `info start` и применённые миграции
+docker compose down           # остановить; с -v — удалить и том с данными
+```
+
+Наружу порты пока не открыты, сервер виден только внутри сети compose. Данные лежат в томе
+`hof_pgdata`, отдельно от dev-тома `hof-dev_pgdata`, так что обе базы могут работать одновременно.
 
 Код сервера — в `src/`, тесты лежат рядом с кодом (`*.test.ts`). В TypeScript допустим только
 синтаксис, который Node может просто стереть: без `enum`, `namespace` с кодом, parameter

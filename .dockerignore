@@ -1,0 +1,10 @@
+# Kept out of the build context: the image copies only package*.json and src/ (Dockerfile).
+.git/
+.env
+node_modules/
+design/
+_discard/
+_reserve/
+request
+.claude/
+**/*.test.ts
