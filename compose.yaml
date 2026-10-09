@@ -1,0 +1,39 @@
+# Hof on one server: PostgreSQL and the application (ARCHITECTURE.md §1, §9).
+# No service publishes ports. Secrets are passed to each service separately, not through a
+# shared env_file: every container gets only what it needs.
+name: hof
+
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: hof
+      # Superuser and both role passwords: the init script creates the roles on first start.
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in .env}
+      HOF_CORE_DB_PASSWORD: ${HOF_CORE_DB_PASSWORD:?set it in .env}
+      HOF_SAECKEL_DB_PASSWORD: ${HOF_SAECKEL_DB_PASSWORD:?set it in .env}
+      HOF_DATABASES: hof
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./deploy/postgres-init.sh:/docker-entrypoint-initdb.d/postgres-init.sh:ro
+    # Ready only when the final server accepts TCP connections. During first-start
+    # initialisation the temporary server listens on the local socket only.
+    healthcheck:
+      test: ['CMD', 'pg_isready', '--host=127.0.0.1', '--username=postgres', '--dbname=hof']
+      start_period: 60s
+      interval: 2s
+      timeout: 5s
+      retries: 30
+
+  hof:
+    build: .
+    environment:
+      HOF_CORE_DB_PASSWORD: ${HOF_CORE_DB_PASSWORD:?set it in .env}
+      # Port: the PostgreSQL default 5432 inside the compose network.
+      PGHOST: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:

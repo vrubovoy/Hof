@@ -9,7 +9,7 @@
     "dev": "node --env-file=.env --watch src/main.ts",
     "test": "node --env-file=.env --test --test-concurrency=1 'src/**/*.test.ts'",
     "format": "prettier --write .",
-    "check": "prettier --check . && eslint . && tsc --noEmit && npm test"
+    "check": "prettier --check . && eslint . && tsc --noEmit && npm test && docker compose build"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.4",
