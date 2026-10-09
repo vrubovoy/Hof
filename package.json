@@ -7,16 +7,18 @@
   },
   "scripts": {
     "dev": "node --watch src/main.ts",
-    "test": "node --test 'src/**/*.test.ts'",
+    "test": "node --env-file=.env --test 'src/**/*.test.ts'",
     "format": "prettier --write .",
     "check": "prettier --check . && eslint . && tsc --noEmit && npm test"
   },
   "dependencies": {
     "@hono/node-server": "^2.1.4",
-    "hono": "^4.13.13"
+    "hono": "^4.13.13",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
     "@types/node": "^24.19.1",
+    "@types/pg": "^8.23.1",
     "eslint": "^10.12.0",
     "prettier": "^3.9.9",
     "typescript": "~6.0.3",
