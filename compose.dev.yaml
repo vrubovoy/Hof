@@ -1,0 +1,23 @@
+# Development only: PostgreSQL for `npm run dev` and `npm test` (ARCHITECTURE.md §10).
+# A project name of its own keeps this volume apart from compose.yaml.
+name: hof-dev
+
+services:
+  postgres:
+    image: postgres:18
+    environment:
+      POSTGRES_DB: hof
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set it in .env}
+      HOF_CORE_DB_PASSWORD: ${HOF_CORE_DB_PASSWORD:?set it in .env}
+      HOF_SAECKEL_DB_PASSWORD: ${HOF_SAECKEL_DB_PASSWORD:?set it in .env}
+      HOF_DATABASES: hof hof_test
+    # Loopback only: Docker-published ports bypass the host firewall (§9).
+    # Host port 5433: 5432 may be taken by a locally installed PostgreSQL.
+    ports:
+      - 127.0.0.1:5433:5432
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./deploy/postgres-init.sh:/docker-entrypoint-initdb.d/postgres-init.sh:ro
+
+volumes:
+  pgdata:
