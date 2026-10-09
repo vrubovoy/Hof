@@ -1,13 +1,18 @@
-// Hof server entry point.
+// Hof server entry point: configuration, database pool, migrations, start.
 // Common request checks run here, before the routes of any module (ARCHITECTURE.md §2, §4).
 
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import { bodyLimit } from 'hono/body-limit';
 import { html } from 'hono/html';
+import { join } from 'node:path';
+import { Pool } from 'pg';
+import { migrate } from './migrate.ts';
 
 const PORT = 3000;
 const BODY_LIMIT_BYTES = 16 * 1024;
+const DATABASE = 'hof';
+const CORE_MIGRATIONS = join(import.meta.dirname, 'core', 'migrations');
 
 // §4.9: explicit header values, not Hono's secureHeaders preset.
 const CONTENT_SECURITY_POLICY =
@@ -104,8 +109,44 @@ export function createApp(): Hono {
   return app;
 }
 
-if (import.meta.main) {
+// A refused connection to every address of `localhost` (::1 and 127.0.0.1) arrives as an
+// AggregateError with an empty message; its inner errors say what happened.
+function describeError(error: unknown): string {
+  if (error instanceof AggregateError && !error.message) {
+    return error.errors.map((inner: unknown) => describeError(inner)).join('; ');
+  }
+  return error instanceof Error ? error.message : String(error);
+}
+
+// Startup order: configuration, then migrations, and only then the HTTP port.
+// Any failure before listen is logged and ends the process with exit code 1.
+async function start(): Promise<void> {
+  const corePassword = process.env.HOF_CORE_DB_PASSWORD;
+  if (!corePassword) {
+    log('error', 'startup_failed', { error: 'HOF_CORE_DB_PASSWORD is not set (see .env.example)' });
+    process.exitCode = 1;
+    return;
+  }
+
+  // Host and port come from the standard PGHOST and PGPORT that the pg driver reads itself;
+  // without them it connects to localhost:5432.
+  const corePool = new Pool({ database: DATABASE, user: 'hof_core', password: corePassword });
+
+  let applied: string[];
+  try {
+    applied = await migrate(corePool, CORE_MIGRATIONS);
+  } catch (error) {
+    log('error', 'startup_failed', { error: describeError(error) });
+    await corePool.end();
+    process.exitCode = 1;
+    return;
+  }
+
   serve({ fetch: createApp().fetch, port: PORT }, (info) => {
-    log('info', 'start', { port: info.port });
+    log('info', 'start', { port: info.port, migrations: applied.join(',') || 'none' });
   });
+}
+
+if (import.meta.main) {
+  await start();
 }

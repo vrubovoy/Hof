@@ -6,8 +6,8 @@
     "node": ">=24.12"
   },
   "scripts": {
-    "dev": "node --watch src/main.ts",
-    "test": "node --env-file=.env --test 'src/**/*.test.ts'",
+    "dev": "node --env-file=.env --watch src/main.ts",
+    "test": "node --env-file=.env --test --test-concurrency=1 'src/**/*.test.ts'",
     "format": "prettier --write .",
     "check": "prettier --check . && eslint . && tsc --noEmit && npm test"
   },

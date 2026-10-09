@@ -1,6 +1,9 @@
-// Common request checks of main.ts: Origin (§4.6), POST body (§4.7), response headers (§4.9).
+// main.ts: common request checks — Origin (§4.6), POST body (§4.7), response headers (§4.9) —
+// and the failures that stop the server before it opens the HTTP port.
 
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
+import { join } from 'node:path';
 import { describe, test, type TestContext } from 'node:test';
 import { createApp } from './main.ts';
 
@@ -139,5 +142,32 @@ describe('response headers', () => {
     assert.equal(res.headers.get('x-content-type-options'), 'nosniff');
     assert.equal(res.headers.get('referrer-policy'), 'same-origin');
     assert.equal(res.headers.get('cache-control'), null);
+  });
+});
+
+describe('startup', () => {
+  // The server runs as a separate process with only the given environment. A listening server
+  // would keep running, so exit code 1 also means the HTTP port was never opened.
+  function start(env: Record<string, string>) {
+    return spawnSync(process.execPath, [join(import.meta.dirname, 'main.ts')], {
+      env: { PATH: process.env.PATH ?? '', ...env },
+      encoding: 'utf8',
+      timeout: 10_000,
+    });
+  }
+
+  test('without HOF_CORE_DB_PASSWORD: exits with 1 and names the variable', () => {
+    const result = start({});
+    assert.equal(result.status, 1);
+    assert.equal(
+      result.stdout,
+      'error startup_failed error="HOF_CORE_DB_PASSWORD is not set (see .env.example)"\n',
+    );
+  });
+
+  test('database unavailable: exits with 1 before listening', () => {
+    const result = start({ HOF_CORE_DB_PASSWORD: 'x', PGHOST: '127.0.0.1', PGPORT: '1' });
+    assert.equal(result.status, 1);
+    assert.equal(result.stdout, 'error startup_failed error="connect ECONNREFUSED 127.0.0.1:1"\n');
   });
 });
